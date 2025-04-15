@@ -1,5 +1,11 @@
 import os
+from pathlib import Path
+from dotenv import load_dotenv
 from .base import *
+
+# .envを読み込む
+env_path = Path(__file__).resolve().parent.parent / ".env"
+load_dotenv(env_path)
 
 # 環境変数を取得
 environment = os.getenv("DJANGO_ENV", "development")
@@ -19,8 +25,8 @@ DATABASES = {
         "NAME": os.getenv("DB_NAME"),
         "USER": os.getenv("DB_USER"),
         "PASSWORD": os.getenv("DB_PASSWORD"),
-        "HOST": os.getenv("DB_HOST", "db"),
-        "PORT": os.getenv("DB_PORT", "5432"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": "5432",
         "OPTIONS": {
             "client_encoding": "UTF8",
         },
