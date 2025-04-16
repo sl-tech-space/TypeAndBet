@@ -1,11 +1,11 @@
 import graphene
 from graphene_django.types import DjangoObjectType
 from django.core.exceptions import ValidationError
-from ...models import User
+from app.models import User
 import uuid
 from django.contrib.auth.hashers import make_password
-from django.core.validators import EmailValidator
 from django.db import transaction
+from app.validators.user_validator import UserValidator
 
 class UserType(DjangoObjectType):
     class Meta:
@@ -25,47 +25,26 @@ class RegisterUser(graphene.Mutation):
 
     @transaction.atomic
     def mutate(self, info, name, email, email_confirm, password):
-        errors = []
-
-        # バリデーション
-        if len(name) > 15:
-            errors.append("ユーザー名は15文字以内で入力してください")
-        
-        if email != email_confirm:
-            errors.append("メールアドレスが一致しません")
-        
-        if len(password) > 255:  # モデルの定義に合わせて修正
-            errors.append("パスワードは255文字以内で入力してください")
-
-        email_validator = EmailValidator()
         try:
-            email_validator(email)
-        except ValidationError:
-            errors.append("有効なメールアドレスを入力してください")
+            # バリデーション
+            UserValidator.validate_name(name)
+            UserValidator.validate_email(email, email_confirm)
+            UserValidator.validate_password(password)
 
-        # 一意性チェック
-        if User.objects.filter(name=name).exists():
-            errors.append("このユーザー名は既に使用されています")
-        
-        if User.objects.filter(email=email).exists():
-            errors.append("このメールアドレスは既に使用されています")
-
-        if errors:
-            return RegisterUser(success=False, errors=errors)
-
-        try:
             # ユーザー作成
             user = User.objects.create(
                 id=uuid.uuid4(),
                 name=name,
                 email=email,
                 password=make_password(password),
-                icon="default_icon.png"  # デフォルトアイコン
+                icon='default.png'
             )
-            return RegisterUser(user=user, success=True, errors=[])
+
+            return RegisterUser(user=user, success=True, errors=None)
+        except ValidationError as e:
+            return RegisterUser(user=None, success=False, errors=[str(e)])
         except Exception as e:
-            errors.append(str(e))
-            return RegisterUser(success=False, errors=errors)
+            return RegisterUser(user=None, success=False, errors=[str(e)])
 
 class Mutation(graphene.ObjectType):
     register_user = RegisterUser.Field()
