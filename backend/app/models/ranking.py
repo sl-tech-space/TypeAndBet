@@ -15,12 +15,3 @@ class Ranking(models.Model):
         db_table = 'rankings'
         ordering = ['ranking']
         unique_together = ['user']
-
-    def __str__(self):
-        return f"{self.user.name}'s ranking: {self.ranking}"
-
-    def save(self, *args, **kwargs):
-        # scoreのチェック
-        if self.score < 0:
-            raise ValueError("Score must be greater than or equal to 0")
-        super().save(*args, **kwargs) 

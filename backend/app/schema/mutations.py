@@ -1,5 +1,5 @@
 import graphene
-from ..views.auth.register import Mutation as AuthMutation
+from app.views.auth.register import RegisterUser
 
-class Mutation(AuthMutation, graphene.ObjectType):
-    pass 
+class Mutation(graphene.ObjectType):
+    register_user = RegisterUser.Field() 
