@@ -3,14 +3,13 @@ from graphene_django.types import DjangoObjectType
 from django.core.exceptions import ValidationError
 from app.models import User
 import uuid
-from django.contrib.auth.hashers import make_password
 from django.db import transaction
 from app.validators.user_validator import UserValidator
 
 class UserType(DjangoObjectType):
     class Meta:
         model = User
-        fields = ('id', 'name', 'email', 'gold', 'created_at')
+        fields = ('id', 'name', 'email')
 
 class RegisterUser(graphene.Mutation):
     class Arguments:
@@ -36,9 +35,10 @@ class RegisterUser(graphene.Mutation):
                 id=uuid.uuid4(),
                 name=name,
                 email=email,
-                password=make_password(password),
                 icon='default.png'
             )
+            user.set_password(password)
+            user.save()
 
             return RegisterUser(user=user, success=True, errors=None)
         except ValidationError as e:

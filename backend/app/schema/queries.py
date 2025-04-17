@@ -1,7 +1,7 @@
 import graphene
 from graphene_django.types import DjangoObjectType
 from app.models import User
-from app.views.ranking.total import RankingType
+from app.views.ranking.overall import RankingType
 
 class UserType(DjangoObjectType):
     class Meta:
@@ -24,5 +24,5 @@ class Query(graphene.ObjectType):
         return User.objects.get(id=id)
 
     def resolve_rankings(self, info, limit=10, offset=0):
-        from app.views.ranking.total import Query as RankingQuery
+        from app.views.ranking.overall import Query as RankingQuery
         return RankingQuery().resolve_rankings(info, limit, offset)
