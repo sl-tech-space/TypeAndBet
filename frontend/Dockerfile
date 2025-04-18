@@ -2,6 +2,9 @@ FROM node:20-slim
 
 WORKDIR /app
 
+# システム依存関係のインストール
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
 # パッケージファイルをコピー
 COPY package.json yarn.lock ./
 

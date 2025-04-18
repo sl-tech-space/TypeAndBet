@@ -11,7 +11,6 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
-      - PORT=${FRONTEND_PORT}
       - TZ=${TIMEZONE}
     depends_on:
       - backend
@@ -39,7 +38,6 @@ services:
       - DJANGO_ENV=development
       - DEBUG=True
       - SECRET_KEY=${SECRET_KEY}
-      - PORT=${BACKEND_PORT}
       - TZ=${TIMEZONE}
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_INTERNAL_PORT}
