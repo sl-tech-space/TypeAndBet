@@ -13,15 +13,3 @@ class Game(models.Model):
     class Meta:
         db_table = 'games'
         ordering = ['-created_at']
-
-    def __str__(self):
-        return f"{self.user.name}'s game at {self.created_at}"
-
-    def save(self, *args, **kwargs):
-        # bet_amountのチェック
-        if self.bet_amount < 100:
-            raise ValueError("Bet amount must be greater than or equal to 100")
-        # scoreのチェック
-        if self.score < 0:
-            raise ValueError("Score must be greater than or equal to 0")
-        super().save(*args, **kwargs) 
