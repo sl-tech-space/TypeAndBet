@@ -22,15 +22,16 @@ class RegisterUser(graphene.Mutation):
     success = graphene.Boolean()
     errors = graphene.List(graphene.String)
 
+    @classmethod
     @transaction.atomic
-    def mutate(self, info, name, email, email_confirm, password):
+    def mutate(cls, root, info, name, email, email_confirm, password):
         try:
             # バリデーション
             UserValidator.validate_name(name)
             UserValidator.validate_email(email, email_confirm)
             UserValidator.validate_password(password)
 
-            # ユーザー作成
+            # ユーザーの作成
             user = User.objects.create(
                 id=uuid.uuid4(),
                 name=name,
@@ -40,11 +41,9 @@ class RegisterUser(graphene.Mutation):
             user.set_password(password)
             user.save()
 
-            return RegisterUser(user=user, success=True, errors=None)
-        except ValidationError as e:
-            return RegisterUser(user=None, success=False, errors=[str(e)])
-        except Exception as e:
-            return RegisterUser(user=None, success=False, errors=[str(e)])
+            return RegisterUser(user=user, success=True, errors=[])
 
-class Mutation(graphene.ObjectType):
-    register_user = RegisterUser.Field()
+        except ValidationError as e:
+            return RegisterUser(success=False, errors=[str(e)])
+        except Exception as e:
+            return RegisterUser(success=False, errors=[f'ユーザー登録中にエラーが発生しました: {str(e)}'])

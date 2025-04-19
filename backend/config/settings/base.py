@@ -136,6 +136,9 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
+# カスタムユーザーモデルの設定
+AUTH_USER_MODEL = 'app.User'
+
 # Google OAuth設定
 SOCIALACCOUNT_PROVIDERS = {
     'google': {

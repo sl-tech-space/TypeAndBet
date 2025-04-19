@@ -1,13 +1,11 @@
 import graphene
 from graphene_django.types import DjangoObjectType
-from django.contrib.auth import get_user_model
 from django.contrib.auth import login
+from app.models.user import User
 from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 import requests
-
-User = get_user_model()
 
 class UserType(DjangoObjectType):
     class Meta:
@@ -22,7 +20,8 @@ class GoogleAuth(graphene.Mutation):
     success = graphene.Boolean()
     errors = graphene.List(graphene.String)
 
-    def mutate(self, info, access_token):
+    @classmethod
+    def mutate(cls, info, access_token):
         try:
             # Googleからユーザー情報を取得
             response = requests.get(
@@ -51,6 +50,3 @@ class GoogleAuth(graphene.Mutation):
 
         except Exception as e:
             return GoogleAuth(success=False, errors=['認証処理中にエラーが発生しました'])
-
-class Mutation(graphene.ObjectType):
-    google_auth = GoogleAuth.Field()
