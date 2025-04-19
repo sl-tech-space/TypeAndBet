@@ -166,3 +166,57 @@ a.secondary {
     filter: invert();
   }
 }
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  text-align: center;
+}
+
+.description {
+  font-size: 1.2rem;
+  text-align: center;
+  color: var(--gray-rgb);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.feature {
+  background: var(--gray-alpha-100);
+  padding: 24px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.feature h2 {
+  margin-top: 0;
+  font-size: 1.4rem;
+}
+
+.feature p {
+  margin-bottom: 0;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .features {
+    grid-template-columns: 1fr;
+  }
+  
+  .title {
+    font-size: 2rem;
+  }
+  
+  .description {
+    font-size: 1rem;
+  }
+}
