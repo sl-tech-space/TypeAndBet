@@ -6,11 +6,15 @@ from app.views.ranking.overall import RankingType
 class UserType(DjangoObjectType):
     class Meta:
         model = User
-        fields = ('id', 'name', 'email', 'created_at')
+        fields = ('id', 'name', 'email', 'gold', 'icon', 'created_at')
 
 class Query(graphene.ObjectType):
     users = graphene.List(UserType)
     user = graphene.Field(UserType, id=graphene.UUID())
+    user_info = graphene.Field(
+        UserType,
+        user_id=graphene.UUID(required=True)
+    )
     rankings = graphene.List(
         RankingType,
         limit=graphene.Int(),
@@ -22,6 +26,9 @@ class Query(graphene.ObjectType):
 
     def resolve_user(self, info, id):
         return User.objects.get(id=id)
+
+    def resolve_user_info(self, info, user_id):
+        return User.objects.get(id=user_id)
 
     def resolve_rankings(self, info, limit=10, offset=0):
         from app.views.ranking.overall import Query as RankingQuery
