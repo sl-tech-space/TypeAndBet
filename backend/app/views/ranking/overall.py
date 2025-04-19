@@ -6,7 +6,7 @@ from app.models.ranking import Ranking
 class RankingType(DjangoObjectType):
     class Meta:
         model = Ranking
-        fields = ('ranking', 'best_score', 'created_at', 'updated_at')
+        fields = ('ranking', 'created_at', 'updated_at')
 
     name = graphene.String()
     icon = graphene.String()

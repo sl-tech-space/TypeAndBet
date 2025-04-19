@@ -55,8 +55,6 @@ class CreateBet(graphene.Mutation):
         except ValidationError as e:
             return CreateBet(success=False, errors=[str(e)])
         except Exception as e:
-            # エラーの詳細をログに出力
-            print(f"Error in CreateBet: {str(e)}")
             return CreateBet(success=False, errors=[f'掛け金の設定中にエラーが発生しました: {str(e)}'])
 
 class UpdateGameScore(graphene.Mutation):
@@ -97,40 +95,66 @@ class UpdateGameScore(graphene.Mutation):
                 std_dev = statistics.stdev(past_scores) if len(past_scores) > 1 else 1
                 z_score = (score - median) / std_dev if std_dev != 0 else 0
 
-                # Zスコアに基づいて掛け金の倍率を計算
-                if z_score >= 2:
-                    multiplier = 2.0  # 上位2.5%
-                elif z_score >= 1:
+                # Zスコアに基づいて掛け金の倍率を計算（より細かい区切り）
+                if z_score >= 3.0:
+                    multiplier = 3.0  # 上位0.1%
+                elif z_score >= 2.5:
+                    multiplier = 2.5  # 上位0.6%
+                elif z_score >= 2.0:
+                    multiplier = 2.0  # 上位2.3%
+                elif z_score >= 1.5:
+                    multiplier = 1.75  # 上位6.7%
+                elif z_score >= 1.0:
                     multiplier = 1.5  # 上位15.9%
-                elif z_score >= 0:
+                elif z_score >= 0.5:
+                    multiplier = 1.25  # 上位30.9%
+                elif z_score >= 0.0:
                     multiplier = 1.0  # 上位50%
-                elif z_score >= -1:
-                    multiplier = 0.5  # 下位15.9%
+                elif z_score >= -0.5:
+                    multiplier = -1.0  # 下位30.9%
+                elif z_score >= -1.0:
+                    multiplier = -1.5  # 下位15.9%
+                elif z_score >= -1.5:
+                    multiplier = -2.0  # 下位6.7%
+                elif z_score >= -2.0:
+                    multiplier = -2.5  # 下位2.3%
+                elif z_score >= -2.5:
+                    multiplier = -3.0  # 下位0.6%
                 else:
-                    multiplier = 0.0  # 下位2.5%
-            else:
-                # 初回の場合はデフォルトの倍率
-                multiplier = 1.0
+                    multiplier = -4.0  # 下位0.1%
 
-            # ゴールドの変化を計算
-            gold_change = int(game.bet_amount * multiplier)
+                # ゴールドの変化を計算（掛け金の倍率を適用）
+                if multiplier >= 0:
+                    # プラスの倍率：掛け金 × 倍率
+                    gold_change = int(game.bet_amount * multiplier)
+                else:
+                    # マイナスの倍率：掛け金 × |倍率| をマイナス
+                    # 掛け金が大きいほど損失も大きくなる
+                    base_loss = int(game.bet_amount * abs(multiplier))
+                    # 掛け金が大きいほど追加の損失を加算
+                    additional_loss = int(game.bet_amount * 0.1)  # 掛け金の10%を追加損失
+                    total_loss = base_loss + additional_loss
+                    
+                    # 現在の所持金を超える損失にならないように調整
+                    if total_loss > user.gold:
+                        total_loss = user.gold
+                    
+                    gold_change = -total_loss
 
-            # ゲームのスコアとゴールド変化を更新
-            game.score = score
-            game.gold_change = gold_change - game.bet_amount  # 掛け金を引いた純利益
-            game.save()
+                # ゲームのスコアとゴールド変化を更新
+                game.score = score
+                game.gold_change = gold_change  # 純利益（掛け金は既に引かれている）
+                game.save()
 
-            # ユーザーの所持金を更新
-            user.gold += gold_change
-            user.save()
+                # ユーザーの所持金を更新
+                user.gold += gold_change
+                user.save()
 
-            # ランキングの更新
-            ranking, created = Ranking.objects.get_or_create(user=user)
-            if score > ranking.best_score:
-                ranking.best_score = score
+                # ランキングの更新
+                ranking, created = Ranking.objects.get_or_create(user=user)
                 ranking.save()
 
-            return UpdateGameScore(game=game, success=True, errors=[])
+                return UpdateGameScore(game=game, success=True, errors=[])
 
         except Game.DoesNotExist:
             return UpdateGameScore(success=False, errors=['ゲームが見つかりません'])
