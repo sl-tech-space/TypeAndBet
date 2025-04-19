@@ -6,16 +6,20 @@ from app.models.ranking import Ranking
 class RankingType(DjangoObjectType):
     class Meta:
         model = Ranking
-        fields = ('ranking', 'gold')
+        fields = ('ranking', 'best_score', 'created_at', 'updated_at')
 
     name = graphene.String()
     icon = graphene.String()
+    gold = graphene.Int()
 
     def resolve_name(self, info):
         return self.user.name
 
     def resolve_icon(self, info):
         return self.user.icon
+
+    def resolve_gold(self, info):
+        return self.user.gold
 
 class Query(graphene.ObjectType):
     rankings = graphene.List(

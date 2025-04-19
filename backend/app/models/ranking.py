@@ -6,8 +6,7 @@ class Ranking(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     ranking = models.IntegerField(null=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='rankings', null=False)
-    score = models.IntegerField(null=False)
-    gold = models.IntegerField(default=1000, null=True)
+    best_score = models.IntegerField(null=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
