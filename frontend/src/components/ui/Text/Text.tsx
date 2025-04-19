@@ -12,7 +12,7 @@ import { TextProps } from "./Text.types";
  * @param className クラス名
  * @returns テキストを表示するコンポーネント
  */
-const Text = ({
+export const Text = ({
   variant = "p",
   size = "auto",
   children,

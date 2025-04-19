@@ -1,0 +1,38 @@
+// ======================================
+// カラー変数
+// ======================================
+
+// メインカラー
+$color-primary: #171717;      // 黒
+$color-secondary: #ffffff;    // 白
+$color-tertiary: #757575;     // グレー
+
+// アクセントカラー
+$color-accent: #4a56e2;       // 青
+
+// テキストカラー
+$text-on-primary: #ffffff;    // 黒背景上のテキスト
+$text-on-secondary: #171717;  // 白背景上のテキスト
+$text-on-tertiary: #ffffff;   // グレー背景上のテキスト
+
+// ボーダーカラー
+$border-primary: #171717;     
+$border-secondary: #171717;   
+$border-tertiary: #757575;    
+
+// シャドウ
+$shadow-primary: 0 4px 8px rgba(0, 0, 0, 0.2);
+$shadow-secondary: 0 4px 8px rgba(0, 0, 0, 0.1);
+$shadow-tertiary: 0 4px 8px rgba(0, 0, 0, 0.15);
+
+// ======================================
+// ブレークポイント
+// ======================================
+// 小型PC
+$breakpoint-pc-small: 1024px;
+// 中型PC
+$breakpoint-pc-medium: 1280px;
+// 大型PC
+$breakpoint-pc-large: 1440px;
+// 超大型PC・ワイドスクリーン
+$breakpoint-pc-xlarge: 1920px; 
