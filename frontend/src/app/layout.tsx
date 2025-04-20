@@ -3,6 +3,7 @@ import { createMetadata } from "@/utils";
 import { META_TITLE, META_DESCRIPTION, META_KEYWORDS } from "@/constants";
 import { Metadata } from "next";
 import { Header } from "@/components/layouts/Header";
+import { Background } from "@/components/ui";
 
 /**
  * メタデータを動的に生成
@@ -24,6 +25,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body>
+        <Background />  
         <Header />
         <main>{children}</main>
       </body>

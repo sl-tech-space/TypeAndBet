@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   sassOptions: {
     includePaths: ["./src"],
-    prependData: `@import "./src/styles/variables.scss";`,
+    prependData: `@use "sass:color";\n@use "./src/styles/variables.scss" as *;\n`,
   },
 };
 

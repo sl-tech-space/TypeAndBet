@@ -2,32 +2,24 @@
 // カラー変数
 // ======================================
 
-// メインカラー
-$color-primary: #171717;      // 黒
-$color-secondary: #ffffff;    // 白
-$color-tertiary: #757575;     // グレー
-
-// アクセントカラー
-$color-accent: #4a56e2;       // 青
-
-// テキストカラー
-$text-on-primary: #ffffff;    // 黒背景上のテキスト
-$text-on-secondary: #171717;  // 白背景上のテキスト
-$text-on-tertiary: #ffffff;   // グレー背景上のテキスト
-
-// ボーダーカラー
-$border-primary: #171717;     
-$border-secondary: #171717;   
-$border-tertiary: #757575;    
+// カラー
+$color-primary: #0f4e2c; // 緑
+$color-secondary: #ffffff; // 白
+$color-tertiary: #171717; // 黒
+$color-accent: #91000c; // 赤（アクセント）
+$color-gold: #d4af37; // 金（高級感のあるアクセント）
 
 // シャドウ
-$shadow-primary: 0 4px 8px rgba(0, 0, 0, 0.2);
-$shadow-secondary: 0 4px 8px rgba(0, 0, 0, 0.1);
-$shadow-tertiary: 0 4px 8px rgba(0, 0, 0, 0.15);
+$shadow-primary: 0 4px 8px rgba(15, 78, 44, 0.2); // 緑のシャドウ
+$shadow-secondary: 0 4px 8px rgba(255, 255, 255, 0.1); // 白のシャドウ
+$shadow-tertiary: 0 4px 8px rgba(0, 0, 0, 0.2); // 黒のシャドウ
+$shadow-accent: 0 4px 8px rgba(230, 57, 70, 0.2); // 赤のシャドウ
+$shadow-gold: 0 0 12px rgba(212, 175, 55, 0.6); // 金色の光沢シャドウ
 
 // ======================================
 // ブレークポイント
 // ======================================
+
 // 小型PC
 $breakpoint-pc-small: 1024px;
 // 中型PC
@@ -35,4 +27,4 @@ $breakpoint-pc-medium: 1280px;
 // 大型PC
 $breakpoint-pc-large: 1440px;
 // 超大型PC・ワイドスクリーン
-$breakpoint-pc-xlarge: 1920px; 
+$breakpoint-pc-xlarge: 1920px;

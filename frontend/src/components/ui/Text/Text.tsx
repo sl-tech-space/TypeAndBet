@@ -8,6 +8,8 @@ import { TextProps } from "./Text.types";
  * @param size テキストのサイズ(デフォルトはmedium)
  * サイズ：auto(タグのサイズに合わせる), small, medium, large, xlarge, xxlarge
  * 画面幅768px以下では１サイズ小さくなる
+ * @param color テキストの色(デフォルトはprimary)
+ * 色：primary, secondary, tertiary, accent, gold
  * @param children テキストの内容
  * @param className クラス名
  * @returns テキストを表示するコンポーネント
@@ -15,13 +17,14 @@ import { TextProps } from "./Text.types";
 export const Text = ({
   variant = "p",
   size = "auto",
+  color = "",
   children,
   className = "",
 }: TextProps) => {
   const Component = variant;
   return (
     <Component
-      className={`${styles[variant]} ${styles[size]} ${className}`}
+      className={`${styles[variant]} ${styles[size]} ${styles[color]} ${className}`}
     >
       {children}
     </Component>

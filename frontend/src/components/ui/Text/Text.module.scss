@@ -62,6 +62,27 @@
   font-size: 2rem; /* 32px */
 }
 
+/* カラー別スタイル */
+.primary {
+  color: $color-primary;
+}
+
+.secondary {
+  color: $color-secondary;
+}
+
+.tertiary {
+  color: $color-tertiary;
+}
+
+.accent {
+  color: $color-accent;
+}
+
+.gold {
+  color: $color-gold;
+}
+
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
   .small {
