@@ -39,28 +39,32 @@
       transform: scale(1.05);
     }
   }
-}
 
-.logoText {
-  color: $color-gold;
-  background: linear-gradient(to right, $color-gold, color.adjust($color-gold, $lightness: 20%));
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: text-shadow 0.3s ease;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  height: 100%;
-  font-size: 1.8rem;
-  line-height: 1;
-  font-weight: 700;
-  letter-spacing: 0.5px;
+  &__text {
+    color: $color-gold;
+    background: linear-gradient(
+      to right,
+      $color-gold,
+      color.adjust($color-gold, $lightness: 20%)
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: text-shadow 0.3s ease;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    font-size: 1.8rem;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: 0.5px;
 
-  &:hover {
-    text-shadow: 0 2px 8px rgba($color-gold, 0.4);
+    &:hover {
+      text-shadow: 0 2px 8px rgba($color-gold, 0.4);
+    }
   }
 }
 
@@ -79,23 +83,10 @@
   will-change: transform, box-shadow, background-color;
 }
 
-.signupButton,
-.loginButton {
+.signup,
+.login {
   position: relative;
   z-index: 1;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba($color-gold, 0.25);
-    filter: brightness(1.1);
-  }
-
-  &:active {
-    transform: translateY(1px);
-    box-shadow: 0 1px 3px rgba($color-gold, 0.15);
-    transition: all 0.1s ease;
-    filter: brightness(0.95);
-  }
 }
 
 /* レスポンシブ対応 */

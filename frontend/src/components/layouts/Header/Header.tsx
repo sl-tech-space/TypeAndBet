@@ -6,10 +6,10 @@ import Link from "next/link";
 import styles from "./Header.module.scss";
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
+import { SITE_NAME, ROUTE, ROUTE_NAME } from "@/constants";
 
 /**
  * ヘッダーコンポーネント
- * @param props プロパティ
  * @returns ヘッダーコンポーネント
  */
 export const Header = () => {
@@ -20,38 +20,40 @@ export const Header = () => {
           <Link href="/">
             <Image
               src="/assets/images/logo.png"
-              alt="Type＆Bet"
+              alt={SITE_NAME}
               width={70}
               height={70}
               priority
             />
           </Link>
-          <Text variant="h1" className={styles.logoText}>
-            Type＆Bet
+          <Text variant="h1" className={styles.logo__text}>
+            {SITE_NAME}
           </Text>
         </div>
 
         <div className={styles.buttons}>
-          <Link href="/login">
+          <Link href={ROUTE.LOGIN}>
             <Button
               textColor="gold"
               backgroundColor="tertiary"
+              isBorder={true}
               borderColor="gold"
               isRound={true}
-              className={`${styles.button} ${styles.loginButton}`}
+              className={`${styles.button} ${styles.login}`}
             >
-              ログイン
+              {ROUTE_NAME.LOGIN}
             </Button>
           </Link>
-          <Link href="/signup">
+          <Link href={ROUTE.SIGNUP}>
             <Button
               textColor="secondary"
               backgroundColor="accent"
+              isBorder={true}
               borderColor="gold"
               isRound={true}
-              className={`${styles.button} ${styles.signupButton}`}
+              className={`${styles.button} ${styles.signup}`}
             >
-              新規登録
+              {ROUTE_NAME.SIGNUP}
             </Button>
           </Link>
         </div>

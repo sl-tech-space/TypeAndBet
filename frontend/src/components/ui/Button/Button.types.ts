@@ -2,11 +2,13 @@ import { CommonColor, CommonSize } from "@/types";
 
 type ButtonType = "button" | "submit" | "reset";
 
-export type ButtonProps = {
+/**
+ * ボタンの基本プロパティ
+ */
+type BaseButtonProps = {
   children: React.ReactNode;
   textColor?: CommonColor;
   backgroundColor?: CommonColor;
-  borderColor?: CommonColor;
   buttonSize?: CommonSize;
   type?: ButtonType;
   isDisabled?: boolean;
@@ -16,3 +18,23 @@ export type ButtonProps = {
   onClick?: () => void;
 };
 
+/**
+ * ボーダーなしボタンのプロパティ
+ */
+type ButtonWithoutBorderProps = BaseButtonProps & {
+  isBorder?: false;
+  borderColor?: never;
+};
+
+/**
+ * ボーダーありボタンのプロパティ
+ */
+type ButtonWithBorderProps = BaseButtonProps & {
+  isBorder: true;
+  borderColor: CommonColor;
+};
+
+/**
+ * ボタンのプロパティ（条件付き型）
+ */
+export type ButtonProps = ButtonWithoutBorderProps | ButtonWithBorderProps;

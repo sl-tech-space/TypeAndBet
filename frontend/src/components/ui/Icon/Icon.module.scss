@@ -1,0 +1,71 @@
+.icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.border {
+  border: 2px solid;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.round {
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+// ボーダーの色
+.primary {
+  border-color: $color-primary;
+}
+
+.secondary {
+  border-color: $color-secondary;
+}
+
+.tertiary {
+  border-color: $color-tertiary;
+}
+
+.accent {
+  border-color: $color-accent;
+}
+
+.gold {
+  border-color: $color-gold;
+  &.border {
+    box-shadow: 0 0 8px rgba($color-gold, 0.5);
+  }
+}
+
+// アイコン特殊効果
+.glow {
+  filter: drop-shadow(0 0 3px currentColor);
+}
+
+.pulse {
+  @include animate(pulse, 2s, ease-in-out, 0s, infinite);
+}
+
+// ホバー時特殊効果
+.hoverEffect {
+  transition: all 0.3s ease;
+
+  &:hover {
+    filter: brightness(1.2);
+    transform: translateY(-2px);
+  }
+}

@@ -1,3 +1,5 @@
+"use client";
+
 import styles from "./Button.module.scss";
 import type { ButtonProps } from "./Button.types";
 
@@ -8,7 +10,8 @@ import type { ButtonProps } from "./Button.types";
  * 色：primary, secondary, tertiary, accent, gold
  * @param backgroundColor 背景の色(デフォルトはprimary)
  * 色：primary, secondary, tertiary, accent, gold
- * @param borderColor ボーダーの色(デフォルトはprimary)
+ * @param isBorder ボーダーを表示するかどうか(デフォルトはtrue)
+ * @param borderColor ボーダーの色(デフォルトはprimary、isBorderがtrueの場合のみ有効)
  * 色：primary, secondary, tertiary, accent, gold
  * @param buttonSize ボタンのサイズ(デフォルトはmedium)
  * サイズ：small, medium, large
@@ -25,6 +28,7 @@ export const Button = ({
   children,
   textColor = "primary",
   backgroundColor = "primary",
+  isBorder = true,
   borderColor = "primary",
   buttonSize = "medium",
   type = "button",
@@ -39,7 +43,7 @@ export const Button = ({
       type={type}
       className={`${styles[buttonSize]} ${styles[`${textColor}-text`]} ${
         styles[`${backgroundColor}-background`]
-      } ${styles[`${borderColor}-border`]} ${
+      } ${isBorder ? styles[`${borderColor}-border`] : ""} ${
         isDisabled ? styles.disabled : ""
       } ${isLoading ? styles.loading : ""} ${
         isRound ? styles.round : ""

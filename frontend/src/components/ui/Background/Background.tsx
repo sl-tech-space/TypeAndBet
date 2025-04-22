@@ -9,33 +9,33 @@ import styles from "./Background.module.scss";
  */
 export const Background = () => {
   return (
-    <div className={styles.casinoBackground}>
+    <div className={styles["casino-background"]}>
       {/* メインのグラデーション背景（緑色ベース） */}
-      <div className={styles.mainGradient}></div>
+      <div className={styles["casino-background__main-gradient"]}></div>
 
       {/* カジノパターンのオーバーレイ */}
-      <div className={styles.patternOverlay}></div>
+      <div className={styles["casino-background__pattern-overlay"]}></div>
 
       {/* 装飾ボーダー */}
-      <div className={styles.topBorder}></div>
-      <div className={styles.bottomBorder}></div>
-      <div className={styles.leftBorder}></div>
-      <div className={styles.rightBorder}></div>
+      <div className={styles["casino-background__top-border"]}></div>
+      <div className={styles["casino-background__bottom-border"]}></div>
+      <div className={styles["casino-background__left-border"]}></div>
+      <div className={styles["casino-background__right-border"]}></div>
 
       {/* カジノライトエフェクト */}
-      <div className={`${styles.lightEffect} ${styles.lightGreen1}`}></div>
-      <div className={`${styles.lightEffect} ${styles.lightGreen2}`}></div>
-      <div className={`${styles.lightEffect} ${styles.lightGreen3}`}></div>
+      <div className={`${styles["casino-background__light-effect"]} ${styles["casino-background__light-green1"]}`}></div>
+      <div className={`${styles["casino-background__light-effect"]} ${styles["casino-background__light-green2"]}`}></div>
+      <div className={`${styles["casino-background__light-effect"]} ${styles["casino-background__light-green3"]}`}></div>
 
       {/* 上下の暗いグラデーション */}
-      <div className={styles.topDarkness}></div>
-      <div className={styles.bottomDarkness}></div>
+      <div className={styles["casino-background__top-darkness"]}></div>
+      <div className={styles["casino-background__bottom-darkness"]}></div>
 
       {/* カジノの浮遊要素 */}
-      <div className={`${styles.floatingElement} ${styles.spade}`}>♠</div>
-      <div className={`${styles.floatingElement} ${styles.heart}`}>♥</div>
-      <div className={`${styles.floatingElement} ${styles.diamond}`}>♦</div>
-      <div className={`${styles.floatingElement} ${styles.club}`}>♣</div>
+      <div className={`${styles["casino-background__floating-element"]} ${styles["casino-background__spade"]}`}>♠</div>
+      <div className={`${styles["casino-background__floating-element"]} ${styles["casino-background__heart"]}`}>♥</div>
+      <div className={`${styles["casino-background__floating-element"]} ${styles["casino-background__diamond"]}`}>♦</div>
+      <div className={`${styles["casino-background__floating-element"]} ${styles["casino-background__club"]}`}>♣</div>
     </div>
   );
 };

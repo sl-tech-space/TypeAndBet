@@ -1,3 +1,4 @@
 export * from "./Text";
 export * from "./Button";
 export * from "./Background";
+export * from "./Icon";

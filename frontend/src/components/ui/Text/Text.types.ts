@@ -6,7 +6,7 @@ type TextSize = "auto" | "small" | "medium" | "large" | "xlarge" | "xxlarge";
 
 export type TextProps = {
   variant?: TextVariant;
-  size?: TextSize;
+  size?: TextSize | ""; //カスタムクラス用に空文字を許可
   color?: CommonColor | ""; //カスタムクラス用に空文字を許可
   children: ReactNode;
   className?: string;
