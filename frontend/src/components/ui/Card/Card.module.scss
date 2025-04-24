@@ -1,0 +1,150 @@
+// カードの基本スタイル
+.card {
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+// カードのバリエーション
+.default {
+  background-color: $color-secondary;
+}
+
+.elevated {
+  background-color: $color-secondary;
+  box-shadow: $shadow-tertiary;
+}
+
+.bordered {
+  border: 2px solid $color-primary;
+  background-color: $color-secondary;
+}
+
+// パディングサイズ
+.padding-none {
+  padding: 0;
+}
+
+.padding-small {
+  padding: 12px;
+}
+
+.padding-medium {
+  padding: 20px;
+}
+
+.padding-large {
+  padding: 32px;
+}
+
+// サイズ
+.size-small {
+  width: 400px;
+}
+
+.size-medium {
+  width: 600px;
+}
+
+.size-large {
+  width: 800px;
+}
+
+// 背景色
+.primary-background {
+  background-color: $color-primary;
+}
+
+.secondary-background {
+  background-color: $color-secondary;
+}
+
+.tertiary-background {
+  background-color: $color-tertiary;
+}
+
+.accent-background {
+  background-color: $color-accent;
+}
+
+.gold-background {
+  background-color: $color-gold;
+}
+
+// ボーダー色
+.primary-border {
+  border: 2px solid $color-primary;
+}
+
+.secondary-border {
+  border: 2px solid $color-secondary;
+}
+
+.tertiary-border {
+  border: 2px solid $color-tertiary;
+}
+
+.accent-border {
+  border: 2px solid $color-accent;
+}
+
+.gold-border {
+  border: 2px solid $color-gold;
+}
+
+// シャドウ
+.primary-shadow {
+  box-shadow: $shadow-primary;
+}
+
+.secondary-shadow {
+  box-shadow: $shadow-secondary;
+}
+
+.tertiary-shadow {
+  box-shadow: $shadow-tertiary;
+}
+
+.accent-shadow {
+  box-shadow: $shadow-accent;
+}
+
+.gold-shadow {
+  box-shadow: $shadow-gold;
+}
+
+// 丸いスタイル
+.round {
+  border-radius: 16px;
+}
+
+// ホバーエフェクト
+.card:hover {
+  &.primary-shadow {
+    box-shadow: 0 8px 16px rgba(15, 78, 44, 0.3);
+  }
+
+  &.secondary-shadow {
+    box-shadow: 0 8px 16px rgba(255, 255, 255, 0.2);
+  }
+
+  &.tertiary-shadow {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  }
+
+  &.accent-shadow {
+    box-shadow: 0 8px 16px rgba(230, 57, 70, 0.3);
+  }
+
+  &.gold-shadow {
+    box-shadow: 0 8px 16px rgba(212, 175, 55, 0.7);
+  }
+}

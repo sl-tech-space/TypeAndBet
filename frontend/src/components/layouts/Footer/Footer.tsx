@@ -3,6 +3,7 @@ import styles from "./Footer.module.scss";
 import { ROUTE, ROUTE_NAME } from "@/constants";
 
 /**
+ * サーバコンポーネント
  * フッターコンポーネント
  * @returns フッターコンポーネント
  */

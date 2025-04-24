@@ -2,12 +2,14 @@
 
 import React from "react";
 import { useState, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import styles from "./Supporter.module.scss";
 import { Icon } from "@/components/ui";
 import { useMessage } from "@/components/common";
-import { SUPPORTER_DEFAULT_MESSAGE } from "@/constants";
+import { PATH_DEFAULT_MESSAGES } from "@/constants";
 
 /**
+ * クライアントコンポーネント
  * ゲームをサポートするキャラクターを表示するコンポーネント
  * 右下に固定表示され、通知を表示
  * @returns Supporterコンポーネント
@@ -19,7 +21,7 @@ export const Supporter = () => {
   const { message } = useMessage();
   const prevMessageRef = useRef<string | null>(null);
   const supporterRef = useRef<HTMLDivElement>(null);
-
+  const path = usePathname();
   // フッターの表示状態を監視
   useEffect(() => {
     // インターセクションオブザーバーの設定
@@ -77,7 +79,8 @@ export const Supporter = () => {
   const hasMessage = !!message;
 
   // 表示するメッセージを決定
-  const displayMessage = message || SUPPORTER_DEFAULT_MESSAGE;
+  const pathMessage = path in PATH_DEFAULT_MESSAGES ? PATH_DEFAULT_MESSAGES[path as keyof typeof PATH_DEFAULT_MESSAGES] : null;
+  const displayMessage = message || pathMessage || "";
 
   // メッセージの変更を監視し、アニメーションをトリガー
   useEffect(() => {
@@ -92,7 +95,7 @@ export const Supporter = () => {
       // アニメーションを再開するため少し遅延を設ける
       const startTimer = setTimeout(() => {
         setShouldAnimate(true);
-
+        
         // アニメーション表示後、一定時間後に状態を戻す
         animationTimer = setTimeout(() => {
           setShouldAnimate(false);
@@ -109,6 +112,20 @@ export const Supporter = () => {
       };
     }
   }, [message]); // メッセージが変わるたびに実行
+
+  // パス変更を監視し、アニメーションをトリガー
+  useEffect(() => {
+    // パスが変更された時にアニメーションを実行
+    setShouldAnimate(true);
+    
+    const animationTimer = setTimeout(() => {
+      setShouldAnimate(false);
+    }, 1000);
+    
+    return () => {
+      clearTimeout(animationTimer);
+    };
+  }, [path]); // パスが変わるたびに実行
 
   // ページトップへスクロール
   const scrollToTop = () => {

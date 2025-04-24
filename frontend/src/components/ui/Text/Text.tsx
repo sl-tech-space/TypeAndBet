@@ -2,6 +2,7 @@ import styles from "./Text.module.scss";
 import { TextProps } from "./Text.types";
 
 /**
+ * サーバコンポーネント
  * テキストを表示するコンポーネント
  * @param variant テキストの種類(デフォルトはpタグ)
  * 種類：h1, h2, h3, h4, h5, h6, p

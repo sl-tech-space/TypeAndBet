@@ -1,14 +1,13 @@
-"use client";
-
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./Header.module.scss";
-import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
-import { SITE_NAME, ROUTE, ROUTE_NAME } from "@/constants";
+import { SITE_NAME } from "@/constants";
+import { HeaderActions } from "./HeaderActions";
 
 /**
+ * サーバコンポーネント
  * ヘッダーコンポーネント
  * @returns ヘッダーコンポーネント
  */
@@ -31,32 +30,8 @@ export const Header = () => {
           </Text>
         </div>
 
-        <div className={styles.buttons}>
-          <Link href={ROUTE.LOGIN}>
-            <Button
-              textColor="gold"
-              backgroundColor="tertiary"
-              isBorder={true}
-              borderColor="gold"
-              isRound={true}
-              className={`${styles.button} ${styles.login}`}
-            >
-              {ROUTE_NAME.LOGIN}
-            </Button>
-          </Link>
-          <Link href={ROUTE.SIGNUP}>
-            <Button
-              textColor="secondary"
-              backgroundColor="accent"
-              isBorder={true}
-              borderColor="gold"
-              isRound={true}
-              className={`${styles.button} ${styles.signup}`}
-            >
-              {ROUTE_NAME.SIGNUP}
-            </Button>
-          </Link>
-        </div>
+        {/* クライアントコンポーネント */}
+        <HeaderActions />
       </div>
     </header>
   );

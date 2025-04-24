@@ -17,6 +17,7 @@ const DEFAULT_SIZES: Record<IconSize, { width: number; height: number }> = {
 };
 
 /**
+ * クライアントコンポーネント
  * カスタマイズ可能なアイコンコンポーネント
  * @param icon アイコンのURL
  * @param alt 代替テキスト

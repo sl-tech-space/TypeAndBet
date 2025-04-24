@@ -4,6 +4,7 @@ import React from "react";
 import styles from "./Background.module.scss";
 
 /**
+ * クライアントコンポーネント
  * カジノテーマの背景コンポーネント
  * @returns 背景コンポーネント
  */

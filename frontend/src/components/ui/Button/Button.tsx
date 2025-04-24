@@ -4,6 +4,7 @@ import styles from "./Button.module.scss";
 import type { ButtonProps } from "./Button.types";
 
 /**
+ * クライアントコンポーネント
  * ボタンを表示するコンポーネント
  * @param children ボタンの内容
  * @param textColor テキストの色(デフォルトはprimary)
