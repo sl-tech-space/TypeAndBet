@@ -10,6 +10,7 @@
 # Backend
 venv
 __pycache__
+backend/config/logs/*
 
 # Frontend dependencies
 frontend/node_modules
