@@ -5,8 +5,28 @@ from pathlib import Path
 import graphene
 from django.conf import settings
 import logging
+from app.utils.constants import TextGeneratorErrorMessages
+from app.utils.errors import BaseError
+from typing import List, Optional
 
 logger = logging.getLogger("app")
+
+
+class TextGeneratorError(BaseError):
+    """テキスト生成に関するエラーを表す例外クラス"""
+
+    def __init__(
+        self,
+        message: str,
+        code: str = "TEXT_GENERATOR_ERROR",
+        details: Optional[List[str]] = None,
+    ):
+        super().__init__(
+            message=message,
+            code=code,
+            status=400,
+            details=details,
+        )
 
 
 class TextGenerator:
@@ -29,7 +49,10 @@ class TextGenerator:
             logger.info("TextGenerator初期化完了")
         except Exception as e:
             logger.error(f"TextGenerator初期化エラー: {str(e)}", exc_info=True)
-            raise
+            raise TextGeneratorError(
+                message=TextGeneratorErrorMessages.INITIALIZATION_ERROR,
+                details=[str(e)],
+            )
 
     def _get_random_theme(self):
         logger.info("ランダムテーマ選択開始")
@@ -40,7 +63,10 @@ class TextGenerator:
             return theme, category
         except Exception as e:
             logger.error(f"テーマ選択エラー: {str(e)}", exc_info=True)
-            raise
+            raise TextGeneratorError(
+                message=TextGeneratorErrorMessages.THEME_SELECTION_ERROR,
+                details=[str(e)],
+            )
 
     def _generate_prompt(self, theme, category=None):
         logger.info(f"プロンプト生成開始: theme={theme}, category={category}")
@@ -53,7 +79,10 @@ class TextGenerator:
             return prompt
         except Exception as e:
             logger.error(f"プロンプト生成エラー: {str(e)}", exc_info=True)
-            raise
+            raise TextGeneratorError(
+                message=TextGeneratorErrorMessages.PROMPT_GENERATION_ERROR,
+                details=[str(e)],
+            )
 
     def generate_text(self):
         logger.info("テキスト生成開始")
@@ -66,33 +95,58 @@ class TextGenerator:
 
             # AIにリクエストを送る
             logger.info("AIリクエスト送信")
-            response = self.model.generate_content(prompt)
-            generated_text = response.text
-            logger.info("AIレスポンス受信")
+            try:
+                response = self.model.generate_content(prompt)
+                generated_text = response.text
+                logger.info("AIレスポンス受信")
+            except Exception as e:
+                logger.error(f"AIリクエストエラー: {str(e)}", exc_info=True)
+                raise TextGeneratorError(
+                    message=TextGeneratorErrorMessages.AI_REQUEST_ERROR,
+                    details=[str(e)],
+                )
 
             # 生成されたテキストを整形
-            parts = generated_text.split("。")
-            kanji_hiragana_pairs = []
+            try:
+                parts = generated_text.split("。")
+                kanji_hiragana_pairs = []
 
-            for i in range(0, len(parts) - 1, 2):
-                if i + 1 >= len(parts):
-                    break
+                for i in range(0, len(parts) - 1, 2):
+                    if i + 1 >= len(parts):
+                        break
 
-                kanji_text = parts[i].strip()
-                hiragana_text = parts[i + 1].strip()
+                    kanji_text = parts[i].strip()
+                    hiragana_text = parts[i + 1].strip()
 
-                # 空のペアはスキップ
-                if kanji_text and hiragana_text:
-                    kanji_hiragana_pairs.append(
-                        {"kanji": kanji_text, "hiragana": hiragana_text}
-                    )
+                    # 空のペアはスキップ
+                    if kanji_text and hiragana_text:
+                        kanji_hiragana_pairs.append(
+                            {"kanji": kanji_text, "hiragana": hiragana_text}
+                        )
 
-            logger.info(f"テキスト生成完了: pairs_count={len(kanji_hiragana_pairs)}")
-            return {"theme": theme, "category": category, "pairs": kanji_hiragana_pairs}
+                logger.info(
+                    f"テキスト生成完了: pairs_count={len(kanji_hiragana_pairs)}"
+                )
+                return {
+                    "theme": theme,
+                    "category": category,
+                    "pairs": kanji_hiragana_pairs,
+                }
+            except Exception as e:
+                logger.error(f"レスポンス処理エラー: {str(e)}", exc_info=True)
+                raise TextGeneratorError(
+                    message=TextGeneratorErrorMessages.RESPONSE_PROCESSING_ERROR,
+                    details=[str(e)],
+                )
 
-        except Exception as e:
+        except TextGeneratorError as e:
             logger.error(f"テキスト生成エラー: {str(e)}", exc_info=True)
-            return {"error": f"テキスト生成エラー: {str(e)}"}
+            return {"error": str(e)}
+        except Exception as e:
+            logger.error(f"予期せぬエラー: {str(e)}", exc_info=True)
+            return {
+                "error": f"{TextGeneratorErrorMessages.TEXT_GENERATION_ERROR}: {str(e)}"
+            }
 
 
 class TextPairType(graphene.ObjectType):
@@ -128,4 +182,6 @@ class GenerateText(graphene.Mutation):
             )
         except Exception as e:
             logger.error(f"テキスト生成ミューテーションエラー: {str(e)}", exc_info=True)
-            return GenerateText(error=f"テキスト生成エラー: {str(e)}")
+            return GenerateText(
+                error=f"{TextGeneratorErrorMessages.TEXT_GENERATION_ERROR}: {str(e)}"
+            )

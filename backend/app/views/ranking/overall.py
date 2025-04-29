@@ -2,8 +2,28 @@ import graphene
 from graphene_django.types import DjangoObjectType
 from app.models.ranking import Ranking
 import logging
+from app.utils.constants import RankingErrorMessages
+from app.utils.errors import BaseError
+from typing import List, Optional
 
 logger = logging.getLogger("app")
+
+
+class RankingError(BaseError):
+    """ランキングに関するエラーを表す例外クラス"""
+
+    def __init__(
+        self,
+        message: str,
+        code: str = "RANKING_ERROR",
+        details: Optional[List[str]] = None,
+    ):
+        super().__init__(
+            message=message,
+            code=code,
+            status=400,
+            details=details,
+        )
 
 
 class RankingType(DjangoObjectType):
@@ -35,26 +55,47 @@ class Query(graphene.ObjectType):
         try:
             logger.info(f"ランキング取得開始: limit={limit}, offset={offset}")
 
-            # ランキングの取得
-            rankings = Ranking.objects.all()
-            total_count = rankings.count()
-            logger.info(f"総ランキング数: {total_count}")
-
-            # ページネーション
-            result = rankings[offset : offset + limit]
-            logger.info(f"取得ランキング数: {len(result)}")
-
-            # 取得したランキングの詳細をログ出力
-            for ranking in result:
-                logger.info(
-                    f"ランキング情報: rank={ranking.ranking}, "
-                    f"user_id={ranking.user.id}, "
-                    f"name={ranking.user.name}, "
-                    f"gold={ranking.user.gold}"
+            # バリデーション
+            if limit < 1 or offset < 0:
+                logger.warning(f"無効なパラメータ: limit={limit}, offset={offset}")
+                raise RankingError(
+                    message=RankingErrorMessages.INVALID_RANKING_PARAMS,
+                    details=["limitは1以上、offsetは0以上である必要があります"],
                 )
 
-            return result
+            # ランキングの取得
+            try:
+                rankings = Ranking.objects.all()
+                total_count = rankings.count()
+                logger.info(f"総ランキング数: {total_count}")
 
+                # ページネーション
+                result = rankings[offset : offset + limit]
+                logger.info(f"取得ランキング数: {len(result)}")
+
+                # 取得したランキングの詳細をログ出力
+                for ranking in result:
+                    logger.info(
+                        f"ランキング情報: rank={ranking.ranking}, "
+                        f"user_id={ranking.user.id}, "
+                        f"name={ranking.user.name}, "
+                        f"gold={ranking.user.gold}"
+                    )
+
+                return result
+            except Exception as e:
+                logger.error(f"ランキング取得エラー: {str(e)}", exc_info=True)
+                raise RankingError(
+                    message=RankingErrorMessages.RANKING_FETCH_ERROR,
+                    details=[str(e)],
+                )
+
+        except RankingError as e:
+            logger.error(f"ランキングエラー: {str(e)}", exc_info=True)
+            raise e
         except Exception as e:
-            logger.error(f"ランキング取得エラー: {str(e)}", exc_info=True)
-            raise
+            logger.error(f"予期せぬエラー: {str(e)}", exc_info=True)
+            raise RankingError(
+                message=RankingErrorMessages.RANKING_FETCH_ERROR,
+                details=[str(e)],
+            )

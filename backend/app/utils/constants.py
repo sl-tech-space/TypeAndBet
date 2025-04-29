@@ -1,0 +1,69 @@
+class AuthErrorMessages:
+    """認証に関するエラーメッセージを定義するクラス"""
+
+    AUTHENTICATION_FAILED = "認証に失敗しました"
+    INVALID_CREDENTIALS = "メールアドレスまたはパスワードが正しくありません"
+    TOKEN_EXPIRED = "トークンの有効期限が切れています"
+    INVALID_TOKEN = "無効なトークンです"
+    TOKEN_GENERATION_ERROR = "トークンの生成中にエラーが発生しました"
+    DUPLICATE_EMAIL = "このメールアドレスは既に登録されています"
+    DUPLICATE_USERNAME = "このユーザー名は既に使用されています"
+    INVALID_INPUT = "入力値が不正です"
+    EMAIL_MISMATCH = "メールアドレスが一致しません"
+    INVALID_EMAIL_FORMAT = "有効なメールアドレスを入力してください"
+    PASSWORD_TOO_LONG = "パスワードは255文字以内で入力してください"
+    USERNAME_TOO_LONG = "ユーザー名は15文字以内で入力してください"
+    LOGIN_REQUIRED = "ログインが必要です"
+
+
+class GameErrorMessages:
+    """ゲームに関するエラーメッセージを定義するクラス"""
+
+    LOGIN_REQUIRED = "ログインが必要です"
+    GAME_NOT_FOUND = "ゲームが見つかりません"
+    NO_PERMISSION = "このゲームを更新する権限がありません"
+    BET_AMOUNT_INVALID = "掛け金は100から700の間で設定してください"
+    INSUFFICIENT_GOLD = "所持金が不足しています"
+    CORRECT_TYPED_INVALID = "正タイプ数は0以上である必要があります"
+    ACCURACY_INVALID = "正タイプ率は0より大きく1以下である必要があります"
+    BET_SETTING_ERROR = "掛け金の設定中にエラーが発生しました"
+    SCORE_UPDATE_ERROR = "スコアの更新中にエラーが発生しました"
+
+
+class TextGeneratorErrorMessages:
+    """テキスト生成に関するエラーメッセージを定義するクラス"""
+
+    INITIALIZATION_ERROR = "テキスト生成の初期化中にエラーが発生しました"
+    THEME_SELECTION_ERROR = "テーマの選択中にエラーが発生しました"
+    PROMPT_GENERATION_ERROR = "プロンプトの生成中にエラーが発生しました"
+    TEXT_GENERATION_ERROR = "テキストの生成中にエラーが発生しました"
+    AI_REQUEST_ERROR = "AIへのリクエスト中にエラーが発生しました"
+    RESPONSE_PROCESSING_ERROR = "AIのレスポンス処理中にエラーが発生しました"
+
+
+class ResultErrorMessages:
+    """結果に関するエラーメッセージを定義するクラス"""
+
+    GAME_NOT_FOUND = "ゲームが見つかりません"
+    RANKING_CALCULATION_ERROR = "ランキングの計算中にエラーが発生しました"
+    GOLD_CALCULATION_ERROR = "ゴールドの計算中にエラーが発生しました"
+    RANK_CHANGE_CALCULATION_ERROR = "ランク変動の計算中にエラーが発生しました"
+    NEXT_RANK_CALCULATION_ERROR = "次のランク必要金額の計算中にエラーが発生しました"
+
+
+class SimulationErrorMessages:
+    """シミュレーションに関するエラーメッセージを定義するクラス"""
+
+    SIMULATION_ERROR = "シミュレーション中にエラーが発生しました"
+    INVALID_PARAMETERS = "無効なパラメータが指定されました"
+    CALCULATION_ERROR = "計算中にエラーが発生しました"
+
+
+class RankingErrorMessages:
+    """ランキングに関するエラーメッセージを定義するクラス"""
+
+    RANKING_NOT_FOUND = "ランキングが見つかりません"
+    RANKING_CALCULATION_ERROR = "ランキングの計算中にエラーが発生しました"
+    RANKING_UPDATE_ERROR = "ランキングの更新中にエラーが発生しました"
+    INVALID_RANKING_PARAMS = "無効なランキングパラメータが指定されました"
+    RANKING_FETCH_ERROR = "ランキングの取得中にエラーが発生しました"

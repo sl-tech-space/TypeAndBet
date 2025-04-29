@@ -3,7 +3,8 @@ from graphene_django.types import DjangoObjectType
 from django.db import transaction
 from app.models import Game, Ranking
 from django.core.exceptions import ValidationError
-from app.validators.game_validator import GameValidator
+from app.utils.validators import GameValidator
+from app.utils.constants import GameErrorMessages
 import statistics
 import logging
 
@@ -21,7 +22,7 @@ def get_user(info):
     user = info.context.user
     if not user.is_authenticated:
         logger.warning("未認証ユーザーのアクセス")
-        raise ValidationError("ログインが必要です")
+        raise ValidationError(GameErrorMessages.LOGIN_REQUIRED)
     logger.info(f"ユーザー情報取得: user_id={user.id}")
     return user
 
@@ -69,7 +70,7 @@ class CreateBet(graphene.Mutation):
             logger.error(f"掛け金設定エラー: {str(e)}", exc_info=True)
             return CreateBet(
                 success=False,
-                errors=[f"掛け金の設定中にエラーが発生しました: {str(e)}"],
+                errors=[f"{GameErrorMessages.BET_SETTING_ERROR}: {str(e)}"],
             )
 
 
@@ -108,7 +109,7 @@ class UpdateGameScore(graphene.Mutation):
                 logger.warning(
                     f"権限エラー: user_id={user.id}, game_user_id={game.user.id}"
                 )
-                raise ValidationError("このゲームを更新する権限がありません")
+                raise ValidationError(GameErrorMessages.NO_PERMISSION)
 
             # スコア計算
             score = int(correct_typed * 10 / accuracy)
@@ -185,7 +186,9 @@ class UpdateGameScore(graphene.Mutation):
 
         except Game.DoesNotExist:
             logger.warning(f"ゲーム未検出: game_id={game_id}")
-            return UpdateGameScore(success=False, errors=["ゲームが見つかりません"])
+            return UpdateGameScore(
+                success=False, errors=[GameErrorMessages.GAME_NOT_FOUND]
+            )
         except ValidationError as e:
             logger.warning(f"バリデーションエラー: {str(e)}")
             return UpdateGameScore(success=False, errors=[str(e)])
@@ -193,5 +196,5 @@ class UpdateGameScore(graphene.Mutation):
             logger.error(f"スコア更新エラー: {str(e)}", exc_info=True)
             return UpdateGameScore(
                 success=False,
-                errors=[f"スコアの更新中にエラーが発生しました: {str(e)}"],
+                errors=[f"{GameErrorMessages.SCORE_UPDATE_ERROR}: {str(e)}"],
             )
