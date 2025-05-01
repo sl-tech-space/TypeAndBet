@@ -49,10 +49,17 @@ export const Button = ({
       } ${isLoading ? styles.loading : ""} ${
         isRound ? styles.round : ""
       } ${className}`}
-      disabled={isDisabled}
+      disabled={isDisabled || isLoading}
       onClick={onClick}
     >
-      {children}
+      <div
+        className={`${styles.button__content} ${
+          isLoading ? styles.loading__content : ""
+        }`}
+      >
+        {children}
+      </div>
+      {isLoading && <div className={styles.loading__spinner} />}
     </button>
   );
 };

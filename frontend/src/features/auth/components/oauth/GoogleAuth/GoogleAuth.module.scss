@@ -1,0 +1,23 @@
+.googleAuth {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 240px;
+  min-width: 240px;
+  height: 40px;
+  padding: 0 16px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+
+  &__icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  &__text {
+    line-height: 1;
+  }
+}

@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { GAME_TIME_LIMIT, GAME_BET_LIMIT } from "@/constants";
+import { GAME_TIME_LIMIT, GAME_BET_LIMIT, GAME_MODE_ID } from "@/constants";
+import { useAsyncState } from "@/hooks";
 import { UseBettingReturn, UseBettingProps } from "./betting.types";
 
 /**
@@ -11,25 +12,24 @@ import { UseBettingReturn, UseBettingProps } from "./betting.types";
  */
 export const useBetting = ({
   balance,
-  onBet,
+  onBet = () => Promise.resolve({ success: true }),
   minBet = GAME_BET_LIMIT.MIN_BET,
   maxBet = GAME_BET_LIMIT.MAX_BET,
+  gameModeId,
 }: UseBettingProps): UseBettingReturn => {
   const [betAmount, setBetAmount] = useState(GAME_BET_LIMIT.DEFAULT_BET);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { error, isSubmitting, withAsyncSubmit } = useAsyncState();
   const router = useRouter();
 
-  ////////////////////////
-  // ベット関連          //
-  ////////////////////////
+  ////////////////
+  // ベット関連 //
+  ///////////////
 
   // ベット額に応じて制限時間を計算
   const _calculateTimeLimit = (amount: number) => {
     return (
       GAME_TIME_LIMIT.MIN_TIME +
-      Math.floor(
-        (GAME_BET_LIMIT.MAX_BET - amount) * GAME_TIME_LIMIT.TIME_PER_BET
-      )
+      Math.floor((maxBet - amount) * GAME_TIME_LIMIT.TIME_PER_BET)
     );
   };
 
@@ -39,28 +39,50 @@ export const useBetting = ({
   // ベット額が残高を超えているかどうか
   const isExceedingBalance = betAmount > balance;
 
-  ////////////////////////
-  // ナビゲーション関連 　//
-  ////////////////////////
+  ///////////////////////
+  // ナビゲーション関連 //
+  //////////////////////
+
+  // ベット額のバリデーション
+  const _validateBetAmount = () => {
+    if (betAmount < minBet) {
+      throw new Error("ベット額が最小ベット額を下回っています");
+    }
+
+    if (betAmount > maxBet) {
+      throw new Error("ベット額が最大ベット額を超えています");
+    }
+
+    if (isExceedingBalance) {
+      throw new Error("残高が不足しています");
+    }
+  };
+
+  // ベット処理の実装
+  const _executeBet = async () => {
+    // ベット額のバリデーション
+    _validateBetAmount();
+
+    // シミュレートモードの場合はベット処理を実行せずタイピング画面に遷移
+    if (gameModeId === GAME_MODE_ID.SIMULATE) {
+      router.push(`/simulate/${betAmount}`);
+      return;
+    }
+
+    const result = await onBet(betAmount);
+
+    if (!result.success) {
+      throw new Error(result.error || "ベットに失敗しました");
+    }
+  };
 
   // 前のページに戻る
   const handleCancel = () => {
     router.back();
   };
 
-  // ベット処理を実行
-  const handleBet = async () => {
-    try {
-      setIsSubmitting(true);
-      await onBet(betAmount);
-      // ベット処理が成功したら自動的に次のページに遷移する処理はサーバーアクション側で実装
-    } catch (error) {
-      console.error("ベット処理中にエラーが発生しました", error);
-      // エラー処理はサーバーアクション側で行うのでここでは何もしない
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  // ベット処理を実行（エラー処理とサブミット状態管理付き）
+  const handleBet = withAsyncSubmit(_executeBet);
 
   return {
     betAmount,
@@ -68,6 +90,7 @@ export const useBetting = ({
     timeLimit,
     isSubmitting,
     isExceedingBalance,
+    error: error?.message ?? null,
     handleBet,
     handleCancel,
   };

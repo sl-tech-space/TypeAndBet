@@ -3,13 +3,15 @@
  */
 export interface UseBettingProps {
   /** ベット実行関数 */
-  onBet: (amount: number) => Promise<void>;
+  onBet?: (amount: number) => Promise<{ success: boolean; error?: string }>;
   /** ユーザーの残高 */
   balance: number;
   /** 最小ベット額 */
   minBet?: number;
   /** 最大ベット額 */
   maxBet?: number;
+  /** ゲームモード識別子 */
+  gameModeId: string;
 }
 
 /**
@@ -26,6 +28,8 @@ export interface UseBettingReturn {
   isSubmitting: boolean;
   /** ベット額が残高を超えているかどうか */
   isExceedingBalance: boolean;
+  /** エラー情報 */
+  error: string | null;
   /** ベット処理関数 */
   handleBet: () => Promise<void>;
   /** キャンセル処理関数 */

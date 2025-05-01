@@ -23,14 +23,15 @@ export const GoldBetForm = ({
   isLoading = false,
   minBet = GAME_BET_LIMIT.MIN_BET,
   maxBet = GAME_BET_LIMIT.MAX_BET,
+  gameModeId,
 }: GoldBetFormProps) => {
-  // ベット関連のロジックをカスタムフックに移行
   const {
     betAmount,
     setBetAmount,
     timeLimit,
     isSubmitting,
     isExceedingBalance,
+    error,
     handleBet,
     handleCancel,
   } = useBetting({
@@ -38,6 +39,7 @@ export const GoldBetForm = ({
     onBet,
     minBet,
     maxBet,
+    gameModeId,
   });
 
   return (
@@ -45,16 +47,22 @@ export const GoldBetForm = ({
       <div className={styles["form-content__info-box"]}>
         <div className={styles["form-content__info-row"]}>
           <span className={styles["form-content__info-label"]}>制限時間:</span>
-          <span className={styles["form-content__info-value"]}>{timeLimit} 秒</span>
+          <span className={styles["form-content__info-value"]}>
+            {timeLimit} 秒
+          </span>
         </div>
         <div className={styles["form-content__info-row"]}>
-          <span className={styles["form-content__info-label"]}>所持ゴールド:</span>
+          <span className={styles["form-content__info-label"]}>
+            所持ゴールド:
+          </span>
           <span className={styles["form-content__info-value"]}>{balance}</span>
         </div>
       </div>
 
       <div className={styles["form-content__amount-selector"]}>
-        <label className={styles["form-content__label"]}>ベット額: {betAmount} ゴールド</label>
+        <label className={styles["form-content__label"]}>
+          ベット額: {betAmount} ゴールド
+        </label>
         <div className={styles["form-content__slider-container"]}>
           <input
             type="range"
@@ -66,8 +74,12 @@ export const GoldBetForm = ({
             className={styles["form-content__slider"]}
             disabled={isLoading || isSubmitting}
           />
-          <div className={`${styles["form-content__slider-mark"]} ${styles["form-content__slider-mark--left"]}`}></div>
-          <div className={`${styles["form-content__slider-mark"]} ${styles["form-content__slider-mark--right"]}`}></div>
+          <div
+            className={`${styles["form-content__slider-mark"]} ${styles["form-content__slider-mark--left"]}`}
+          ></div>
+          <div
+            className={`${styles["form-content__slider-mark"]} ${styles["form-content__slider-mark--right"]}`}
+          ></div>
         </div>
         <div className={styles["form-content__range"]}>
           <span>{minBet}</span>
@@ -76,8 +88,12 @@ export const GoldBetForm = ({
       </div>
 
       {isExceedingBalance && (
-        <div className={styles["form-content__error"]}>ベット額が所持ゴールドを超えています</div>
+        <div className={styles["form-content__error"]}>
+          ベット額が所持ゴールドを超えています
+        </div>
       )}
+
+      {error && <div className={styles["form-content__error"]}>{error}</div>}
 
       <div className={styles["form-content__actions"]}>
         <Button

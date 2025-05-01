@@ -7,6 +7,8 @@ alwaysApply: false
 
 常にベストプラクティスを提供し変更してよいかの確認をしてください。
 
+Next15のAppRouterに沿った回答をしてください。
+
 .tex ファイルは export const と export default でエクスポートしてください。
 
 各ディレクトリに index.ts を用意し tsx ファイルのエクスポートをそれぞれ利用してください。

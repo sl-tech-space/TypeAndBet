@@ -47,31 +47,35 @@ class TokenType(graphene.ObjectType):
     expiresAt = graphene.Int()
 
 
-class OAuthResponseType(graphene.ObjectType):
-    user = graphene.Field(UserType)
-    tokens = graphene.Field(TokenType)
-
-
 def generate_tokens(user):
     try:
         logger.info(f"トークン生成開始: user_id={user.id}")
         # アクセストークン（1時間有効）
-        access_token_expires = datetime.utcnow() + timedelta(
+        access_token_expires = datetime.now() + timedelta(
             minutes=ACCESS_TOKEN_EXPIRE_MINUTES
         )
         access_token = jwt.encode(
-            {"user_id": str(user.id), "exp": access_token_expires.timestamp()},
+            {
+                "user_id": str(user.id),
+                "exp": access_token_expires.timestamp(),
+                "type": "access"
+            },
             JWT_SECRET,
             algorithm="HS256",
         )
         logger.info(f"アクセストークン生成完了: user_id={user.id}")
 
         # リフレッシュトークン（30日有効）
-        refresh_token_expires = datetime.utcnow() + timedelta(
+        refresh_token_expires = datetime.now() + timedelta(
             days=REFRESH_TOKEN_EXPIRE_DAYS
         )
         refresh_token = jwt.encode(
-            {"user_id": str(user.id), "exp": refresh_token_expires.timestamp()},
+            {
+                "user_id": str(user.id),
+                "exp": refresh_token_expires.timestamp(),
+                "type": "refresh",
+                "jti": secrets.token_hex(16)
+            },
             JWT_SECRET,
             algorithm="HS256",
         )
@@ -99,9 +103,10 @@ class GoogleAuth(graphene.Mutation):
         name = graphene.String(required=True)
         icon = graphene.String()
 
-    oauthAuthenticate = graphene.Field(OAuthResponseType)
     success = graphene.Boolean()
     errors = graphene.List(graphene.String)
+    user = graphene.Field(UserType)
+    tokens = graphene.Field(TokenType)
 
     @classmethod
     def mutate(cls, root, info, **kwargs):
@@ -127,9 +132,8 @@ class GoogleAuth(graphene.Mutation):
             logger.info(f"トークン生成完了: user_id={user.id}")
 
             return GoogleAuth(
-                oauthAuthenticate=OAuthResponseType(
-                    user=user, tokens=TokenType(**tokens)
-                ),
+                user=user,
+                tokens=TokenType(**tokens),
                 success=True,
                 errors=[],
             )
@@ -146,7 +150,6 @@ class RefreshToken(graphene.Mutation):
     class Arguments:
         refreshToken = graphene.String(required=True)
 
-    oauthAuthenticate = graphene.Field(OAuthResponseType)
     success = graphene.Boolean()
     errors = graphene.List(graphene.String)
 
@@ -185,9 +188,8 @@ class RefreshToken(graphene.Mutation):
             logger.info(f"新しいトークン生成完了: user_id={user.id}")
 
             return RefreshToken(
-                oauthAuthenticate=OAuthResponseType(
-                    user=user, tokens=TokenType(**tokens)
-                ),
+                user=user,
+                tokens=TokenType(**tokens),
                 success=True,
                 errors=[],
             )

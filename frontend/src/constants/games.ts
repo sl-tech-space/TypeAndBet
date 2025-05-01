@@ -24,3 +24,11 @@ export const GAME_BET_LIMIT = {
   MAX_BET: 700,
   DEFAULT_BET: 400,
 };
+/**
+ * ゲームモード識別子
+ */
+export const GAME_MODE_ID = {
+  SIMULATE: "simulate",
+  PLAY: "play",
+};
+

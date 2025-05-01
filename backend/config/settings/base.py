@@ -21,12 +21,33 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-cjir2ou)5y4=703q5f$aekfnfgl3f!dc#gfshx0bz2-j+l)qyp"
+SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-cjir2ou)5y4=703q5f$aekfnfgl3f!dc#gfshx0bz2-j+l)qyp")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = []
+# フロントエンドのポート設定
+FRONTEND_PORT = os.environ.get("FRONTEND_PORT", "3000")
+
+# CORS設定
+CORS_ALLOWED_ORIGINS = os.environ.get(
+    "DJANGO_CORS_ALLOWED_ORIGINS",
+    f"http://localhost:{FRONTEND_PORT},http://frontend:{FRONTEND_PORT}"
+).split(",")
+
+CORS_ALLOW_CREDENTIALS = True
+
+# CSRF設定
+CSRF_TRUSTED_ORIGINS = os.environ.get(
+    "DJANGO_CSRF_TRUSTED_ORIGINS",
+    f"http://localhost:{FRONTEND_PORT},http://frontend:{FRONTEND_PORT}"
+).split(",")
+
+# 許可するホスト
+ALLOWED_HOSTS = os.environ.get(
+    "DJANGO_ALLOWED_HOSTS",
+    "localhost,127.0.0.1,backend"
+).split(",")
 
 
 # Application definition

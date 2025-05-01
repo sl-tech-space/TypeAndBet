@@ -12,6 +12,7 @@ import type { GoldBetCardProps } from "./GoldBetCard.types";
  * @param isLoading ローディング状態
  * @param minBet 最小ベット額
  * @param maxBet 最大ベット額
+ * @param gameModeId ゲームモード識別子
  * @returns ベット設定カードコンポーネント
  */
 export const GoldBetCard = ({
@@ -20,6 +21,7 @@ export const GoldBetCard = ({
   isLoading = false,
   minBet = 100,
   maxBet = 700,
+  gameModeId,
 }: GoldBetCardProps) => {
   // フォームに渡すプロパティをまとめる
   const formProps = {
@@ -28,6 +30,7 @@ export const GoldBetCard = ({
     isLoading,
     minBet,
     maxBet,
+    gameModeId,
   };
 
   return (
