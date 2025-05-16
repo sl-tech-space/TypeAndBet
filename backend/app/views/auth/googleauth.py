@@ -58,7 +58,7 @@ def generate_tokens(user):
             {
                 "user_id": str(user.id),
                 "exp": access_token_expires.timestamp(),
-                "type": "access"
+                "type": "access",
             },
             JWT_SECRET,
             algorithm="HS256",
@@ -74,7 +74,7 @@ def generate_tokens(user):
                 "user_id": str(user.id),
                 "exp": refresh_token_expires.timestamp(),
                 "type": "refresh",
-                "jti": secrets.token_hex(16)
+                "jti": secrets.token_hex(16),
             },
             JWT_SECRET,
             algorithm="HS256",

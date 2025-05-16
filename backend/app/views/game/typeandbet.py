@@ -5,7 +5,7 @@ from app.models import Game, Ranking
 from django.core.exceptions import ValidationError
 from app.utils.validators import GameValidator
 from app.utils.constants import GameErrorMessages
-import statistics
+from app.utils.game_calculator import GameCalculator
 import logging
 
 logger = logging.getLogger("app")
@@ -15,16 +15,6 @@ class GameType(DjangoObjectType):
     class Meta:
         model = Game
         fields = ("id", "user", "bet_amount", "score", "gold_change", "created_at")
-
-
-def get_user(info):
-    """ユーザー情報を取得するヘルパー関数"""
-    user = info.context.user
-    if not user.is_authenticated:
-        logger.warning("未認証ユーザーのアクセス")
-        raise ValidationError(GameErrorMessages.LOGIN_REQUIRED)
-    logger.info(f"ユーザー情報取得: user_id={user.id}")
-    return user
 
 
 class CreateBet(graphene.Mutation):
@@ -42,7 +32,11 @@ class CreateBet(graphene.Mutation):
             logger.info(f"掛け金設定開始: bet_amount={bet_amount}")
 
             # ユーザー情報の取得
-            user = get_user(info)
+            user = info.context.user
+            if not user.is_authenticated:
+                logger.warning("未認証ユーザーのアクセス")
+                raise ValidationError(GameErrorMessages.LOGIN_REQUIRED)
+            logger.info(f"ユーザー情報取得: user_id={user.id}")
             logger.info(f"現在の所持金: {user.gold}")
 
             # バリデーション
@@ -93,7 +87,11 @@ class UpdateGameScore(graphene.Mutation):
             )
 
             # ユーザー情報の取得
-            user = get_user(info)
+            user = info.context.user
+            if not user.is_authenticated:
+                logger.warning("未認証ユーザーのアクセス")
+                raise ValidationError(GameErrorMessages.LOGIN_REQUIRED)
+            logger.info(f"ユーザー情報取得: user_id={user.id}")
 
             # バリデーション
             GameValidator.validate_correct_typed(correct_typed)
@@ -112,7 +110,7 @@ class UpdateGameScore(graphene.Mutation):
                 raise ValidationError(GameErrorMessages.NO_PERMISSION)
 
             # スコア計算
-            score = int(correct_typed * 10 / accuracy)
+            score = GameCalculator.calculate_score(correct_typed, accuracy)
             logger.info(f"スコア計算: score={score}")
 
             # 過去のスコアを取得してZスコアを計算
@@ -120,50 +118,17 @@ class UpdateGameScore(graphene.Mutation):
                 Game.objects.exclude(id=game_id).values_list("score", flat=True)
             )
             if past_scores:
-                median = statistics.median(past_scores)
-                std_dev = statistics.stdev(past_scores) if len(past_scores) > 1 else 1
-                z_score = (score - median) / std_dev if std_dev != 0 else 0
+                z_score = GameCalculator.calculate_z_score(score, past_scores)
                 logger.info(f"Zスコア計算: z_score={z_score}")
 
                 # 倍率の計算
-                if z_score >= 3.0:
-                    multiplier = 3.0  # 上位0.1%
-                elif z_score >= 2.5:
-                    multiplier = 2.5  # 上位0.6%
-                elif z_score >= 2.0:
-                    multiplier = 2.0  # 上位2.3%
-                elif z_score >= 1.5:
-                    multiplier = 1.75  # 上位6.7%
-                elif z_score >= 1.0:
-                    multiplier = 1.5  # 上位15.9%
-                elif z_score >= 0.5:
-                    multiplier = 1.25  # 上位30.9%
-                elif z_score >= 0.0:
-                    multiplier = 1.0  # 上位50%
-                elif z_score >= -0.5:
-                    multiplier = -1.0  # 下位30.9%
-                elif z_score >= -1.0:
-                    multiplier = -1.5  # 下位15.9%
-                elif z_score >= -1.5:
-                    multiplier = -2.0  # 下位6.7%
-                elif z_score >= -2.0:
-                    multiplier = -2.5  # 下位2.3%
-                elif z_score >= -2.5:
-                    multiplier = -3.0  # 下位0.6%
-                else:
-                    multiplier = -4.0  # 下位0.1%
+                multiplier = GameCalculator.calculate_multiplier(z_score)
                 logger.info(f"倍率計算: multiplier={multiplier}")
 
                 # ゴールドの変化を計算
-                if multiplier >= 0:
-                    gold_change = int(game.bet_amount * multiplier)
-                else:
-                    base_loss = int(game.bet_amount * abs(multiplier))
-                    additional_loss = int(game.bet_amount * 0.1)
-                    total_loss = base_loss + additional_loss
-                    if total_loss > user.gold:
-                        total_loss = user.gold
-                    gold_change = -total_loss
+                gold_change = GameCalculator.calculate_gold_change(
+                    multiplier, game.bet_amount, user.gold
+                )
                 logger.info(f"ゴールド変化計算: gold_change={gold_change}")
 
                 # ゲームの更新
