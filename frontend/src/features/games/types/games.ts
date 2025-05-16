@@ -13,5 +13,3 @@ export interface UseGameModeReturn {
   setGameMode: (mode: GameMode) => void;
   navigateToGameMode: (mode: GameMode) => void;
 }
-
-

@@ -2,6 +2,11 @@ import styles from "./TimerCard.module.scss";
 import { Card } from "@/components/ui";
 import { Timer } from "./Timer";
 
+/**
+ * サーバコンポーネント
+ * タイマーを表示するカードコンポーネント
+ * @returns タイマーカード
+ */
 export const TimerCard = () => {
   return (
     <div className={styles.wrapper}>

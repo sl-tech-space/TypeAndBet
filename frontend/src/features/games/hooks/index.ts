@@ -4,12 +4,10 @@ export { useGenerator } from "./useGenerator";
 export * from "./useGenerator";
 export { useTyping } from "./useTyping";
 export * from "./useTyping";
-export { useKeyboard } from "./useKeyboard";
-export * from "./useKeyboard";
 export { useKeydown } from "./useKeydown";
 export * from "./useKeydown";
 export { useTimer } from "./useTimer";
-export * from "./useTimer"
+export * from "./useTimer";
 
 export * from "./generator.types";
 export * from "./keydown.types";

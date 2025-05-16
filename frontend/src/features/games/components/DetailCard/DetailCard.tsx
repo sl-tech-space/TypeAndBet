@@ -4,6 +4,11 @@ import styles from "./DetailCard.module.scss";
 import { Card, Text } from "@/components/ui";
 import { useTypingContext } from "@/features/games/contexts/TypingContext";
 
+/**
+ * クライアントコンポーネント
+ * ユーザのタイピング詳細情報を表示するカード
+ * @returns ユーザのタイピング詳細情報を表示するカード
+ */
 export const DetailCard = () => {
   const { accuracy, correctTypeCount } = useTypingContext();
 

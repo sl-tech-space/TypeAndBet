@@ -8,7 +8,15 @@ import { useTimerStore } from "@/features/games/stores";
  * @returns タイマーの時間、実行中かどうか、終了したかどうかを返す
  */
 export const useTimer = () => {
-  const { time, isRunning, isFinished, startTimer, stopTimer, resetTimer, start } = useTimerStore();
+  const {
+    time,
+    isRunning,
+    isFinished,
+    startTimer,
+    stopTimer,
+    resetTimer,
+    start,
+  } = useTimerStore();
 
   // 時間を分:秒の形式に変換
   const formatTime = (seconds: number): string => {

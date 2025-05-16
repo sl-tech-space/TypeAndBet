@@ -9,6 +9,7 @@ import { useMessage } from "@/components/common";
 import { GAME_MODE_MESSAGES, GAME_MODES } from "@/constants";
 
 /**
+ * クライアントコンポーネント
  * ゲームモードを選択するコンポーネント
  * @returns ゲームモードを選択するコンポーネント
  */

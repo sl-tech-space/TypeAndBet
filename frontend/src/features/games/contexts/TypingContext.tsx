@@ -12,6 +12,12 @@ type TypingContextType = {
   totalTypeCount: number;
   setTotalTypeCount: (value: number | ((prev: number) => number)) => void;
   accuracy: number;
+  // 現在の入力状態
+  currentKeyStatus: {
+    key: string;
+    isCorrect: boolean | null;
+  };
+  setCurrentKeyStatus: (key: string, isCorrect: boolean | null) => void;
 };
 
 /**
@@ -26,6 +32,36 @@ export const TypingProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   // 正タイプ数と総タイプ数のカウント
   const [correctTypeCount, setCorrectTypeCount] = useState<number>(INITIAL_VALUE);
   const [totalTypeCount, setTotalTypeCount] = useState<number>(INITIAL_VALUE);
+  
+  // 現在入力中のキーとその正誤状態
+  const [currentKeyStatus, setCurrentKeyStatusState] = useState<{
+    key: string;
+    isCorrect: boolean | null;
+  }>({
+    key: '',
+    isCorrect: null
+  });
+
+  // 現在のキーの状態を更新する関数
+  const setCurrentKeyStatus = (key: string, isCorrect: boolean | null) => {
+    setCurrentKeyStatusState({
+      key,
+      isCorrect
+    });
+
+    // 一定時間後に状態をリセット
+    if (isCorrect !== null) {
+      setTimeout(() => {
+        setCurrentKeyStatusState(prev => {
+          // 同じキーの場合のみリセット
+          if (prev.key === key) {
+            return { key: '', isCorrect: null };
+          }
+          return prev;
+        });
+      }, 300);
+    }
+  };
 
   // 正タイプ率の計算
   const accuracy = useMemo(() => {
@@ -39,7 +75,9 @@ export const TypingProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     setCorrectTypeCount,
     totalTypeCount,
     setTotalTypeCount,
-    accuracy
+    accuracy,
+    currentKeyStatus,
+    setCurrentKeyStatus
   };
 
   return (

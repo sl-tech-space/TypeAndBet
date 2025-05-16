@@ -6,6 +6,11 @@ import { Text } from "@/components/ui";
 import { useTimer } from "@/features/games/hooks/useTimer";
 import styles from "./Timer.module.scss";
 
+/**
+ * クライアントコンポーネント
+ * タイマー本体
+ * @returns タイマー本体を返す
+ */
 export const Timer = () => {
   const { time, formatTime } = useTimer();
   const [progress, setProgress] = useState(100);
@@ -30,11 +35,7 @@ export const Timer = () => {
 
   return (
     <div className={styles.timer}>
-      <Text
-        variant="p"
-        color="gold"
-        className={styles.timer__text}
-      >
+      <Text variant="p" color="gold" className={styles.timer__text}>
         残り時間&nbsp;:&nbsp;{formatTime(time)}
       </Text>
       <div className={styles.timer__container}>

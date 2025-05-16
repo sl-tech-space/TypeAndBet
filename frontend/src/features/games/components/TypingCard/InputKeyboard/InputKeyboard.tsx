@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
 import styles from "./InputKeyboard.module.scss";
-import { useKeyboard, useTyping } from "@/features/games/hooks";
+import { useTypingContext } from "@/features/games/contexts/TypingContext";
 import type { KeyboardLayout } from "./InputKeyboard.types";
-import type { KeydownEvent } from "@/features/games/hooks/keydown.types";
-import { TYPE_JUDGE } from "@/constants";
 
+/**
+ * キーボードレイアウト
+ * @type {KeyboardLayout}
+ */
 const keyboardLayout: KeyboardLayout = [
   [
     { label: "Esc", code: "Escape" },
@@ -104,38 +105,57 @@ const keyboardLayout: KeyboardLayout = [
   ],
 ];
 
+/**
+ * クライアントコンポーネント
+ * キーボードコンポーネント
+ * 入力したキーの正誤判定を表示する
+ * @returns キーボードコンポーネント
+ */
 export const InputKeyboard = () => {
-  const { state, handlers } = useKeyboard();
-  const { correctKeys, incorrectKeys, pressedKey } = state;
-  const [lastPressedKey, setLastPressedKey] = useState<string | null>(null);
-  const [isCallbackRegistered, setIsCallbackRegistered] = useState(false);
+  const { currentKeyStatus } = useTypingContext();
+
+  // 現在のキーコードを計算
+  const getKeyCode = (key: string): string => {
+    if (key.length === 1 && /[a-z]/i.test(key)) {
+      return `Key${key.toUpperCase()}`;
+    } else if (key.length === 1 && /[0-9]/.test(key)) {
+      return `Digit${key}`;
+    } else if (key === " ") {
+      return "Space";
+    } else if (key === "Enter") {
+      return "Enter";
+    }
+    return key;
+  };
+
+  // 現在のキーの状態
+  const currentKeyCode = currentKeyStatus.key
+    ? getKeyCode(currentKeyStatus.key)
+    : "";
 
   return (
     <div className={styles.keyboardLayout}>
       <div className={styles.keyboard}>
-        {/* デバッグ情報 (実際の環境では非表示にする) */}
-        {process.env.NODE_ENV === "development" && (
-          <div style={{ position: "absolute", top: 0, right: 0, fontSize: "10px", color: "white", background: "rgba(0,0,0,0.5)", padding: "2px 5px", zIndex: 100 }}>
-            <div>
-              {lastPressedKey || "キー未押下"} ({isCallbackRegistered ? "CB登録済" : "CB未登録"})
-            </div>
-            <div>
-              正解キー: {correctKeys.length > 0 ? correctKeys.join(', ') : "なし"} | 
-              不正解キー: {incorrectKeys.length > 0 ? incorrectKeys.join(', ') : "なし"}
-            </div>
-          </div>
-        )}
-        
         {keyboardLayout.map((row, rowIndex) => (
           <div key={rowIndex} className={styles.keyboardRow}>
             {row.map((key) => (
               <div
                 key={key.code}
-                className={`${styles.key} ${key.wide ? styles.keyWide : ""} ${
-                  key.extraWide ? styles.keyExtraWide : ""
-                } ${correctKeys.includes(key.code) ? styles.keyCorrect : ""} ${
-                  incorrectKeys.includes(key.code) ? styles.keyIncorrect : ""
-                }`}
+                className={`${styles.key} 
+                  ${key.wide ? styles.keyWide : ""} 
+                  ${key.extraWide ? styles.keyExtraWide : ""} 
+                  ${
+                    currentKeyCode === key.code &&
+                    currentKeyStatus.isCorrect === true
+                      ? styles.keyCorrect
+                      : ""
+                  } 
+                  ${
+                    currentKeyCode === key.code &&
+                    currentKeyStatus.isCorrect === false
+                      ? styles.keyIncorrect
+                      : ""
+                  }`}
               >
                 {key.label}
               </div>

@@ -21,7 +21,8 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
   time: 0,
   isRunning: false,
   isFinished: false,
-  startTimer: (initialTime: number) => set({ time: initialTime, isRunning: false, isFinished: false }),
+  startTimer: (initialTime: number) =>
+    set({ time: initialTime, isRunning: false, isFinished: false }),
   stopTimer: () => set({ time: 0, isRunning: false, isFinished: false }),
   resetTimer: () => set({ time: 0, isRunning: false, isFinished: false }),
   start: () => {

@@ -5,6 +5,11 @@ import { Button } from "@/components/ui/Button/Button";
 import Image from "next/image";
 import styles from "./GoogleAuth.module.scss";
 
+/**
+ * クライアントコンポーネント
+ * Google認証用のボタンコンポーネント
+ * @returns Google認証用のボタンコンポーネン用用
+ */
 export const GoogleAuth = () => {
   return (
     <Button

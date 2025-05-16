@@ -24,6 +24,7 @@ export const useTyping = () => {
     totalTypeCount,
     setTotalTypeCount,
     accuracy,
+    setCurrentKeyStatus,
   } = useTypingContext();
 
   // 状態と関数の取得
@@ -97,7 +98,14 @@ export const useTyping = () => {
     setCorrectTypeCount(INITIAL_VALUE);
     setTotalTypeCount(INITIAL_VALUE);
     setInputState(resetInputState());
-  }, [resetInputState, setCorrectTypeCount, setTotalTypeCount]);
+    // キー状態もリセット
+    setCurrentKeyStatus("", null);
+  }, [
+    resetInputState,
+    setCorrectTypeCount,
+    setTotalTypeCount,
+    setCurrentKeyStatus,
+  ]);
 
   // カウントダウン完了時の処理
   useEffect(() => {
@@ -391,6 +399,12 @@ export const useTyping = () => {
       // Trie構造を使って入力の有効性をチェック
       const isValidInput: boolean = validPatternIndices.length > INITIAL_VALUE;
 
+      // キーの状態を更新 - TypingContextを使用
+      console.log(
+        `キー ${currentInput} の状態を更新: ${isValidInput ? "正解" : "不正解"}`
+      );
+      setCurrentKeyStatus(currentInput, isValidInput);
+
       // 不正解の場合
       if (!isValidInput) {
         // 不正解の場合は入力履歴を更新せず、表示更新のためにromajiProgressを更新
@@ -504,6 +518,7 @@ export const useTyping = () => {
       isFinished,
       setCorrectTypeCount,
       setTotalTypeCount,
+      setCurrentKeyStatus,
     ]
   );
 

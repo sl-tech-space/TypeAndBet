@@ -5,6 +5,11 @@ import { useTyping } from "@/features/games";
 import { useTypingContext } from "@/features/games/contexts/TypingContext";
 import { Text } from "@/components/ui";
 
+/**
+ * クライアントコンポーネント
+ * タイピング対象の文章を表示するコンポーネント
+ * @returns タイピング対象の文章を表示するコンポーネント
+ */
 export const SentenceDisplay = () => {
   const {
     targetSentence,

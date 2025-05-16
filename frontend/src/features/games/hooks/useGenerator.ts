@@ -25,7 +25,7 @@ export const useGenerator = () => {
         const newSentences = data.result.pairs.map((pair: TextPair) => {
           // jp-transliteratorからローマ字パターンを取得
           const romajiPatterns = getCharacterPatterns(pair.hiragana);
-          
+
           return {
             kanji: pair.kanji,
             hiragana: pair.hiragana,

@@ -3,6 +3,12 @@ import { InputKeyboard } from "./InputKeyboard";
 import styles from "./TypingCard.module.scss";
 import { Card } from "@/components/ui";
 
+/**
+ * サーバコンポーネント
+ * タイピングカード
+ * タイピングゲームのカードコンポーネント
+ * @returns タイピングゲームのカードコンポーネント
+ */
 export const TypingCard = () => {
   return (
     <Card
