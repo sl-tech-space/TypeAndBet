@@ -27,3 +27,8 @@ export const ROUTE_NAME = {
   PRIVACY: "プライバシーポリシー",
   CONTACT: "お問い合わせ",
 };
+
+export const HOME_BACK_BUTTON = {
+  TEXT: "ホームに戻る",
+  ROUTE: "/",
+};

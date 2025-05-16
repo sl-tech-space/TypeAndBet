@@ -16,6 +16,7 @@ import type { CardProps } from "./";
  * @param borderColor ボーダーの色(デフォルトはprimary、isBorderがtrueの場合のみ有効)
  * 色：primary, secondary, tertiary, accent, gold
  * @param isRound カードが丸くなっているかどうか(デフォルトはfalse)
+ * @param isHoverable ホバー時にカードが変化するかどうか(デフォルトはtrue)
  * @param hasShadow シャドウを表示するかどうか(デフォルトはtrue)
  * @param shadowColor シャドウの色(デフォルトはprimary、hasShadowがtrueの場合のみ有効)
  * 色：primary, secondary, tertiary, accent, gold
@@ -31,6 +32,7 @@ export const Card = ({
   isBorder = false,
   borderColor = "primary",
   isRound = false,
+  isHoverable = true,
   hasShadow = true,
   shadowColor = "primary",
   padding = "medium",
@@ -45,6 +47,7 @@ export const Card = ({
         ${styles[`${backgroundColor}-background`]}
         ${isBorder ? styles[`${borderColor}-border`] : ""}
         ${isRound ? styles.round : ""}
+        ${isHoverable ? styles.hoverable : ""}
         ${hasShadow ? styles[`${shadowColor}-shadow`] : ""}
         ${styles[`padding-${padding}`]}
         ${styles[`size-${size}`]}

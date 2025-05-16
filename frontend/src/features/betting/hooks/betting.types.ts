@@ -34,4 +34,6 @@ export interface UseBettingReturn {
   handleBet: () => Promise<void>;
   /** キャンセル処理関数 */
   handleCancel: () => void;
+  /** アニメーション付きの表示用残高 */
+  displayBalance: number;
 }

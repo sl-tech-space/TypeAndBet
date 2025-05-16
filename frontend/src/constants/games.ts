@@ -32,3 +32,17 @@ export const GAME_MODE_ID = {
   PLAY: "play",
 };
 
+/**
+ * タイピング判定
+ */
+export const TYPE_JUDGE = {
+  CORRECT: "correct",
+  INCORRECT: "incorrect",
+};
+
+/**
+ * タイピングの初期値
+ */
+export const COUNT_DOWN_TIME = 3;
+export const INITIAL_VALUE = 0; 
+export const INITIAL_SENTENCE_COUNT = 5;

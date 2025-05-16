@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { GAME_TIME_LIMIT, GAME_BET_LIMIT, GAME_MODE_ID } from "@/constants";
 import { useAsyncState } from "@/hooks";
 import { UseBettingReturn, UseBettingProps } from "./betting.types";
+import { useTimer } from "@/features/games/hooks/useTimer";
 
 /**
  * ベッティング機能用のカスタムフック
@@ -17,9 +18,35 @@ export const useBetting = ({
   maxBet = GAME_BET_LIMIT.MAX_BET,
   gameModeId,
 }: UseBettingProps): UseBettingReturn => {
-  const [betAmount, setBetAmount] = useState(GAME_BET_LIMIT.DEFAULT_BET);
-  const { error, isSubmitting, withAsyncSubmit } = useAsyncState();
+  const [betAmount, setBetAmount] = useState(minBet);
+  const [displayBalance, setDisplayBalance] = useState(balance);
+  const { error: asyncStateError, isSubmitting, withAsyncSubmit } = useAsyncState();
   const router = useRouter();
+  const { startTimer, stopTimer } = useTimer();
+
+  // アニメーション付きで残高を更新する関数
+  const animateBalance = useCallback(
+    (targetBalance: number) => {
+      const startBalance = displayBalance;
+      const diff = targetBalance - startBalance;
+      const duration = 300; // アニメーション時間（ミリ秒）
+      const steps = 20; // アニメーションのステップ数
+      const stepDuration = duration / steps;
+      const stepValue = diff / steps;
+      let step = 0;
+
+      const interval = setInterval(() => {
+        step++;
+        if (step >= steps) {
+          setDisplayBalance(targetBalance);
+          clearInterval(interval);
+        } else {
+          setDisplayBalance(Math.round(startBalance + stepValue * step));
+        }
+      }, stepDuration);
+    },
+    [displayBalance]
+  );
 
   ////////////////
   // ベット関連 //
@@ -63,21 +90,29 @@ export const useBetting = ({
     // ベット額のバリデーション
     _validateBetAmount();
 
+    // 制限時間を設定
+    startTimer(timeLimit);
+
     // シミュレートモードの場合はベット処理を実行せずタイピング画面に遷移
     if (gameModeId === GAME_MODE_ID.SIMULATE) {
-      router.push(`/simulate/${betAmount}`);
+      const id = Math.random().toString(36).substring(2, 10);
+      // 残高を更新
+      animateBalance(balance - betAmount);
+      await Promise.resolve(router.push(`/simulate/${id}`));
       return;
     }
 
     const result = await onBet(betAmount);
 
     if (!result.success) {
-      throw new Error(result.error || "ベットに失敗しました");
+      stopTimer();
+      throw new Error("ベットに失敗しました");
     }
   };
 
   // 前のページに戻る
   const handleCancel = () => {
+    stopTimer();
     router.back();
   };
 
@@ -90,8 +125,9 @@ export const useBetting = ({
     timeLimit,
     isSubmitting,
     isExceedingBalance,
-    error: error?.message ?? null,
+    error: asyncStateError?.message ?? null,
     handleBet,
     handleCancel,
+    displayBalance,
   };
 };

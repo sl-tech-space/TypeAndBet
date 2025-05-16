@@ -6,11 +6,6 @@
   overflow: hidden;
   width: 100%;
   box-sizing: border-box;
-  cursor: pointer;
-
-  &:hover {
-    transform: translateY(-2px);
-  }
 }
 
 // カードのバリエーション
@@ -127,24 +122,29 @@
 }
 
 // ホバーエフェクト
-.card:hover {
-  &.primary-shadow {
-    box-shadow: 0 8px 16px rgba(15, 78, 44, 0.3);
-  }
+.hoverable {
+  &.card:hover {
+    transform: translateY(-4px);
+    cursor: pointer;
 
-  &.secondary-shadow {
-    box-shadow: 0 8px 16px rgba(255, 255, 255, 0.2);
-  }
+    &.primary-shadow {
+      box-shadow: 0 6px 0 rgba(15, 78, 44, 0.3);
+    }
 
-  &.tertiary-shadow {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-  }
+    &.secondary-shadow {
+      box-shadow: 0 6px 0 rgba(255, 255, 255, 0.2);
+    }
 
-  &.accent-shadow {
-    box-shadow: 0 8px 16px rgba(230, 57, 70, 0.3);
-  }
+    &.tertiary-shadow {
+      box-shadow: 0 6px 0 rgba(0, 0, 0, 0.3);
+    }
 
-  &.gold-shadow {
-    box-shadow: 0 8px 16px rgba(212, 175, 55, 0.7);
+    &.accent-shadow {
+      box-shadow: 0 6px 0 rgba(230, 57, 70, 0.3);
+    }
+
+    &.gold-shadow {
+      box-shadow: 0 6px 0 rgba(212, 175, 55, 0.7);
+    }
   }
 }

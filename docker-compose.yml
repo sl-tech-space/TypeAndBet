@@ -12,6 +12,9 @@ services:
     environment:
       - NODE_ENV=development
       - TZ=${TIMEZONE}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
     depends_on:
       - backend
     healthcheck:

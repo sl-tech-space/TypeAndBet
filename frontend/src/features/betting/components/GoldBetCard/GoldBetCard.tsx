@@ -1,3 +1,5 @@
+"use client";
+
 import styles from "./GoldBetCard.module.scss";
 import { Card, Overlay, Text } from "@/components/ui";
 import { GoldBetForm } from "./GoldBetForm";
@@ -51,10 +53,11 @@ export const GoldBetCard = ({
             ベット額を選択
           </Text>
 
-          {/* クライアントコンポーネント */}
           <GoldBetForm {...formProps} />
         </Card>
       </div>
     </Overlay>
   );
 };
+
+export default GoldBetCard;

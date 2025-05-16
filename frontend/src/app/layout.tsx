@@ -4,7 +4,6 @@ import { META_TITLE, META_DESCRIPTION, META_KEYWORDS } from "@/constants";
 import { Metadata } from "next";
 import { Header, Footer } from "@/components/layouts";
 import { Background } from "@/components/ui";
-import "@/lib/apollo-server";
 
 /**
  * メタデータを動的に生成

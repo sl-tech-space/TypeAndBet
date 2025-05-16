@@ -1,0 +1,27 @@
+.card {
+  width: 70% !important;
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  backdrop-filter: blur(3px) !important;
+
+  &__container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    &__sentence {
+      height: 40%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &__keyboard {
+      height: 60%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}

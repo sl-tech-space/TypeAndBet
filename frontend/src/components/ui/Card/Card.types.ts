@@ -21,6 +21,7 @@ export type CardProps = {
   isBorder?: boolean;
   borderColor?: CommonColor;
   isRound?: boolean;
+  isHoverable?: boolean;
   hasShadow?: boolean;
   shadowColor?: CommonColor;
   padding?: PaddingSize;

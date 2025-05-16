@@ -1,0 +1,66 @@
+.sentence {
+  text-align: center;
+
+  :global(p) {
+    font-weight: 800 !important;
+  }
+
+  &__target {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  // ローマ字表示用のスタイル
+  &__romaji {
+    display: inline-block;
+    font-size: 24px;
+    font-weight: bold;
+    font-family: monospace;
+    line-height: 1.5;
+  }
+
+  // 入力済みの文字
+  &__typed {
+    color: $typing-green;
+  }
+
+  // 現在入力中の文字
+  &__current {
+    position: relative;
+  }
+
+  // 正しく入力された部分
+  &__correct {
+    color: $typing-green;
+  }
+
+  // 次に入力する文字
+  &__next {
+    color: $typing-red !important;
+    border-radius: 2px;
+    animation: blink 1s ease-in-out infinite;
+  }
+
+  // 残りの文字
+  &__remaining {
+    color: $typing-gray;
+  }
+
+  // ヒント表示用スタイル
+  &__hint {
+    color: $typing-orange;
+    opacity: 0.7;
+  }
+
+  // カーソルの点滅アニメーション
+  @keyframes blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+}

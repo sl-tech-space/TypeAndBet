@@ -34,6 +34,7 @@ export const GoldBetForm = ({
     error,
     handleBet,
     handleCancel,
+    displayBalance,
   } = useBetting({
     balance,
     onBet,
@@ -46,7 +47,9 @@ export const GoldBetForm = ({
     <div className={styles["form-content"]}>
       <div className={styles["form-content__info-box"]}>
         <div className={styles["form-content__info-row"]}>
-          <span className={styles["form-content__info-label"]}>制限時間:</span>
+          <span className={styles["form-content__info-label"]}>
+            制限時間:
+          </span>
           <span className={styles["form-content__info-value"]}>
             {timeLimit} 秒
           </span>
@@ -55,7 +58,9 @@ export const GoldBetForm = ({
           <span className={styles["form-content__info-label"]}>
             所持ゴールド:
           </span>
-          <span className={styles["form-content__info-value"]}>{balance}</span>
+          <span className={styles["form-content__info-value"]}>
+            {displayBalance}
+          </span>
         </div>
       </div>
 
@@ -129,3 +134,5 @@ export const GoldBetForm = ({
     </div>
   );
 };
+
+export default GoldBetForm;
