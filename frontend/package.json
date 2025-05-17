@@ -13,7 +13,7 @@
     "@types/node-fetch": "^2.6.12",
     "graphql": "^16.10.0",
     "graphql-request": "^7.1.2",
-    "jp-transliterator": "^2.0.3",
+    "jp-transliterator": "^2.0.4",
     "next": "15.2.4",
     "next-auth": "^5.0.0-beta.25",
     "node-fetch": "2",
