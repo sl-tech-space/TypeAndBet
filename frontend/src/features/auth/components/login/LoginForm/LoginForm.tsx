@@ -25,16 +25,7 @@ export const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [isFormValid, setIsFormValid] = useState(false);
-
-  /**
-   * フォームの有効性を確認
-   */
-  const checkFormValidity = (newEmail: string, newPassword: string) => {
-    const isEmailValid = validateEmail(newEmail);
-    const isPasswordValid = validatePassword(newPassword);
-    setIsFormValid(isEmailValid && isPasswordValid);
-  };
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   /**
    * メールアドレス入力時のバリデーション
@@ -43,7 +34,9 @@ export const LoginForm = () => {
     const newEmail = e.target.value;
     setEmail(newEmail);
     validateEmail(newEmail);
-    checkFormValidity(newEmail, password);
+    if (!hasInteracted) {
+      setHasInteracted(true);
+    }
   };
 
   /**
@@ -53,7 +46,9 @@ export const LoginForm = () => {
     const newPassword = e.target.value;
     setPassword(newPassword);
     validatePassword(newPassword);
-    checkFormValidity(email, newPassword);
+    if (!hasInteracted) {
+      setHasInteracted(true);
+    }
   };
 
   /**
@@ -64,7 +59,10 @@ export const LoginForm = () => {
     e.preventDefault();
     setError(null);
 
-    if (!isFormValid) {
+    // メールアドレスとパスワードのバリデーション
+    const isEmailValid = validateEmail(email);
+    const isPasswordValid = validatePassword(password);
+    if (!isEmailValid || !isPasswordValid) {
       return;
     }
 
@@ -78,6 +76,15 @@ export const LoginForm = () => {
       }
     }
   };
+
+  // ボタンの無効化条件
+  const isButtonDisabled =
+    isLoading ||
+    !hasInteracted ||
+    !email ||
+    !password ||
+    passwordErrors.length > 0 ||
+    emailErrors.length > 0;
 
   return (
     <form className={styles["login-form"]} onSubmit={handleSubmit}>
@@ -105,7 +112,7 @@ export const LoginForm = () => {
           value={email}
           onChange={handleEmailChange}
         />
-        {emailErrors.length > 0 && (
+        {emailErrors.length > 0 && hasInteracted && (
           <div className={styles["login-form__email-errors"]}>
             {emailErrors.map((error, index) => (
               <div key={index} className={styles["login-form__error"]}>
@@ -156,7 +163,7 @@ export const LoginForm = () => {
             />
           </button>
         </div>
-        {passwordErrors.length > 0 && (
+        {passwordErrors.length > 0 && hasInteracted && (
           <div className={styles["login-form__password-errors"]}>
             {passwordErrors.map((error, index) => (
               <div key={index} className={styles["login-form__error"]}>
@@ -173,7 +180,7 @@ export const LoginForm = () => {
         isBorder={true}
         borderColor="tertiary"
         buttonSize="medium"
-        isDisabled={isLoading || !isFormValid}
+        isDisabled={isButtonDisabled}
         isLoading={isLoading}
         isRound={false}
       >
