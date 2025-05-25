@@ -17,7 +17,6 @@ export const GoogleAuth = () => {
       textColor="secondary"
       backgroundColor="tertiary"
       borderColor="gold"
-      buttonSize="large"
       isBorder={true}
       isRound={true}
       className={styles.googleAuth}

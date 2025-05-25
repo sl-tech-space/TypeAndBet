@@ -1,4 +1,3 @@
-import Link from "next/link";
 import styles from "./page.module.scss";
 import { TypingCard, TimerCard, DetailCard } from "@/features/games";
 import { HomeButton } from "@/features/helper";

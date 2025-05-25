@@ -69,29 +69,37 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     async jwt({ token, user, account }) {
       // 初回サインイン時またはユーザー情報更新時
       if (account && user) {
-        try {
-          const { data } = await AuthService.googleAuth(
-            user.email,
-            user.name,
-            user.icon
-          );
+        if (account.provider === OAUTH_PROVIDER.GOOGLE) {
+          try {
+            const { data } = await AuthService.googleAuth(
+              user.email,
+              user.name,
+              user.icon
+            );
 
-          if (!data) {
-            throw new Error("OAuth認証に失敗しました");
+            if (!data) {
+              throw new Error("OAuth認証に失敗しました");
+            }
+
+            // トークン情報を更新
+            return {
+              ...token,
+              id: data.user.id,
+              accessToken: data.tokens.accessToken,
+              refreshToken: data.tokens.refreshToken,
+              expiresAt: data.tokens.expiresAt,
+              icon: data.user.icon,
+            };
+          } catch (error) {
+            console.error("OAuth認証に失敗:", error);
+            return { ...token, error: "RefreshAccessTokenError" };
           }
-
-          // トークン情報を更新
+        } else {
+          // 通常のログイン時はユーザー情報をそのまま使用
           return {
             ...token,
-            id: data.user.id,
-            accessToken: data.tokens.accessToken,
-            refreshToken: data.tokens.refreshToken,
-            expiresAt: data.tokens.expiresAt,
-            icon: data.user.icon,
+            ...user,
           };
-        } catch (error) {
-          console.error("OAuth認証に失敗:", error);
-          return { ...token, error: "RefreshAccessTokenError" };
         }
       }
 
@@ -103,7 +111,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
         try {
           // リフレッシュトークンを使用して新しいアクセストークンを取得
-          const { data } = await AuthService.refreshToken(token.refreshToken as string);
+          const { data } = await AuthService.refreshToken(
+            token.refreshToken as string
+          );
 
           if (data?.refreshToken) {
             return {

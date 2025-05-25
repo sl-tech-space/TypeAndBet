@@ -1,5 +1,31 @@
 import { gql } from "@apollo/client";
-import { USER_BASIC_FIELDS, TOKEN_ALL_FIELDS } from "@/graphql/fragments";
+
+/**
+ * ログイン
+ * @param email メールアドレス
+ * @param password パスワード
+ * @returns ユーザーとトークン
+ */
+export const LOGIN = gql`
+  mutation Login($email: String!, $password: String!) {
+    loginUser(email: $email, password: $password) {
+      success
+      errors
+      user {
+        id
+        name
+        email
+        icon
+        gold
+      }
+      tokens {
+        accessToken
+        refreshToken
+        expiresAt
+      }
+    }
+  }
+`;
 
 /**
  * Google認証
@@ -12,15 +38,19 @@ export const GOOGLE_AUTH = gql`
   mutation GoogleAuth($email: String!, $name: String!, $icon: String!) {
     googleAuth(email: $email, name: $name, icon: $icon) {
       user {
-        ...UserBasicFields
+        id
+        name
+        email
+        icon
+        gold
       }
       tokens {
-        ...TokenAllFields
+        accessToken
+        refreshToken
+        expiresAt
       }
     }
   }
-  ${USER_BASIC_FIELDS}
-  ${TOKEN_ALL_FIELDS}
 `;
 
 /**
@@ -31,8 +61,9 @@ export const GOOGLE_AUTH = gql`
 export const REFRESH_TOKEN = gql`
   mutation RefreshToken($refreshToken: String!) {
     refreshToken(refreshToken: $refreshToken) {
-      ...TokenAllFields
+      accessToken
+      refreshToken
+      expiresAt
     }
   }
-  ${TOKEN_ALL_FIELDS}
 `;

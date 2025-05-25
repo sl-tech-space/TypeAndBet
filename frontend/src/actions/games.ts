@@ -10,8 +10,8 @@ import "@/lib/apollo-server";
  */
 export async function generateText() {
   try {
-    const result = await GamesService.generateText();
-    return { success: true, result: result.generateText };
+    const { data } = await GamesService.generateText();
+    return { success: true, result: data.generateText };
   } catch (error) {
     console.error("テキスト生成中にエラーが発生:", error);
 

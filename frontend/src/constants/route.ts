@@ -7,6 +7,7 @@ export const ROUTE = {
   PLAY: "/play",
   LOGIN: "/auth/login",
   SIGNUP: "/auth/signup",
+  PASSWORD_FORGET: "/auth/password-forget",
   LOGOUT: "/auth/logout",
   TERMS: "/terms",
   PRIVACY: "/privacy",
