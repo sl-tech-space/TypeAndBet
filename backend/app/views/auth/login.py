@@ -7,8 +7,17 @@ from app.utils.errors import BaseError, ErrorHandler
 from app.utils.validators import ValidationError
 from app.utils.constants import AuthErrorMessages
 from typing import List, Optional
+import jwt
+from datetime import datetime, timedelta
+import os
+import secrets
 
 logger = logging.getLogger("app")
+
+# JWTの設定
+JWT_SECRET = os.getenv("JWT_SECRET", secrets.token_hex(32))
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
+REFRESH_TOKEN_EXPIRE_DAYS = 30
 
 
 class AuthenticationError(BaseError):
@@ -34,6 +43,62 @@ class UserType(DjangoObjectType):
         fields = ("id", "name", "email")
 
 
+class TokenType(graphene.ObjectType):
+    accessToken = graphene.String()
+    refreshToken = graphene.String()
+    expiresAt = graphene.Int()
+
+
+def generate_tokens(user):
+    try:
+        logger.info(f"トークン生成開始: user_id={user.id}")
+        # アクセストークン（1時間有効）
+        access_token_expires = datetime.now() + timedelta(
+            minutes=ACCESS_TOKEN_EXPIRE_MINUTES
+        )
+        access_token = jwt.encode(
+            {
+                "user_id": str(user.id),
+                "exp": access_token_expires.timestamp(),
+                "type": "access",
+            },
+            JWT_SECRET,
+            algorithm="HS256",
+        )
+        logger.info(f"アクセストークン生成完了: user_id={user.id}")
+
+        # リフレッシュトークン（30日有効）
+        refresh_token_expires = datetime.now() + timedelta(
+            days=REFRESH_TOKEN_EXPIRE_DAYS
+        )
+        refresh_token = jwt.encode(
+            {
+                "user_id": str(user.id),
+                "exp": refresh_token_expires.timestamp(),
+                "type": "refresh",
+                "jti": secrets.token_hex(16),
+            },
+            JWT_SECRET,
+            algorithm="HS256",
+        )
+        logger.info(f"リフレッシュトークン生成完了: user_id={user.id}")
+
+        return {
+            "accessToken": access_token,
+            "refreshToken": refresh_token,
+            "expiresAt": int(access_token_expires.timestamp()),
+        }
+    except Exception as e:
+        logger.error(
+            f"トークン生成エラー: user_id={user.id}, error={str(e)}", exc_info=True
+        )
+        raise AuthenticationError(
+            message=AuthErrorMessages.AUTHENTICATION_FAILED,
+            code="TOKEN_GENERATION_ERROR",
+            details=[AuthErrorMessages.TOKEN_GENERATION_ERROR],
+        )
+
+
 class LoginUser(graphene.Mutation):
     class Arguments:
         email = graphene.String(required=True)
@@ -42,6 +107,7 @@ class LoginUser(graphene.Mutation):
     success = graphene.Boolean()
     errors = graphene.List(graphene.String)
     user = graphene.Field(UserType)
+    tokens = graphene.Field(TokenType)
 
     @classmethod
     def mutate(cls, root, info, email: str, password: str):
@@ -50,10 +116,10 @@ class LoginUser(graphene.Mutation):
 
             # 入力値のバリデーション
             if not email or not password:
-                logger.warning("必須項目が未入力: email={email}, password={password}")
+                logger.warning(f"必須項目が未入力: email={email}, password={password}")
                 raise ValidationError(
                     message=AuthErrorMessages.INVALID_INPUT,
-                    details=["メールアドレスとパスワードは必須です"],
+                    details=[AuthErrorMessages.REQUIRED_FIELDS_MISSING],
                 )
 
             # メールアドレスの形式チェック
@@ -80,7 +146,16 @@ class LoginUser(graphene.Mutation):
             login(info.context, user)
             logger.info(f"ログイン成功: user_id={user.id}, email={email}")
 
-            return LoginUser(success=True, errors=[], user=user)
+            # トークン生成
+            tokens = generate_tokens(user)
+            logger.info(f"トークン生成完了: user_id={user.id}")
+
+            return LoginUser(
+                success=True,
+                errors=[],
+                user=user,
+                tokens=TokenType(**tokens),
+            )
 
         except (ValidationError, AuthenticationError) as e:
             logger.warning(f"ログインエラー: {str(e)}")

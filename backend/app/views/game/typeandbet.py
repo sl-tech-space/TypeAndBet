@@ -71,8 +71,8 @@ class CreateBet(graphene.Mutation):
 class UpdateGameScore(graphene.Mutation):
     class Arguments:
         game_id = graphene.UUID(required=True)
-        correct_typed = graphene.Int(required=True)  # 正タイプ数
-        accuracy = graphene.Float(required=True)  # 正タイプ率
+        correct_typed = graphene.Int(required=True)
+        accuracy = graphene.Float(required=True)
 
     game = graphene.Field(GameType)
     success = graphene.Boolean()

@@ -4,6 +4,7 @@ from app.models import User
 from app.utils.constants import AuthErrorMessages, GameErrorMessages
 from graphql import GraphQLError
 from typing import List, Optional
+import re
 
 
 class ValidationError(GraphQLError):
@@ -67,6 +68,24 @@ class UserValidator:
             raise ValidationError(
                 message=AuthErrorMessages.INVALID_INPUT,
                 details=[AuthErrorMessages.PASSWORD_TOO_LONG],
+            )
+
+        if len(re.findall(r"[A-Z]", password)) < 2:
+            raise ValidationError(
+                message=AuthErrorMessages.INVALID_INPUT,
+                details=[AuthErrorMessages.PASSWORD_UPPERCASE_REQUIRED],
+            )
+
+        if len(re.findall(r"[0-9]", password)) < 2:
+            raise ValidationError(
+                message=AuthErrorMessages.INVALID_INPUT,
+                details=[AuthErrorMessages.PASSWORD_NUMBER_REQUIRED],
+            )
+
+        if len(re.findall(r"[!@#$%^&*(),.?:|]", password)) < 2:
+            raise ValidationError(
+                message=AuthErrorMessages.INVALID_INPUT,
+                details=[AuthErrorMessages.PASSWORD_SYMBOL_REQUIRED],
             )
 
 

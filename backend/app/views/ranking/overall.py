@@ -55,7 +55,6 @@ class Query(graphene.ObjectType):
         try:
             logger.info(f"ランキング取得開始: limit={limit}, offset={offset}")
 
-            # バリデーション
             if limit < 1 or offset < 0:
                 logger.warning(f"無効なパラメータ: limit={limit}, offset={offset}")
                 raise RankingError(
@@ -73,7 +72,6 @@ class Query(graphene.ObjectType):
                 result = rankings[offset : offset + limit]
                 logger.info(f"取得ランキング数: {len(result)}")
 
-                # 取得したランキングの詳細をログ出力
                 for ranking in result:
                     logger.info(
                         f"ランキング情報: rank={ranking.ranking}, "

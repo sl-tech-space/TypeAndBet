@@ -52,7 +52,6 @@ class RegisterUser(graphene.Mutation):
         try:
             logger.info(f"ユーザー登録開始: email={email}, name={name}")
 
-            # バリデーション
             logger.info("バリデーション開始")
             try:
                 UserValidator.validate_name(name)
