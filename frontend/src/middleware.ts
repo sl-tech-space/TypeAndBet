@@ -2,11 +2,11 @@ import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { refreshToken } from "@/lib/actions/auth";
-import { AUTH_PATH } from "@/constants";
+import { ROUTE, AUTH_PATH } from "@/constants";
 
 // スタートページかチェック
 const isStartPage = (pathname: string) => {
-  return pathname === "/";
+  return pathname === ROUTE.HOME;
 };
 
 // 認証が必要なパスかチェック
@@ -18,7 +18,7 @@ const isProtectedRoute = (pathname: string) => {
 
 // 認証ページかチェック
 const isAuthPage = (pathname: string) => {
-  return pathname.startsWith("/auth");
+  return pathname.startsWith(ROUTE.LOGIN) || pathname.startsWith(ROUTE.SIGNUP);
 };
 
 export async function middleware(request: NextRequest) {
@@ -31,30 +31,26 @@ export async function middleware(request: NextRequest) {
   if (isProtectedRoute(pathname)) {
     // セッションまたはアクセストークンが存在しない場合はログインページにリダイレクト
     if (!session || !session.accessToken) {
-      return NextResponse.redirect(new URL(`/auth/login`, request.url));
+      return NextResponse.redirect(new URL(ROUTE.LOGIN, request.url));
     }
 
     // トークンエラーがある場合はログアウト
     if (session.error === "RefreshAccessTokenError") {
-      return NextResponse.redirect(new URL(`/auth/login`, request.url));
+      return NextResponse.redirect(new URL(ROUTE.LOGIN, request.url));
     }
 
     // アクセストークンの有効期限チェック
-    if (Number(session.expiresAt) * 1000 < Date.now()) {
+    if (session.expiresAt && Number(session.expiresAt) * 1000 < Date.now()) {
       const success = await refreshToken();
       if (!success) {
-        return NextResponse.redirect(new URL(`/auth/login`, request.url));
+        return NextResponse.redirect(new URL(ROUTE.LOGIN, request.url));
       }
     }
   }
 
-  // 認証ページまたはスタートページの場合で、ログイン済み(セッション+アクセストークンが存在する場合)
-  if (
-    (isStartPage(pathname) || isAuthPage(pathname)) &&
-    session &&
-    session.accessToken
-  ) {
-    return NextResponse.redirect(new URL(`/dashboard`, request.url));
+  // 認証ページにアクセスで、ログイン済みの場合はホームにリダイレクト
+  if (isAuthPage(pathname) && session?.accessToken) {
+    return NextResponse.redirect(new URL(ROUTE.HOME, request.url));
   }
 
   return NextResponse.next();

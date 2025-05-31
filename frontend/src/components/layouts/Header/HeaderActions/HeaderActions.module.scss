@@ -1,7 +1,7 @@
 // アクションボタン群のコンテナ
 .buttons {
   display: flex;
-  gap: 16px;
+  gap: 1rem;
 }
 
 // 共通ボタンスタイル
@@ -13,6 +13,11 @@
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
   will-change: transform, box-shadow, background-color;
+
+  &.login,
+  &.signup {
+    min-width: 100px;
+  }
 }
 
 // 個別ボタンのスタイル
@@ -22,14 +27,81 @@
   z-index: 1;
 }
 
-/* レスポンシブ対応 */
-@media screen and (max-width: 768px) {
-  .buttons {
-    gap: 8px;
+.user {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  position: relative;
+
+  &__info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 100%;
   }
-  
-  .button {
-    padding: 6px 12px;
-    font-size: 12px;
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    &__name {
+      font-weight: 600;
+      color: var(--color-gold);
+      font-size: 1rem;
+    }
+
+    &__balance {
+      color: var(--color-gold);
+      font-size: 0.875rem;
+    }
+  }
+
+  &__icon-container {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+  }
+
+  &__icon {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    &__image {
+      height: 100%;
+      width: auto;
+      aspect-ratio: 1;
+      min-width: 48px;
+    }
+  }
+
+  &__dropdown {
+    display: block;
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background-color: #000;
+    border: 1px solid var(--color-gold);
+    border-radius: 4px;
+    min-width: 180px;
+    padding: 0.75rem;
+    pointer-events: auto;
+
+    &__email {
+      text-align: center;
+      padding-bottom: 0.75rem;
+      margin-bottom: 0.75rem;
+      border-bottom: 1px solid var(--color-gold);
+      font-size: 0.9rem;
+    }
+
+    &__button {
+      display: flex;
+      justify-content: center;
+    }
   }
 }

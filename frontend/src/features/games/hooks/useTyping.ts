@@ -400,9 +400,6 @@ export const useTyping = () => {
       const isValidInput: boolean = validPatternIndices.length > INITIAL_VALUE;
 
       // キーの状態を更新 - TypingContextを使用
-      console.log(
-        `キー ${currentInput} の状態を更新: ${isValidInput ? "正解" : "不正解"}`
-      );
       setCurrentKeyStatus(currentInput, isValidInput);
 
       // 不正解の場合

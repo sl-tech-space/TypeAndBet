@@ -5,7 +5,6 @@ import Credentials from "next-auth/providers/credentials";
 import type { Session } from "next-auth";
 import { AuthService } from "@/graphql";
 import { OAUTH_PROVIDER } from "@/constants";
-import type { OAuthResponse, RefreshTokenResponse } from "@/types";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   providers: [
@@ -16,7 +15,41 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         password: { type: "password" },
       },
       async authorize(credentials) {
-        return credentials as any;
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("メールアドレスとパスワードを入力してください");
+        }
+
+        try {
+          const { data } = await AuthService.login(
+            credentials.email as string,
+            credentials.password as string
+          );
+
+          if (!data.loginUser.success) {
+            if (data.loginUser.errors && data.loginUser.errors.length > 0) {
+              throw new Error(data.loginUser.errors.join("\n"));
+            }
+            throw new Error("認証に失敗しました");
+          }
+
+          // 認証成功時はユーザー情報とトークンを返す
+          return {
+            id: data.loginUser.user.id,
+            name: data.loginUser.user.name,
+            email: data.loginUser.user.email,
+            gold: data.loginUser.user.gold,
+            icon: data.loginUser.user.icon,
+            accessToken: data.loginUser.tokens.accessToken,
+            refreshToken: data.loginUser.tokens.refreshToken,
+            expiresAt: data.loginUser.tokens.expiresAt,
+          };
+        } catch (error) {
+          console.error("認証エラー:", error);
+          if (error instanceof Error) {
+            throw error;
+          }
+          throw new Error("メールアドレスまたはパスワードが正しくありません");
+        }
       },
     }),
     Google({
@@ -146,6 +179,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           id: token.id?.toString() ?? undefined,
           name: token.name ?? undefined,
           email: token.email ?? undefined,
+          gold: (token.gold as number) ?? 0,
           icon: token.picture ?? undefined,
         },
         accessToken: token.accessToken as string | undefined,

@@ -18,3 +18,14 @@ export const removeSpacesFromArray = (strArray: string[]): string[] => {
   if (!strArray || !Array.isArray(strArray)) return [];
   return strArray.map((str) => removeSpaces(str));
 };
+
+/**
+ * メールアドレスをマスク処理する関数
+ * @param email メールアドレス
+ * @returns マスク処理されたメールアドレス
+ */
+export const maskEmail = (email: string) => {
+  const atIndex = email.indexOf("@");
+  if (atIndex <= 2) return email;
+  return email.slice(0, 2) + "***" + email.slice(atIndex);
+};

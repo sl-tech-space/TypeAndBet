@@ -31,6 +31,7 @@ export const Input = ({
   borderColor = "primary",
   inputSize = "medium",
   isRound = false,
+  autoComplete = "on",
   className = "",
   onChange,
 }: InputProps) => {

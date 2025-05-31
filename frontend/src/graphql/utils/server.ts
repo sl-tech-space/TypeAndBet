@@ -66,6 +66,24 @@ export class GraphQLServerClient {
   }
 
   /**
+   * クエリを実行する
+   * @param query クエリ
+   * @param variables 変数
+   * @returns レスポンス
+   */
+  public async executeQuery<T = any>(
+    query: TypedDocumentNode<T, any> | string,
+    variables?: any
+  ): Promise<{ data: T }> {
+    try {
+      const result = await this.client.request<T>(query, variables);
+      return { data: result };
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  /**
    * ミューテーションを実行する
    * @param mutation ミューテーション
    * @param variables 変数

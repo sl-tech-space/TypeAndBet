@@ -15,6 +15,7 @@ type BaseInputProps = {
   isDisabled?: boolean;
   inputSize?: CommonSize;
   isRound?: boolean;
+  autoComplete?: string;
   className?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };

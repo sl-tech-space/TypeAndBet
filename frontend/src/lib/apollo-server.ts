@@ -16,5 +16,5 @@ const serverClient = new ApolloGraphQLClient(GRAPHQL_ENDPOINT, {
 });
 
 GraphQLServerClient.initialize(serverClient);
-
 export { serverClient };
+
