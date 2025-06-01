@@ -10,11 +10,11 @@ const serverClient = new ApolloGraphQLClient(GRAPHQL_ENDPOINT, {
   headers: {
     "Content-Type": "application/json",
     "Accept": "application/json",
+    "X-Requested-With": "XMLHttpRequest",
   },
-  cache: "no-store",
-  method: "POST",
+  credentials: "include",
 });
 
-GraphQLServerClient.initialize(serverClient as any);
+GraphQLServerClient.initialize(serverClient);
 
 export { serverClient };

@@ -1,4 +1,4 @@
-import { GraphQLServerClient, GOOGLE_AUTH, REFRESH_TOKEN } from "@/graphql";
+import { GraphQLServerClient, GOOGLE_AUTH, REFRESH_TOKEN, LOGIN } from "@/graphql";
 
 /**
  * 認証サービスクラス
@@ -6,6 +6,21 @@ import { GraphQLServerClient, GOOGLE_AUTH, REFRESH_TOKEN } from "@/graphql";
 export class AuthService {
   private static get graphqlClient() {
     return GraphQLServerClient.getInstance();
+  }
+
+  /**
+   * ログインを行う
+   * @param email メールアドレス
+   * @param password パスワード
+   * @returns
+   */
+  public static async login(email: string, password: string) {
+    const variables = {
+      email,
+      password,
+    };
+
+    return this.graphqlClient.executeMutation(LOGIN, variables);
   }
 
   /**

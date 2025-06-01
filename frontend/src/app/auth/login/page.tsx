@@ -1,9 +1,13 @@
-import { GoogleAuth } from "@/features/auth/components";
+import styles from "./page.module.scss";
+import { AuthCard, LoginForm, AuthActions } from "@/features/auth";
 
 export default function Login() {
   return (
-    <div>
-      <GoogleAuth />
-    </div>
+    <section className={styles.container}>
+      <AuthCard title="ログイン">
+        <LoginForm />
+        <AuthActions />
+      </AuthCard>
+    </section>
   );
 }
