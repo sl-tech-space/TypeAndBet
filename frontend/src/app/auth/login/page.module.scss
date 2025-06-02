@@ -1,10 +1,11 @@
 .container {
-  height: calc(
+  min-height: calc(
     100vh - 80px
-  ); /* ヘッダーの高さ(80px)を引いた残りのビューポート高さ */
+  ); /* 最小の高さとしてヘッダーの高さを引いた値を設定 */
   width: 100%;
   display: flex;
   flex-direction: column; /* 垂直方向に並べる */
+  justify-content: center;
   align-items: center;
   box-sizing: border-box;
   padding: 1rem 1rem;

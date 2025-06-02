@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { PASSWORD_VALIDATION, EMAIL_VALIDATION } from "@/constants";
+import {
+  PASSWORD_VALIDATION,
+  EMAIL_VALIDATION,
+  NAME_VALIDATION,
+} from "@/constants";
 
 /**
  * パスワードのバリデーションフック
@@ -8,8 +12,15 @@ import { PASSWORD_VALIDATION, EMAIL_VALIDATION } from "@/constants";
 export const usePasswordValidation = () => {
   const [errors, setErrors] = useState<string[]>([]);
 
-  const validatePassword = (password: string) => {
+  const validatePassword = (password: string): boolean => {
     const newErrors: string[] = [];
+
+    // 必須チェック
+    if (!password) {
+      newErrors.push(PASSWORD_VALIDATION.ERROR_MESSAGES.REQUIRED);
+      setErrors(newErrors);
+      return false;
+    }
 
     // 長さのチェック
     if (password.length < PASSWORD_VALIDATION.MIN_LENGTH) {
@@ -75,7 +86,7 @@ export const usePasswordValidation = () => {
 export const useEmailValidation = () => {
   const [errors, setErrors] = useState<string[]>([]);
 
-  const validateEmail = (email: string) => {
+  const validateEmail = (email: string): boolean => {
     const newErrors: string[] = [];
 
     // 必須チェック
@@ -102,4 +113,36 @@ export const useEmailValidation = () => {
   };
 
   return { errors, validateEmail };
+};
+
+/**
+ * 名前のバリデーションフック
+ * @returns 名前のバリデーションフック
+ */
+export const useNameValidation = () => {
+  const [errors, setErrors] = useState<string[]>([]);
+
+  const validateName = (name: string): boolean => {
+    const newErrors: string[] = [];
+
+    // 必須チェック
+    if (!name) {
+      newErrors.push(NAME_VALIDATION.ERROR_MESSAGES.REQUIRED);
+      setErrors(newErrors);
+      return false;
+    }
+
+    // 長さのチェック
+    if (name.length < NAME_VALIDATION.MIN_LENGTH) {
+      newErrors.push(NAME_VALIDATION.ERROR_MESSAGES.MIN_LENGTH);
+    }
+    if (name.length > NAME_VALIDATION.MAX_LENGTH) {
+      newErrors.push(NAME_VALIDATION.ERROR_MESSAGES.MAX_LENGTH);
+    }
+
+    setErrors(newErrors);
+    return newErrors.length === 0;
+  };
+
+  return { errors, validateName };
 };

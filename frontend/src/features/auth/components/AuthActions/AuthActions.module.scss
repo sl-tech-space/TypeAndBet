@@ -31,7 +31,16 @@
     }
   }
 
-  &__password-forget {
+  &__links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  &__password-forget,
+  &__signup,
+  &__login {
     color: $color-gold;
     font-size: 14px;
     text-decoration: none;

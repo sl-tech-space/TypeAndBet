@@ -19,14 +19,28 @@ export const AuthActions = () => {
     <div className={styles["auth-actions"]}>
       <div className={styles["auth-actions__divider"]}>{AUTH_ACTIONS.OR}</div>
       <GoogleAuth />
-      <Link
-        href={isLoginScreen ? ROUTE.PASSWORD_FORGET : ROUTE.SIGNUP}
-        className={styles["auth-actions__password-forget"]}
-      >
-        {isLoginScreen
-          ? AUTH_ACTIONS.PASSWORD_FORGET
-          : AUTH_ACTIONS.ALREADY_HAVE_ACCOUNT}
-      </Link>
+      <div className={styles["auth-actions__links"]}>
+        {isLoginScreen ? (
+          <>
+            <Link
+              href={ROUTE.PASSWORD_FORGET}
+              className={styles["auth-actions__password-forget"]}
+            >
+              {AUTH_ACTIONS.PASSWORD_FORGET}
+            </Link>
+            <Link
+              href={ROUTE.SIGNUP}
+              className={styles["auth-actions__signup"]}
+            >
+              {AUTH_ACTIONS.NO_ACCOUNT}
+            </Link>
+          </>
+        ) : (
+          <Link href={ROUTE.LOGIN} className={styles["auth-actions__login"]}>
+            {AUTH_ACTIONS.ALREADY_HAVE_ACCOUNT}
+          </Link>
+        )}
+      </div>
     </div>
   );
 };
