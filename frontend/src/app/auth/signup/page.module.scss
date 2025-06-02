@@ -1,0 +1,12 @@
+.container {
+  height: calc(
+    100vh - 80px
+  ); /* ヘッダーの高さ(80px)を引いた残りのビューポート高さ */
+  width: 100%;
+  display: flex;
+  flex-direction: column; /* 垂直方向に並べる */
+  align-items: center;
+  box-sizing: border-box;
+  padding: 1rem 1rem;
+  position: relative;
+}

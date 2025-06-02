@@ -31,11 +31,11 @@ export const LOGIN = gql`
  * Google認証
  * @param email メールアドレス
  * @param name 名前
- * @param icon アイコン
+ * @param icon アイコン（オプショナル）
  * @returns ユーザーとトークン
  */
 export const GOOGLE_AUTH = gql`
-  mutation GoogleAuth($email: String!, $name: String!, $icon: String!) {
+  mutation GoogleAuth($email: String!, $name: String!, $icon: String) {
     googleAuth(email: $email, name: $name, icon: $icon) {
       user {
         id

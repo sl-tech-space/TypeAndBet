@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
+import "@/lib/apollo-server";
 
 import type { Session } from "next-auth";
 import { AuthService } from "@/graphql";
@@ -66,26 +67,36 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     async signIn({ user, account }) {
       if (account?.provider === OAUTH_PROVIDER.GOOGLE) {
         try {
+          console.log("Google認証開始:", { email: user.email, name: user.name });
+          // Google認証から取得したアイコンURLを使用
+          const icon = user.image || "/assets/images/default-icon.png";
           const { data } = await AuthService.googleAuth(
             user.email,
             user.name,
-            user.icon
+            icon
           );
+          console.log("Google認証レスポンス:", data);
 
-          if (!data) {
+          if (!data?.googleAuth) {
+            console.error("Google認証失敗: データが空です");
             return;
           }
 
           // userオブジェクトを更新
           Object.assign(user, {
-            id: data.user.id,
-            accessToken: data.tokens.accessToken,
-            refreshToken: data.tokens.refreshToken,
-            expiresAt: data.tokens.expiresAt,
-            icon: data.user.icon,
+            id: data.googleAuth.user.id,
+            accessToken: data.googleAuth.tokens.accessToken,
+            refreshToken: data.googleAuth.tokens.refreshToken,
+            expiresAt: data.googleAuth.tokens.expiresAt,
+            icon: data.googleAuth.user.icon,
+            gold: data.googleAuth.user.gold,
           });
+          console.log("ユーザー情報更新完了:", user);
         } catch (error) {
           console.error("OAuth認証に失敗:", error);
+          if (error instanceof Error) {
+            console.error("エラー詳細:", error.message);
+          }
         }
       }
     },
@@ -104,24 +115,27 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       if (account && user) {
         if (account.provider === OAUTH_PROVIDER.GOOGLE) {
           try {
+            // Google認証から取得したアイコンURLを使用
+            const icon = user.image || "/assets/images/default-icon.png";
             const { data } = await AuthService.googleAuth(
               user.email,
               user.name,
-              user.icon
+              icon
             );
 
-            if (!data) {
+            if (!data?.googleAuth) {
               throw new Error("OAuth認証に失敗しました");
             }
 
             // トークン情報を更新
             return {
               ...token,
-              id: data.user.id,
-              accessToken: data.tokens.accessToken,
-              refreshToken: data.tokens.refreshToken,
-              expiresAt: data.tokens.expiresAt,
-              icon: data.user.icon,
+              id: data.googleAuth.user.id,
+              accessToken: data.googleAuth.tokens.accessToken,
+              refreshToken: data.googleAuth.tokens.refreshToken,
+              expiresAt: data.googleAuth.tokens.expiresAt,
+              icon: data.googleAuth.user.icon,
+              gold: data.googleAuth.user.gold,
             };
           } catch (error) {
             console.error("OAuth認証に失敗:", error);
@@ -179,7 +193,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           id: token.id?.toString() ?? undefined,
           name: token.name ?? undefined,
           email: token.email ?? undefined,
-          gold: (token.gold as number) ?? 0,
+          gold: (token.gold as number | undefined) ?? 0,
           icon: token.picture ?? undefined,
         },
         accessToken: token.accessToken as string | undefined,

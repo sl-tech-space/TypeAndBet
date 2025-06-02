@@ -39,8 +39,8 @@ export const HeaderActionsClient = () => {
       <div className={styles.user}>
         <div className={styles["user__info"]}>
           <div className={styles["user__text"]}>
-            <Text color="gold">{session.user.name || "ゲスト"}</Text>
-            <Text color="gold">{(session.user.gold || 0).toLocaleString()}G</Text>
+            <Text variant="h3" color="gold" className={styles["user__text__name"]}>{session.user.name || "ゲスト"}</Text>
+            <Text variant="h3" color="gold" className={styles["user__text__gold"]}>{(session.user.gold || 0).toLocaleString()}G</Text>
           </div>
           <div className={styles["user__icon-container"]}>
             <div
@@ -63,7 +63,7 @@ export const HeaderActionsClient = () => {
             {isOpen && (
               <div className={styles["user__dropdown"]}>
                 <div className={styles["user__dropdown__email"]}>
-                  <Text color="gold">
+                  <Text variant="h3" color="gold">
                     {session.user.email ? maskEmail(session.user.email) : "メールアドレスなし"}
                   </Text>
                 </div>
