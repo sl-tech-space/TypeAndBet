@@ -39,8 +39,8 @@ class RegisterUser(graphene.Mutation):
     class Arguments:
         name = graphene.String(required=True)
         email = graphene.String(required=True)
-        email_confirm = graphene.String(required=True)
         password = graphene.String(required=True)
+        password_confirm = graphene.String(required=True)
 
     user = graphene.Field(UserType)
     success = graphene.Boolean()
@@ -48,7 +48,7 @@ class RegisterUser(graphene.Mutation):
 
     @classmethod
     @transaction.atomic
-    def mutate(cls, root, info, name, email, email_confirm, password):
+    def mutate(cls, root, info, name, email, password, password_confirm):
         try:
             logger.info(f"ユーザー登録開始: email={email}, name={name}")
 
@@ -61,14 +61,14 @@ class RegisterUser(graphene.Mutation):
                 raise e
 
             try:
-                UserValidator.validate_email(email, email_confirm)
+                UserValidator.validate_email(email)
                 logger.info("メールアドレスバリデーション成功")
             except ValidationError as e:
                 logger.warning(f"メールアドレスバリデーション失敗: {str(e)}")
                 raise e
 
             try:
-                UserValidator.validate_password(password)
+                UserValidator.validate_password(password, password_confirm)
                 logger.info("パスワードバリデーション成功")
             except ValidationError as e:
                 logger.warning(f"パスワードバリデーション失敗: {str(e)}")

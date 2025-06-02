@@ -40,13 +40,7 @@ class UserValidator:
             )
 
     @staticmethod
-    def validate_email(email, email_confirm):
-        if email != email_confirm:
-            raise ValidationError(
-                message=AuthErrorMessages.INVALID_INPUT,
-                details=[AuthErrorMessages.EMAIL_MISMATCH],
-            )
-
+    def validate_email(email):
         validator = EmailValidator()
         try:
             validator(email)
@@ -63,7 +57,13 @@ class UserValidator:
             )
 
     @staticmethod
-    def validate_password(password):
+    def validate_password(password, password_confirm):
+        if password != password_confirm:
+            raise ValidationError(
+                message=AuthErrorMessages.INVALID_INPUT,
+                details=[AuthErrorMessages.PASSWORD_MISMATCH],
+            )
+
         if len(password) > 255:
             raise ValidationError(
                 message=AuthErrorMessages.INVALID_INPUT,

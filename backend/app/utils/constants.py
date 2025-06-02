@@ -9,7 +9,7 @@ class AuthErrorMessages:
     DUPLICATE_EMAIL = "このメールアドレスは既に登録されています"
     DUPLICATE_USERNAME = "このユーザー名は既に使用されています"
     INVALID_INPUT = "入力値が不正です"
-    EMAIL_MISMATCH = "メールアドレスが一致しません"
+    PASSWORD_MISMATCH = "パスワードが一致しません"
     INVALID_EMAIL_FORMAT = "有効なメールアドレスを入力してください"
     PASSWORD_TOO_LONG = "パスワードは255文字以内で入力してください"
     USERNAME_TOO_LONG = "ユーザー名は15文字以内で入力してください"
