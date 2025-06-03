@@ -2,6 +2,7 @@
 
 import { ApolloError } from "@apollo/client";
 import { GamesService } from "@/graphql";
+import { ERROR_MESSAGE } from "@/constants";
 import "@/lib/apollo-server";
 
 /**
@@ -13,11 +14,11 @@ export async function generateText() {
     const { data } = await GamesService.generateText();
     return { success: true, result: data.generateText };
   } catch (error) {
-    console.error("テキスト生成中にエラーが発生:", error);
+    console.error(ERROR_MESSAGE.GENERATE_TEXT_FAILED, error);
 
-    let errorMessage = "予期せぬエラーが発生しました";
+    let errorMessage = ERROR_MESSAGE.UNEXPECTED;
     if (error instanceof ApolloError) {
-      errorMessage = `GraphQLエラー: ${error.message}`;
+      errorMessage = `${ERROR_MESSAGE.GRAPHQL_ERROR}: ${error.message}`;
     } else if (error instanceof Error) {
       errorMessage = error.message;
     }

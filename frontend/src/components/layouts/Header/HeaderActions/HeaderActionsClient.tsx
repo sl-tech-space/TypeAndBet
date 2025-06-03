@@ -25,7 +25,7 @@ export const HeaderActionsClient = () => {
   const handleLogout = async () => {
     try {
       await signOut({
-        redirect: false
+        redirect: false,
       });
       router.push(ROUTE.HOME);
     } catch (error) {
@@ -39,8 +39,20 @@ export const HeaderActionsClient = () => {
       <div className={styles.user}>
         <div className={styles["user__info"]}>
           <div className={styles["user__text"]}>
-            <Text variant="h3" color="gold" className={styles["user__text__name"]}>{session.user.name || "ゲスト"}</Text>
-            <Text variant="h3" color="gold" className={styles["user__text__gold"]}>{(session.user.gold || 0).toLocaleString()}G</Text>
+            <Text
+              variant="h3"
+              color="gold"
+              className={styles["user__text__name"]}
+            >
+              {session.user.name || "ゲスト"}
+            </Text>
+            <Text
+              variant="h3"
+              color="gold"
+              className={styles["user__text__gold"]}
+            >
+              {(session.user.gold || 0).toLocaleString()}G
+            </Text>
           </div>
           <div className={styles["user__icon-container"]}>
             <div
@@ -50,7 +62,9 @@ export const HeaderActionsClient = () => {
               <Icon
                 icon={session.user.icon || "/assets/images/default-icon.png"}
                 alt={
-                  session.user.name ? `${session.user.name}のアイコン` : "デフォルトアイコン"
+                  session.user.name
+                    ? `${session.user.name}のアイコン`
+                    : "デフォルトアイコン"
                 }
                 size="sm"
                 isBorder
@@ -64,7 +78,9 @@ export const HeaderActionsClient = () => {
               <div className={styles["user__dropdown"]}>
                 <div className={styles["user__dropdown__email"]}>
                   <Text variant="h3" color="gold">
-                    {session.user.email ? maskEmail(session.user.email) : "メールアドレスなし"}
+                    {session.user.email
+                      ? maskEmail(session.user.email)
+                      : "メールアドレスなし"}
                   </Text>
                 </div>
                 <div className={styles["user__dropdown__button"]}>
@@ -77,7 +93,7 @@ export const HeaderActionsClient = () => {
                     buttonSize="small"
                     onClick={handleLogout}
                   >
-                    ログアウト
+                    {ROUTE_NAME.LOGOUT}
                   </Button>
                 </div>
               </div>

@@ -1,16 +1,22 @@
 "use client";
 
+import styles from "./LoginForm.module.scss";
+import Image from "next/image";
+import { FormEvent, useState } from "react";
 import { Button, Input, Label } from "@/components/ui";
 import { usePasswordVisibility } from "@/features/auth";
-import { FORM_LABEL, FORM_PLACEHOLDER } from "@/constants";
-import Image from "next/image";
-import styles from "./LoginForm.module.scss";
-import { FormEvent, useState } from "react";
-import { useLogin } from "@/features/auth/hooks/useLogin";
 import {
+  FORM_LABEL,
+  FORM_PLACEHOLDER,
+  ERROR_MESSAGE,
+  ROUTE_NAME,
+} from "@/constants";
+import {
+  useLogin,
   usePasswordValidation,
   useEmailValidation,
-} from "@/features/auth/hooks/useValidation";
+} from "@/features/auth";
+import type { LoginResult } from "@/features/auth";
 
 /**
  * クライアントコンポーネント
@@ -66,13 +72,15 @@ export const LoginForm = () => {
       return;
     }
 
-    const result = await login(email, password);
+    const result: LoginResult = await login(email, password);
 
-    if (!result?.success) {
-      if (result?.error) {
+    if (!result.success) {
+      if (result.error) {
         setError(Object.values(result.error).join(""));
-      } else if (result?.error) {
+      } else if (result.error) {
         setError(result.error);
+      } else {
+        setError(ERROR_MESSAGE.UNEXPECTED);
       }
     }
   };
@@ -88,7 +96,9 @@ export const LoginForm = () => {
 
   return (
     <form className={styles["login-form"]} onSubmit={handleSubmit}>
+      {/* エラー表示 */}
       {error && <div className={styles["login-form__error"]}>{error}</div>}
+      {/* メールアドレス入力フィールド */}
       <div className={styles["login-form__email-field"]}>
         <div className={styles["login-form__email-field__label-container"]}>
           <Image
@@ -112,6 +122,7 @@ export const LoginForm = () => {
           value={email}
           onChange={handleEmailChange}
         />
+        {/* メールアドレスエラー表示 */}
         {emailErrors.length > 0 && hasInteracted && (
           <div className={styles["login-form__email-errors"]}>
             {emailErrors.map((error, index) => (
@@ -122,6 +133,7 @@ export const LoginForm = () => {
           </div>
         )}
       </div>
+      {/* パスワード入力フィールド */}
       <div className={styles["login-form__password-field"]}>
         <div className={styles["login-form__password-field__label-container"]}>
           <Image
@@ -163,6 +175,7 @@ export const LoginForm = () => {
             />
           </button>
         </div>
+        {/* パスワードエラー表示 */}
         {passwordErrors.length > 0 && hasInteracted && (
           <div className={styles["login-form__password-errors"]}>
             {passwordErrors.map((error, index) => (
@@ -173,6 +186,7 @@ export const LoginForm = () => {
           </div>
         )}
       </div>
+      {/* ログインボタン */}
       <Button
         type="submit"
         textColor="secondary"
@@ -184,7 +198,7 @@ export const LoginForm = () => {
         isLoading={isLoading}
         isRound={false}
       >
-        ログイン
+        {ROUTE_NAME.LOGIN}
       </Button>
     </form>
   );

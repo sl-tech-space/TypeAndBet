@@ -1,6 +1,6 @@
-# Betting機能
+# Betting 機能
 
-TypeAndBetアプリケーションのベッティング機能を管理するディレクトリです。
+TypeAndBet アプリケーションのベッティング機能を管理するディレクトリです。
 
 ## 機能概要
 
@@ -109,13 +109,7 @@ const GamePage = () => {
     return { success: true };
   };
 
-  return (
-    <GoldBetCard
-      balance={1000}
-      onBet={handleBet}
-      gameModeId="REAL"
-    />
-  );
+  return <GoldBetCard balance={1000} onBet={handleBet} gameModeId="REAL" />;
 };
 ```
 

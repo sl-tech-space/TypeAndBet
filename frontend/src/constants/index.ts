@@ -3,3 +3,4 @@ export * from "./messages";
 export * from "./route";
 export * from "./games";
 export * from "./auth";
+export * from "./error";

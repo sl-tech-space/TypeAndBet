@@ -44,5 +44,5 @@ export const TYPE_JUDGE = {
  * タイピングの初期値
  */
 export const COUNT_DOWN_TIME = 3;
-export const INITIAL_VALUE = 0; 
+export const INITIAL_VALUE = 0;
 export const INITIAL_SENTENCE_COUNT = 5;

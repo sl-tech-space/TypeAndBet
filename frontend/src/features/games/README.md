@@ -44,47 +44,61 @@ games/
 ## コンポーネント
 
 ### ModeSelector
+
 ゲームモード（シミュレーション/プレイ）を選択するためのコンポーネント
 
 ### TimerCard
+
 ゲーム内の制限時間を表示・管理するコンポーネント
 
 ### DetailCard
+
 ゲームの詳細情報（テーマ、カテゴリなど）を表示するコンポーネント
 
 ## カスタムフック
 
 ### useTyping
+
 タイピングゲームの中核となるロジックを管理するフック
+
 - 入力処理
 - 進捗管理
 - 正誤判定
 - スコア計算
 
 ### useGenerator
+
 ゲーム用の文章を生成・管理するフック
-- AIによる文章生成
+
+- AI による文章生成
 - ローマ字変換
 - 文章の状態管理
 
 ### useKeydown
+
 キーボード入力を処理するフック
+
 - キー入力イベントの処理
 - 入力の正誤判定
 
 ### useTimer
+
 ゲーム内のタイマーを管理するフック
+
 - 制限時間の管理
 - カウントダウン処理
 
 ### useGameMode
+
 ゲームモードを管理するフック
+
 - モード選択
 - ルーティング制御
 
 ## 型定義
 
 ### Sentence
+
 ```typescript
 interface Sentence {
   kanji: string;
@@ -94,6 +108,7 @@ interface Sentence {
 ```
 
 ### RomajiProgress
+
 ```typescript
 type RomajiProgress = {
   typed: string[];
@@ -123,36 +138,28 @@ const GameComponent = () => {
     startTyping,
   } = useTyping();
 
-  const {
-    generate,
-    promptDetail,
-    isLoading,
-  } = useGenerator();
+  const { generate, promptDetail, isLoading } = useGenerator();
 
   // ゲーム開始時に文章を生成
   useEffect(() => {
     generate();
   }, []);
 
-  return (
-    <div>
-      {/* ゲーム画面のUI実装 */}
-    </div>
-  );
+  return <div>{/* ゲーム画面のUI実装 */}</div>;
 };
 ```
 
 ## 特徴
 
-- シミュレーションモードとプレイモードの2つのゲームモードを提供
-- AIを活用した文章生成システム
+- シミュレーションモードとプレイモードの 2 つのゲームモードを提供
+- AI を活用した文章生成システム
 - リアルタイムの入力判定とフィードバック
 - 詳細なタイピング統計（正確性、速度など）
 - カスタムフックを活用した効率的な状態管理
-- TypeScriptによる型安全な実装
+- TypeScript による型安全な実装
 
 ## 制限事項
 
-- 文章生成にはAPIキーが必要です
+- 文章生成には API キーが必要です
 - シミュレーションモードでは実際のベット処理は行われません
 - 一度に生成できる文章の数に制限があります

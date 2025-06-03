@@ -28,6 +28,17 @@ export const AUTH_ACTIONS = {
   NO_ACCOUNT: "アカウントをお持ちでない方はこちら",
 };
 
+export const SIGNUP_SUCCESS_MESSAGE = {
+  SUCCESS: "様、登録ありがとうございます。",
+  LOGIN_NAVIGATION: "ログイン画面からログインしてください。",
+  LOGIN_NAVIGATION_COUNT: "秒後にログイン画面に遷移します...",
+};
+
+export const SIGNUP_SUCCESS_COUNTDOWN = 5; //5s
+export const SIGNUP_SUCCESS_DECREMENT = 1; //1s
+export const SIGNUP_SUCCESS_COUNTDOWN_MIN = 0; //0s
+export const SIGNUP_SUCCESS_COUNTDOWN_INTERVAL = 1000; //1000ms
+
 ////////////////////////////
 // バリデーション
 ////////////////////////////

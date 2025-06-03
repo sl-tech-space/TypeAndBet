@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ROUTE } from "@/constants";
 import { signIn } from "next-auth/react";
+import { LoginResult } from "./useLogin.types";
 
 /**
  * ログインフック
@@ -14,7 +15,10 @@ export const useLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const login = async (email: string, password: string) => {
+  const login = async (
+    email: string,
+    password: string
+  ): Promise<LoginResult> => {
     try {
       setIsLoading(true);
       const result = await loginAction(email, password);

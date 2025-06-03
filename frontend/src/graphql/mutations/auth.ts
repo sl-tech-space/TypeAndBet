@@ -28,6 +28,33 @@ export const LOGIN = gql`
 `;
 
 /**
+ * 新規登録
+ * @param name 名前
+ * @param email メールアドレス
+ * @param password パスワード
+ * @param passwordConfirm パスワード確認
+ * @returns 成功フラグとエラーとユーザー情報
+ */
+export const SIGNUP = gql`
+  mutation Signup(
+    $name: String!
+    $email: String!
+    $password: String!
+    $passwordConfirm: String!
+  ) {
+    registerUser(
+      name: $name
+      email: $email
+      password: $password
+      passwordConfirm: $passwordConfirm
+    ) {
+      success
+      errors
+    }
+  }
+`;
+
+/**
  * Google認証
  * @param email メールアドレス
  * @param name 名前

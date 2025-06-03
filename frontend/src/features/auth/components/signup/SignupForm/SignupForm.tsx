@@ -1,17 +1,25 @@
 "use client";
 
-import { Button, Input, Label } from "@/components/ui";
-import { usePasswordVisibility } from "@/features/auth";
-import { FORM_LABEL, FORM_PLACEHOLDER } from "@/constants";
-import Image from "next/image";
 import styles from "./SignupForm.module.scss";
+import Image from "next/image";
 import { FormEvent, useState } from "react";
-import { useSignup } from "@/features/auth/hooks";
+import { Text, Button, Input, Label } from "@/components/ui";
 import {
+  usePasswordVisibility,
+  useSignup,
   usePasswordValidation,
   useEmailValidation,
   useNameValidation,
-} from "@/features/auth/hooks/useValidation";
+  SignupSuccessInfo,
+} from "@/features/auth";
+import type { SignupResult } from "@/features/auth";
+import {
+  FORM_LABEL,
+  FORM_PLACEHOLDER,
+  SIGNUP_SUCCESS_MESSAGE,
+  ERROR_MESSAGE,
+  ROUTE_NAME,
+} from "@/constants";
 
 /**
  * クライアントコンポーネント
@@ -20,7 +28,7 @@ import {
  */
 export const SignupForm = () => {
   const { isVisible, toggleVisibility, inputType } = usePasswordVisibility();
-  const { signup, isLoading } = useSignup();
+  const { signup, isLoading, countdown } = useSignup();
   const { errors: passwordErrors, validatePassword } = usePasswordValidation();
   const { errors: emailErrors, validateEmail } = useEmailValidation();
   const { errors: nameErrors, validateName } = useNameValidation();
@@ -30,6 +38,9 @@ export const SignupForm = () => {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [successInfo, setSuccessInfo] = useState<SignupSuccessInfo | null>(
+    null
+  );
   const [passwordConfirmError, setPasswordConfirmError] = useState<
     string | null
   >(null);
@@ -107,6 +118,7 @@ export const SignupForm = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+    setSuccessInfo(null);
 
     // 各フィールドのバリデーション
     const isNameValid = validateName(name);
@@ -126,14 +138,24 @@ export const SignupForm = () => {
       return;
     }
 
-    const result = await signup(name, email, password);
+    const result: SignupResult = await signup(
+      name,
+      email,
+      password,
+      passwordConfirm
+    );
 
-    if (!result?.success) {
-      if (result?.error) {
-        setError(Object.values(result.error).join(""));
-      } else if (result?.error) {
-        // setError(result.error);
-      }
+    if (result.success && result.data) {
+      setSuccessInfo({
+        name: result.data.name,
+        email: result.data.email,
+        passwordLength: result.data.passwordLength,
+        countdown: result.data.countdown,
+      });
+    } else if (result.error) {
+      setError(result.error);
+    } else {
+      setError(ERROR_MESSAGE.UNEXPECTED);
     }
   };
 
@@ -152,7 +174,29 @@ export const SignupForm = () => {
 
   return (
     <form className={styles["signup-form"]} onSubmit={handleSubmit}>
+      {/* エラー表示 */}
       {error && <div className={styles["signup-form__error"]}>{error}</div>}
+      {/* サインアップ成功時の表示 */}
+      {successInfo && countdown !== null && (
+        <div className={styles["signup-form__success"]}>
+          <Text variant="h3" color="gold">
+            {successInfo.name}
+            {SIGNUP_SUCCESS_MESSAGE.SUCCESS}
+          </Text>
+          <Text color="gold">{SIGNUP_SUCCESS_MESSAGE.LOGIN_NAVIGATION}</Text>
+          <Text color="gold">
+            {FORM_LABEL.EMAIL}: {successInfo.email}
+          </Text>
+          <Text color="gold">
+            {FORM_LABEL.PASSWORD}: {successInfo.passwordLength}桁
+          </Text>
+          <Text color="gold">
+            {countdown}
+            {SIGNUP_SUCCESS_MESSAGE.LOGIN_NAVIGATION_COUNT}
+          </Text>
+        </div>
+      )}
+      {/* ユーザ名入力フィールド */}
       <div className={styles["signup-form__name-field"]}>
         <div className={styles["signup-form__name-field__label-container"]}>
           <Image
@@ -176,6 +220,7 @@ export const SignupForm = () => {
           value={name}
           onChange={handleNameChange}
         />
+        {/* ユーザ名エラー表示 */}
         {nameErrors.length > 0 && hasInteracted && (
           <div className={styles["signup-form__name-errors"]}>
             {nameErrors.map((error, index) => (
@@ -186,6 +231,7 @@ export const SignupForm = () => {
           </div>
         )}
       </div>
+      {/* メールアドレス入力フィールド */}
       <div className={styles["signup-form__email-field"]}>
         <div className={styles["signup-form__email-field__label-container"]}>
           <Image
@@ -219,6 +265,7 @@ export const SignupForm = () => {
           </div>
         )}
       </div>
+      {/* パスワード入力フィールド */}
       <div className={styles["signup-form__password-field"]}>
         <div className={styles["signup-form__password-field__label-container"]}>
           <Image
@@ -260,6 +307,7 @@ export const SignupForm = () => {
             />
           </button>
         </div>
+        {/* パスワードエラー表示 */}
         {passwordErrors.length > 0 && hasInteracted && (
           <div className={styles["signup-form__password-errors"]}>
             {passwordErrors.map((error, index) => (
@@ -270,6 +318,7 @@ export const SignupForm = () => {
           </div>
         )}
       </div>
+      {/* パスワード確認入力フィールド */}
       <div className={styles["signup-form__password-confirm-field"]}>
         <div
           className={
@@ -319,12 +368,14 @@ export const SignupForm = () => {
             />
           </button>
         </div>
+        {/* パスワード確認エラー表示 */}
         {passwordConfirmError && hasInteracted && (
           <div className={styles["signup-form__password-confirm-error"]}>
             {passwordConfirmError}
           </div>
         )}
       </div>
+      {/* 新規登録ボタン */}
       <Button
         type="submit"
         textColor="secondary"
@@ -336,7 +387,7 @@ export const SignupForm = () => {
         isLoading={isLoading}
         isRound={false}
       >
-        新規登録
+        {ROUTE_NAME.SIGNUP}
       </Button>
     </form>
   );
