@@ -1,4 +1,18 @@
-export const ERROR_MESSAGE = {
+/**
+ * エラーメッセージの型定義
+ */
+export type ErrorMessageKey =
+  | "UNEXPECTED"
+  | "LOGIN_FAILED"
+  | "SIGNUP_FAILED"
+  | "GENERATE_TEXT_FAILED"
+  | "GRAPHQL_ERROR";
+
+export type ErrorMessages = {
+  [key in ErrorMessageKey]: string;
+};
+
+export const ERROR_MESSAGE: ErrorMessages = {
   UNEXPECTED: "予期せぬエラーが発生しました",
   LOGIN_FAILED: "ログインに失敗しました",
   SIGNUP_FAILED: "新規登録に失敗しました",

@@ -1,7 +1,26 @@
 /**
+ * ルートの型定義
+ */
+export type RouteKey =
+  | "HOME"
+  | "SIMULATE"
+  | "PLAY"
+  | "LOGIN"
+  | "SIGNUP"
+  | "PASSWORD_FORGET"
+  | "LOGOUT"
+  | "TERMS"
+  | "PRIVACY"
+  | "CONTACT";
+
+export type Routes = {
+  [key in RouteKey]: string;
+};
+
+/**
  * ルート
  */
-export const ROUTE = {
+export const ROUTE: Routes = {
   HOME: "/",
   SIMULATE: "/simulate",
   PLAY: "/play",
@@ -15,9 +34,18 @@ export const ROUTE = {
 };
 
 /**
+ * ルート名の型定義
+ */
+export type RouteNameKey = Exclude<RouteKey, "PASSWORD_FORGET">;
+
+export type RouteNames = {
+  [key in RouteNameKey]: string;
+};
+
+/**
  * ルート名
  */
-export const ROUTE_NAME = {
+export const ROUTE_NAME: RouteNames = {
   HOME: "ホーム",
   SIMULATE: "シミュレーション",
   PLAY: "Type&Bet",
@@ -29,7 +57,16 @@ export const ROUTE_NAME = {
   CONTACT: "お問い合わせ",
 };
 
-export const HOME_BACK_BUTTON = {
+/**
+ * ホームバックボタンの型定義
+ */
+export type HomeBackButtonKey = "TEXT" | "ROUTE";
+
+export type HomeBackButton = {
+  [key in HomeBackButtonKey]: string;
+};
+
+export const HOME_BACK_BUTTON: HomeBackButton = {
   TEXT: "ホームに戻る",
   ROUTE: "/",
 };

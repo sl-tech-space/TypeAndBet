@@ -1,10 +1,9 @@
 "use server";
 
-import { signIn, signOut } from "@/auth";
-import { OAUTH_PROVIDER } from "@/constants";
+import { OAUTH_PROVIDER, ROUTE } from "@/constants";
 import { AuthService } from "@/graphql";
 import { revalidatePath } from "next/cache";
-import { auth } from "@/auth";
+import { auth, signIn } from "@/auth";
 
 /**
  * Google認証を行う
@@ -12,17 +11,7 @@ import { auth } from "@/auth";
  */
 export const signInWithGoogle = async () => {
   await signIn(OAUTH_PROVIDER.GOOGLE, {
-    redirectTo: `/`,
-  });
-};
-
-/**
- * ログアウトを行う
- * @returns ログアウト成功時にはリダイレクト先のパスを返す
- */
-export const handleSignOut = async () => {
-  await signOut({
-    redirectTo: `/`,
+    redirectTo: ROUTE.HOME,
   });
 };
 
@@ -40,7 +29,7 @@ export async function refreshToken() {
     );
 
     if (data?.refreshToken) {
-      revalidatePath("/");
+      revalidatePath(ROUTE.HOME);
       return true;
     }
   } catch (error) {

@@ -1,49 +1,106 @@
 /**
+ * 認証必須パスのインターフェース
+ */
+interface AuthPath {
+  href: string;
+  label: string;
+}
+
+/**
  * 認証必須パス
  */
-export const AUTH_PATH = [{ href: "/type-and-bet", label: "Type&Bet" }];
+export const AUTH_PATH: AuthPath[] = [
+  { href: "/type-and-bet", label: "Type&Bet" },
+];
 
-export const OAUTH_PROVIDER = {
+/**
+ * OAuthプロバイダーの型定義
+ */
+export type OAuthProvider = {
+  GOOGLE: "google";
+};
+
+export const OAUTH_PROVIDER: OAuthProvider = {
   GOOGLE: "google",
 };
 
-export const FORM_LABEL = {
+/**
+ * フォームラベルの型定義
+ */
+export type FormLabel = {
+  EMAIL: string;
+  PASSWORD: string;
+  PASSWORD_CONFIRM: string;
+  NAME: string;
+};
+
+export const FORM_LABEL: FormLabel = {
   EMAIL: "メールアドレス",
   PASSWORD: "パスワード",
   PASSWORD_CONFIRM: "パスワード確認",
   NAME: "ユーザ名",
 };
 
-export const FORM_PLACEHOLDER = {
+export const FORM_PLACEHOLDER: Record<keyof FormLabel, string> = {
   EMAIL: "メールアドレスを入力してください",
   PASSWORD: "パスワードを入力してください",
   PASSWORD_CONFIRM: "パスワードを再入力してください",
   NAME: "ユーザ名を入力してください",
 };
 
-export const AUTH_ACTIONS = {
+/**
+ * 認証アクションの型定義
+ */
+export type AuthActions = {
+  OR: string;
+  PASSWORD_FORGET: string;
+  ALREADY_HAVE_ACCOUNT: string;
+  NO_ACCOUNT: string;
+};
+
+export const AUTH_ACTIONS: AuthActions = {
   OR: "または",
   PASSWORD_FORGET: "パスワードを忘れた方はこちら",
   ALREADY_HAVE_ACCOUNT: "既にアカウントをお持ちの方はこちら",
   NO_ACCOUNT: "アカウントをお持ちでない方はこちら",
 };
 
-export const SIGNUP_SUCCESS_MESSAGE = {
+/**
+ * サインアップ成功メッセージの型定義
+ */
+export type SignupSuccessMessage = {
+  SUCCESS: string;
+  LOGIN_NAVIGATION: string;
+  LOGIN_NAVIGATION_COUNT: string;
+};
+
+export const SIGNUP_SUCCESS_MESSAGE: SignupSuccessMessage = {
   SUCCESS: "様、登録ありがとうございます。",
   LOGIN_NAVIGATION: "ログイン画面からログインしてください。",
   LOGIN_NAVIGATION_COUNT: "秒後にログイン画面に遷移します...",
 };
 
-export const SIGNUP_SUCCESS_COUNTDOWN = 5; //5s
-export const SIGNUP_SUCCESS_DECREMENT = 1; //1s
-export const SIGNUP_SUCCESS_COUNTDOWN_MIN = 0; //0s
-export const SIGNUP_SUCCESS_COUNTDOWN_INTERVAL = 1000; //1000ms
+export const SIGNUP_SUCCESS_COUNTDOWN: number = 5; //5s
+export const SIGNUP_SUCCESS_DECREMENT: number = 1; //1s
+export const SIGNUP_SUCCESS_COUNTDOWN_MIN: number = 0; //0s
 
 ////////////////////////////
 // バリデーション
 ////////////////////////////
 
-export const EMAIL_VALIDATION = {
+/**
+ * メールバリデーションの型定義
+ */
+export type EmailValidation = {
+  MAX_LENGTH: number;
+  PATTERN: RegExp;
+  ERROR_MESSAGES: {
+    REQUIRED: string;
+    INVALID: string;
+  };
+};
+
+export const EMAIL_VALIDATION: EmailValidation = {
   MAX_LENGTH: 254,
   PATTERN: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   ERROR_MESSAGES: {
@@ -52,7 +109,34 @@ export const EMAIL_VALIDATION = {
   },
 };
 
-export const PASSWORD_VALIDATION = {
+/**
+ * パスワードバリデーションの型定義
+ */
+export type PasswordValidation = {
+  MIN_LENGTH: number;
+  MAX_LENGTH: number;
+  MIN_UPPERCASE: number;
+  MIN_LOWERCASE: number;
+  MIN_NUMBER: number;
+  MIN_SPECIAL_CHAR: number;
+  PATTERN: {
+    UPPERCASE: RegExp;
+    LOWERCASE: RegExp;
+    NUMBER: RegExp;
+    SPECIAL_CHAR: RegExp;
+  };
+  ERROR_MESSAGES: {
+    REQUIRED: string;
+    MIN_LENGTH: string;
+    MAX_LENGTH: string;
+    MIN_UPPERCASE: string;
+    MIN_NUMBER: string;
+    MIN_SPECIAL_CHAR: string;
+    REQUIRED_CHARS: string;
+  };
+};
+
+export const PASSWORD_VALIDATION: PasswordValidation = {
   MIN_LENGTH: 8,
   MAX_LENGTH: 128,
   MIN_UPPERCASE: 2,
@@ -76,7 +160,22 @@ export const PASSWORD_VALIDATION = {
   },
 };
 
-export const NAME_VALIDATION = {
+/**
+ * ユーザー名バリデーションの型定義
+ */
+export type NameValidation = {
+  MIN_LENGTH: number;
+  MAX_LENGTH: number;
+  PATTERN: RegExp;
+  ERROR_MESSAGES: {
+    REQUIRED: string;
+    MIN_LENGTH: string;
+    MAX_LENGTH: string;
+    PATTERN: string;
+  };
+};
+
+export const NAME_VALIDATION: NameValidation = {
   MIN_LENGTH: 1,
   MAX_LENGTH: 15,
   PATTERN: /^[a-zA-Z0-9]+$/,

@@ -16,8 +16,8 @@ export const useGenerator = () => {
   const [promptDetail, setPromptDetail] = useState<PromptDetail | null>(null);
   const { error, isLoading, withAsyncLoading } = useAsyncState();
 
-  const handleGenerate = useCallback(
-    withAsyncLoading(async () => {
+  const handleGenerate = useCallback(async () => {
+    return withAsyncLoading(async () => {
       const data = await generateText();
 
       if (data.success && data.result) {
@@ -41,9 +41,8 @@ export const useGenerator = () => {
         };
         setPromptDetail(newPromptDetail);
       }
-    }),
-    [withAsyncLoading, setSentences, setPromptDetail]
-  );
+    })();
+  }, [withAsyncLoading]);
 
   return {
     sentences,

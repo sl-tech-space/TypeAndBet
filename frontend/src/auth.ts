@@ -69,13 +69,12 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         try {
           console.log("Google認証開始:", { email: user.email, name: user.name });
           // Google認証から取得したアイコンURLを使用
-          const icon = user.image || "/assets/images/default-icon.png";
+          const icon: string = user.image || "/assets/images/default-icon.png";
           const { data } = await AuthService.googleAuth(
             user.email,
             user.name,
             icon
           );
-          console.log("Google認証レスポンス:", data);
 
           if (!data?.googleAuth) {
             console.error("Google認証失敗: データが空です");
@@ -116,7 +115,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         if (account.provider === OAUTH_PROVIDER.GOOGLE) {
           try {
             // Google認証から取得したアイコンURLを使用
-            const icon = user.image || "/assets/images/default-icon.png";
+            const icon: string = user.image || "/assets/images/default-icon.png";
             const { data } = await AuthService.googleAuth(
               user.email,
               user.name,

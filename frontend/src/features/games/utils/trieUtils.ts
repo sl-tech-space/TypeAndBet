@@ -70,7 +70,7 @@ export class RomajiTrie {
       const romajiUnit = pattern[charIndex];
 
       // 文字位置に対応するサブツリーの根ノードを見つけるか作成
-      let charNode = this.findOrCreateCharNode(this.root, charIndex);
+      const charNode = this.findOrCreateCharNode(this.root, charIndex);
 
       // ローマ字単位を1文字ずつTrieに追加
       this.insertRomajiUnit(charNode, romajiUnit, charIndex, patternIndex);

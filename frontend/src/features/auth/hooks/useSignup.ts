@@ -6,7 +6,7 @@ import { signup as signupAction } from "@/actions/auth";
 import {
   ROUTE,
   SIGNUP_SUCCESS_COUNTDOWN,
-  SIGNUP_SUCCESS_COUNTDOWN_INTERVAL,
+  ONE_SECOND_MS,
   SIGNUP_SUCCESS_DECREMENT,
   SIGNUP_SUCCESS_COUNTDOWN_MIN,
 } from "@/constants";
@@ -31,7 +31,7 @@ export const useSignup = () => {
 
     const timer = setTimeout(() => {
       setCountdown(countdown - SIGNUP_SUCCESS_DECREMENT);
-    }, SIGNUP_SUCCESS_COUNTDOWN_INTERVAL);
+    }, ONE_SECOND_MS);
 
     return () => clearTimeout(timer);
   }, [countdown, router]);
