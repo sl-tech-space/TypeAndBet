@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { GAME_TIME_LIMIT, GAME_BET_LIMIT, GAME_MODE_ID } from "@/constants";
-import { useAsyncState } from "@/hooks";
-import { UseBettingReturn, UseBettingProps } from "./betting.types";
-import { useTimer } from "@/features/games/hooks/useTimer";
+import { useAsyncState, useBaseRouter, useNavigator } from "@/hooks";
+import { useTimer } from "@/features/games";
+import { createGameSession } from "@/actions";
+import type { UseBettingReturn, UseBettingProps } from "./betting.types";
 
 /**
  * ベッティング機能用のカスタムフック
@@ -20,8 +20,13 @@ export const useBetting = ({
 }: UseBettingProps): UseBettingReturn => {
   const [betAmount, setBetAmount] = useState(minBet);
   const [displayBalance, setDisplayBalance] = useState(balance);
-  const { error: asyncStateError, isSubmitting, withAsyncSubmit } = useAsyncState();
-  const router = useRouter();
+  const {
+    error: asyncStateError,
+    isSubmitting,
+    withAsyncSubmit,
+  } = useAsyncState();
+  const { back } = useBaseRouter();
+  const { toSimulateById } = useNavigator();
   const { startTimer, stopTimer } = useTimer();
 
   // アニメーション付きで残高を更新する関数
@@ -95,10 +100,14 @@ export const useBetting = ({
 
     // シミュレートモードの場合はベット処理を実行せずタイピング画面に遷移
     if (gameModeId === GAME_MODE_ID.SIMULATE) {
-      const id = Math.random().toString(36).substring(2, 10);
-      // 残高を更新
-      animateBalance(balance - betAmount);
-      await Promise.resolve(router.push(`/simulate/${id}`));
+      try {
+        const session = await createGameSession(betAmount);
+        // 残高を更新
+        animateBalance(balance - betAmount);
+        toSimulateById(session.id);
+      } catch (error) {
+        throw error;
+      }
       return;
     }
 
@@ -113,7 +122,7 @@ export const useBetting = ({
   // 前のページに戻る
   const handleCancel = () => {
     stopTimer();
-    router.back();
+    back();
   };
 
   // ベット処理を実行（エラー処理とサブミット状態管理付き）

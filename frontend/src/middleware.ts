@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { refreshToken } from "@/lib/actions/auth";
+import { refreshToken } from "@/lib";
 import { ROUTE, AUTH_PATH, ONE_SECOND_MS } from "@/constants";
 import { Session } from "next-auth";
 
@@ -36,7 +36,10 @@ export async function middleware(request: NextRequest) {
     }
 
     // アクセストークンの有効期限チェック
-    if (session.expiresAt && Number(session.expiresAt) * ONE_SECOND_MS < Date.now()) {
+    if (
+      session.expiresAt &&
+      Number(session.expiresAt) * ONE_SECOND_MS < Date.now()
+    ) {
       const success = await refreshToken();
       if (!success) {
         return NextResponse.redirect(new URL(ROUTE.LOGIN, request.url));

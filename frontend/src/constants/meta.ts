@@ -6,7 +6,7 @@ export const SITE_NAME: string = "Type&Bet";
 /**
  * メタ情報のキーの型定義
  */
-export type MetaKey = "HOME" | "SIMULATE" | "LOGIN" | "SIGNUP";
+export type MetaKey = "HOME" | "SIMULATE" | "LOGIN" | "SIGNUP" | "PLAY";
 
 /**
  * メタ情報の型定義
@@ -23,6 +23,7 @@ export const META_TITLE: MetaInfo = {
   SIMULATE: "シミュレート",
   LOGIN: "ログイン",
   SIGNUP: "新規登録",
+  PLAY: "プレイ",
 };
 
 /**
@@ -32,8 +33,11 @@ export const META_DESCRIPTION: MetaInfo = {
   HOME: "Type&Betへようこそ！ログインや新規登録、シミュレーションをして、Type&Betを楽しんでください。",
   SIMULATE:
     "Type&Betのシミュレートページです。自分のタイピング力を試すことができます。",
-  LOGIN: "ログインページです。ログインすることで、Type&Betを楽しむことができます。",
-  SIGNUP: "新規登録ページです。新規登録することで、Type&Betを楽しむことができます。",
+  LOGIN:
+    "ログインページです。ログインすることで、Type&Betを楽しむことができます。",
+  SIGNUP:
+    "新規登録ページです。新規登録することで、Type&Betを楽しむことができます。",
+  PLAY: "Type&Betの本番です。プレイすることで成績を競うことができます。",
 };
 
 /**
@@ -45,4 +49,5 @@ export const META_KEYWORDS: MetaInfo = {
     "Type&Bet, シミュレート, タイピング, ゲーム, 賭け, 競争, ランキング",
   LOGIN: "Type&Bet, ログイン, シミュレーション, ランキング, 競争, 賭け",
   SIGNUP: "Type&Bet, 新規登録, シミュレーション, ランキング, 競争, 賭け",
+  PLAY: "Type&Bet, プレイ, タイピング, ゲーム, 賭け, 競争, ランキング",
 };

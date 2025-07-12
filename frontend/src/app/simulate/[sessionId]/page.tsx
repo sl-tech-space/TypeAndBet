@@ -1,9 +1,22 @@
+import { notFound } from "next/navigation";
 import styles from "./page.module.scss";
-import { TypingCard, TimerCard, DetailCard } from "@/features/games";
+import {
+  TypingCard,
+  TimerCard,
+  DetailCard,
+  TypingProvider,
+} from "@/features/games";
 import { HomeButton } from "@/features/helper";
-import { TypingProvider } from "@/features/games/contexts/TypingContext";
+import { isValidGameSession } from "@/actions";
+import type { GameSessionIdProps } from "@/types";
 
-export default function SimulateByIdPage() {
+export default async function SimulateByIdPage({ params }: GameSessionIdProps) {
+  const { sessionId } = await params;
+  const isValid = await isValidGameSession(sessionId);
+  if (!isValid) {
+    notFound();
+  }
+
   return (
     <TypingProvider>
       <section className={styles.container}>

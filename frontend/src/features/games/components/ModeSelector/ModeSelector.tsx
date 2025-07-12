@@ -4,9 +4,9 @@ import { ReactNode } from "react";
 import Image from "next/image";
 import styles from "./ModeSelector.module.scss";
 import { Button, Text } from "@/components/ui";
-import { useGameMode } from "@/features/games";
 import { useMessage } from "@/components/common";
-import { GAME_MODE_MESSAGES, GAME_MODES } from "@/constants";
+import { GAME_MODE_MESSAGES, GAME_MODE } from "@/constants";
+import { useNavigator, useSession } from "@/hooks";
 
 /**
  * クライアントコンポーネント
@@ -14,8 +14,11 @@ import { GAME_MODE_MESSAGES, GAME_MODES } from "@/constants";
  * @returns ゲームモードを選択するコンポーネント
  */
 export const ModeSelector = (): ReactNode => {
-  const { navigateToGameMode } = useGameMode();
-  const { setMessage: setMessage } = useMessage();
+  const { isAuthenticated, accessToken } = useSession();
+  const { setMessage } = useMessage();
+  const { toSimulate, toPlay } = useNavigator();
+
+  const isLoggedIn = isAuthenticated && accessToken;
 
   return (
     <div className={styles["select-mode"]}>
@@ -34,7 +37,7 @@ export const ModeSelector = (): ReactNode => {
             isBorder={true}
             borderColor="gold"
             buttonSize="large"
-            onClick={() => navigateToGameMode(GAME_MODES.SIMULATE)}
+            onClick={() => toSimulate()}
           >
             <Image
               src="/assets/svg/keyboard.svg"
@@ -42,7 +45,7 @@ export const ModeSelector = (): ReactNode => {
               width={24}
               height={24}
             />
-            {GAME_MODES.SIMULATE}
+            {GAME_MODE.SIMULATE}
           </Button>
         </div>
 
@@ -57,7 +60,8 @@ export const ModeSelector = (): ReactNode => {
             isBorder={true}
             borderColor="gold"
             buttonSize="large"
-            onClick={() => navigateToGameMode(GAME_MODES.PLAY)}
+            onClick={() => toPlay()}
+            isDisabled={!isLoggedIn}
           >
             <Image
               src="/assets/svg/paid.svg"
@@ -65,7 +69,7 @@ export const ModeSelector = (): ReactNode => {
               width={24}
               height={24}
             />
-            {GAME_MODES.PLAY}
+            {GAME_MODE.PLAY}
           </Button>
         </div>
       </div>

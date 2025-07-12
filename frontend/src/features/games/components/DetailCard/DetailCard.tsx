@@ -2,7 +2,7 @@
 
 import styles from "./DetailCard.module.scss";
 import { Card, Text } from "@/components/ui";
-import { useTypingContext } from "@/features/games/contexts/TypingContext";
+import { useTypingContext } from "@/features/games";
 
 /**
  * クライアントコンポーネント
