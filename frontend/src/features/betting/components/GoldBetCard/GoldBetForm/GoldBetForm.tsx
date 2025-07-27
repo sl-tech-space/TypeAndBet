@@ -1,10 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import styles from "./GoldBetForm.module.scss";
+import { type ReactElement } from "react";
+
 import { Button } from "@/components/ui";
 import { GAME_BET_LIMIT } from "@/constants";
 import { useBetting } from "@/features/betting/hooks";
+
+import styles from "./GoldBetForm.module.scss";
+
 import type { GoldBetFormProps } from "./GoldBetForm.types";
 
 /**
@@ -24,7 +28,7 @@ export const GoldBetForm = ({
   minBet = GAME_BET_LIMIT.MIN_BET,
   maxBet = GAME_BET_LIMIT.MAX_BET,
   gameModeId,
-}: GoldBetFormProps) => {
+}: GoldBetFormProps): ReactElement => {
   const {
     betAmount,
     setBetAmount,
@@ -134,5 +138,3 @@ export const GoldBetForm = ({
     </div>
   );
 };
-
-export default GoldBetForm;

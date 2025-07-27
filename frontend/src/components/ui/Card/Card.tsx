@@ -1,5 +1,8 @@
+import { type ReactElement } from "react";
+
 import styles from "./Card.module.scss";
-import type { CardProps } from "./";
+
+import type { CardProps } from "./Card.types";
 
 /**
  * サーバコンポーネント
@@ -38,7 +41,7 @@ export const Card = ({
   padding = "medium",
   size = "medium",
   className = "",
-}: CardProps) => {
+}: CardProps): ReactElement => {
   return (
     <div
       className={`

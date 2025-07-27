@@ -1,2 +1,1 @@
-export { default as Supporter } from "./Supporter";
-export * from "./Supporter";
+export { Supporter } from "./Supporter";

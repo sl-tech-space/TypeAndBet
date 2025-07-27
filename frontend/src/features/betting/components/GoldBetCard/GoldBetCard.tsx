@@ -1,8 +1,12 @@
 "use client";
 
-import styles from "./GoldBetCard.module.scss";
+import { type ReactElement } from "react";
+
 import { Card, Overlay, Text } from "@/components/ui";
+
+import styles from "./GoldBetCard.module.scss";
 import { GoldBetForm } from "./GoldBetForm";
+
 import type { GoldBetCardProps } from "./GoldBetCard.types";
 
 /**
@@ -24,7 +28,7 @@ export const GoldBetCard = ({
   minBet = 100,
   maxBet = 700,
   gameModeId,
-}: GoldBetCardProps) => {
+}: GoldBetCardProps): ReactElement => {
   // フォームに渡すプロパティをまとめる
   const formProps = {
     balance,
@@ -59,5 +63,3 @@ export const GoldBetCard = ({
     </Overlay>
   );
 };
-
-export default GoldBetCard;

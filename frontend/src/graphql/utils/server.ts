@@ -1,5 +1,18 @@
 import { GraphQLClient } from "graphql-request";
+
 import type { TypedDocumentNode } from "@graphql-typed-document-node/core";
+
+interface GraphQLErrorResponse {
+  response?: {
+    errors?: Array<{
+      message?: string;
+      extensions?: {
+        details?: string[];
+      };
+    }>;
+  };
+  message: string;
+}
 
 export class GraphQLServerClient {
   private static instance: GraphQLServerClient;
@@ -9,7 +22,7 @@ export class GraphQLServerClient {
     this.client = client;
   }
 
-  public static initialize(client: GraphQLClient) {
+  public static initialize(client: GraphQLClient): void {
     this.instance = new GraphQLServerClient(client);
   }
 
@@ -24,15 +37,18 @@ export class GraphQLServerClient {
    * GraphQLエラーを処理する
    * @param error エラーオブジェクト
    */
-  private handleError(error: any): never {
+  private handleError(error: unknown): never {
+    const graphQLError = error as GraphQLErrorResponse;
+
     try {
       // エラーオブジェクトからレスポンスを取得
-      const errorData = error.response?.errors?.[0];
+      const errorData = graphQLError.response?.errors?.[0];
 
       if (errorData) {
         // detailsが存在する場合はそれを使用
-        if (errorData.extensions?.details?.length > 0) {
-          throw new Error(errorData.extensions.details.join("\n"));
+        const details = errorData.extensions?.details;
+        if (details && details.length > 0) {
+          throw new Error(details.join("\n"));
         }
 
         // detailsがない場合はmessageを使用
@@ -42,15 +58,16 @@ export class GraphQLServerClient {
       }
 
       // エラーメッセージが直接含まれている場合
-      const messageMatch = error.message.match(/認証に失敗しました: (.*)/);
+      const messageMatch = graphQLError.message.match(/認証に失敗しました: (.*)/);
       if (messageMatch) {
         try {
-          const parsedError = JSON.parse(messageMatch[1]);
+          const parsedError = JSON.parse(messageMatch[1]) as GraphQLErrorResponse;
           const firstError = parsedError.response?.errors?.[0];
-          if (firstError?.extensions?.details) {
-            throw new Error(firstError.extensions.details.join("\n"));
+          const details = firstError?.extensions?.details;
+          if (details) {
+            throw new Error(details.join("\n"));
           }
-        } catch (parseError) {
+        } catch {
           // パース失敗時は元のメッセージを使用
           throw new Error(messageMatch[1]);
         }
@@ -71,12 +88,12 @@ export class GraphQLServerClient {
    * @param variables 変数
    * @returns レスポンス
    */
-  public async executeQuery<T = any>(
-    query: TypedDocumentNode<T, any> | string,
-    variables?: any
-  ): Promise<{ data: T }> {
+  public async executeQuery<TData extends Record<string, unknown>, TVariables extends Record<string, unknown> = Record<string, never>>(
+    query: TypedDocumentNode<TData, TVariables> | string,
+    variables?: TVariables
+  ): Promise<{ data: TData }> {
     try {
-      const result = await this.client.request<T>(query, variables);
+      const result = await this.client.request<TData>(query, variables);
       return { data: result };
     } catch (error) {
       return this.handleError(error);
@@ -89,12 +106,12 @@ export class GraphQLServerClient {
    * @param variables 変数
    * @returns レスポンス
    */
-  public async executeMutation<T = any>(
-    mutation: TypedDocumentNode<T, any> | string,
-    variables?: any
-  ): Promise<{ data: T }> {
+  public async executeMutation<TData extends Record<string, unknown>, TVariables extends Record<string, unknown> = Record<string, never>>(
+    mutation: TypedDocumentNode<TData, TVariables> | string,
+    variables?: TVariables
+  ): Promise<{ data: TData }> {
     try {
-      const result = await this.client.request<T>(mutation, variables);
+      const result = await this.client.request<TData>(mutation, variables);
       return { data: result };
     } catch (error) {
       return this.handleError(error);

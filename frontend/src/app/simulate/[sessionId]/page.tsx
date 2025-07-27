@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import styles from "./page.module.scss";
+
+import { isValidGameSession } from "@/actions";
 import {
   TypingCard,
   TimerCard,
@@ -7,7 +8,9 @@ import {
   TypingProvider,
 } from "@/features/games";
 import { HomeButton } from "@/features/helper";
-import { isValidGameSession } from "@/actions";
+
+import styles from "./page.module.scss";
+
 import type { GameSessionIdProps } from "@/types";
 
 export default async function SimulateByIdPage({ params }: GameSessionIdProps) {

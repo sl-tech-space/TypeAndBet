@@ -1,5 +1,7 @@
 import { Card, Text } from "@/components/ui";
+
 import styles from "./AuthCard.module.scss";
+
 import type { AuthCardProps } from "./AuthCard.types";
 
 /**

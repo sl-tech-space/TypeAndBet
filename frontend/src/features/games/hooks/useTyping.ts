@@ -1,16 +1,20 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
+
 import {
   COUNT_DOWN_TIME,
   INITIAL_VALUE,
   INITIAL_SENTENCE_COUNT,
 } from "@/constants";
-import { useGenerator, useTimer, useKeydown } from "./";
-import type { KeydownEvent, Sentence, InputState, RomajiProgress } from "./";
 import { RomajiTrie, buildRomajiTrie } from "@/features/games";
 import { removeSpaces, removeSpacesFromArray } from "@/utils";
+
 import { useTypingContext } from "../contexts/TypingContext";
+
+import { useGenerator, useTimer, useKeydown } from "./";
+
+import type { KeydownEvent, Sentence, InputState, RomajiProgress } from "./";
 
 /**
  * タイピングゲームのロジックを管理するフック

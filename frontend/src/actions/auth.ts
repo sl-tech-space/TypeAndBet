@@ -1,8 +1,8 @@
 "use server";
 
-import { AuthService } from "@/graphql";
-import { ERROR_MESSAGE } from "@/constants";
 import { signIn } from "@/auth";
+import { ERROR_MESSAGE } from "@/constants";
+import { AuthService } from "@/graphql";
 import "@/lib/apollo-server";
 
 /**

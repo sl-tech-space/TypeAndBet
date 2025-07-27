@@ -1,9 +1,11 @@
-import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import styles from "./Header.module.scss";
-import { Text } from "@/components/ui/Text";
+import { type ReactElement } from "react";
+
+import { Text } from "@/components/ui";
 import { SITE_NAME } from "@/constants";
+
+import styles from "./Header.module.scss";
 import { HeaderActions } from "./HeaderActions";
 
 /**
@@ -11,7 +13,7 @@ import { HeaderActions } from "./HeaderActions";
  * ヘッダーコンポーネント
  * @returns ヘッダーコンポーネント
  */
-export const Header = () => {
+export const Header = (): ReactElement => {
   return (
     <header className={styles.header}>
       <div className={styles.container}>

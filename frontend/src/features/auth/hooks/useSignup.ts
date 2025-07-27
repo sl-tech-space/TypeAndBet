@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+
 import { signup as signupAction } from "@/actions/auth";
 import {
   ROUTE,
@@ -10,6 +11,7 @@ import {
   SIGNUP_SUCCESS_DECREMENT,
   SIGNUP_SUCCESS_COUNTDOWN_MIN,
 } from "@/constants";
+
 import { SignupResult } from "./useSignup.types";
 
 /**

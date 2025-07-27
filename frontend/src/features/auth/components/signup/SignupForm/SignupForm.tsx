@@ -1,18 +1,9 @@
 "use client";
 
-import styles from "./SignupForm.module.scss";
 import Image from "next/image";
-import { FormEvent, useState } from "react";
+import { type FormEvent, type ReactElement, useState } from "react";
+
 import { Text, Button, Input, Label } from "@/components/ui";
-import {
-  usePasswordVisibility,
-  useSignup,
-  usePasswordValidation,
-  useEmailValidation,
-  useNameValidation,
-  SignupSuccessInfo,
-} from "@/features/auth";
-import type { SignupResult } from "@/features/auth";
 import {
   FORM_LABEL,
   FORM_PLACEHOLDER,
@@ -20,13 +11,25 @@ import {
   ERROR_MESSAGE,
   ROUTE_NAME,
 } from "@/constants";
+import {
+  usePasswordVisibility,
+  useSignup,
+  usePasswordValidation,
+  useEmailValidation,
+  useNameValidation,
+  type SignupSuccessInfo,
+} from "@/features/auth";
+
+import styles from "./SignupForm.module.scss";
+
+import type { SignupResult } from "@/features/auth";
 
 /**
  * クライアントコンポーネント
  * 新規登録フォーム
  * @returns 新規登録フォーム
  */
-export const SignupForm = () => {
+export const SignupForm = (): ReactElement => {
   const { isVisible, toggleVisibility, inputType } = usePasswordVisibility();
   const { signup, isLoading, countdown } = useSignup();
   const { errors: passwordErrors, validatePassword } = usePasswordValidation();
@@ -48,7 +51,7 @@ export const SignupForm = () => {
   /**
    * 名前入力時のバリデーション
    */
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const newName = e.target.value;
     setName(newName);
     validateName(newName);
@@ -60,7 +63,7 @@ export const SignupForm = () => {
   /**
    * メールアドレス入力時のバリデーション
    */
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const newEmail = e.target.value;
     setEmail(newEmail);
     validateEmail(newEmail);
@@ -72,7 +75,7 @@ export const SignupForm = () => {
   /**
    * パスワード入力時のバリデーション
    */
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const newPassword = e.target.value;
     setPassword(newPassword);
     validatePassword(newPassword);
@@ -87,7 +90,7 @@ export const SignupForm = () => {
    */
   const handlePasswordConfirmChange = (
     e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  ): void => {
     const newPasswordConfirm = e.target.value;
     setPasswordConfirm(newPasswordConfirm);
     validatePasswordConfirm(password, newPasswordConfirm);
@@ -102,7 +105,7 @@ export const SignupForm = () => {
   const validatePasswordConfirm = (
     password: string,
     confirmPassword: string
-  ) => {
+  ): boolean => {
     if (password !== confirmPassword) {
       setPasswordConfirmError("パスワードが一致しません");
       return false;
@@ -115,7 +118,7 @@ export const SignupForm = () => {
    * 新規登録フォームの送信
    * @param e フォームのイベント
    */
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setError(null);
     setSuccessInfo(null);
@@ -392,5 +395,3 @@ export const SignupForm = () => {
     </form>
   );
 };
-
-export default SignupForm;

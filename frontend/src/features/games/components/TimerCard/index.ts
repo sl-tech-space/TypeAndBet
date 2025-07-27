@@ -1,3 +1,2 @@
-export { default as TimerCard } from "./TimerCard";
-export * from "./TimerCard";
+export { TimerCard } from "./TimerCard";
 

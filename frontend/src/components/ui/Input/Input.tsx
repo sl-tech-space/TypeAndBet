@@ -1,7 +1,10 @@
 "use client";
 
-import { InputProps } from "./Input.types";
+import { type ReactElement } from "react";
+
 import styles from "./Input.module.scss";
+
+import type { InputProps } from "./Input.types";
 
 /**
  * クライアントコンポーネント
@@ -34,7 +37,7 @@ export const Input = ({
   autoComplete = "on",
   className = "",
   onChange,
-}: InputProps) => {
+}: InputProps): ReactElement => {
   return (
     <input
       type={type}
@@ -47,8 +50,7 @@ export const Input = ({
         isDisabled ? styles.disabled : ""
       } ${isRound ? styles.round : ""} ${className}`}
       onChange={onChange}
+      autoComplete={autoComplete}
     />
   );
 };
-
-export default Input;

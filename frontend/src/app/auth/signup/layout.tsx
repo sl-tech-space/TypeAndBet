@@ -1,6 +1,8 @@
 import { Metadata } from "next";
-import { createMetadata } from "@/utils";
+import { type ReactNode } from "react";
+
 import { META_TITLE, META_DESCRIPTION, META_KEYWORDS } from "@/constants";
+import { createMetadata } from "@/utils";
 
 /**
  * メタデータを動的に生成
@@ -17,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function SignupLayout({
   children,
 }: {
-  children: React.ReactNode;
-}) {
-  return <>{children}</>;
+  children: ReactNode;
+}): ReactNode {
+  return children;
 }

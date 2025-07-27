@@ -1,9 +1,13 @@
-import { auth } from "@/auth";
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { refreshToken } from "@/lib";
-import { ROUTE, AUTH_PATH, ONE_SECOND_MS } from "@/constants";
 import { Session } from "next-auth";
+
+import { auth } from "@/auth";
+import { ROUTE, AUTH_PATH, ONE_SECOND_MS } from "@/constants";
+import { refreshToken } from "@/lib";
+
+import type { NextRequest } from "next/server";
+
+
 
 // 認証が必要なパスかチェック
 const isProtectedRoute = (pathname: string) => {

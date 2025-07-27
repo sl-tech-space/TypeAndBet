@@ -1,7 +1,9 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode, useMemo } from "react";
+
 import { INITIAL_VALUE } from "@/constants";
+import { isUndefined } from "@/utils";
 
 /**
  * タイピングコンテキストの型
@@ -92,8 +94,8 @@ export const TypingProvider: React.FC<{ children: ReactNode }> = ({ children }) 
  */
 export const useTypingContext = () => {
   const context = useContext(TypingContext);
-  if (context === undefined) {
+  if (isUndefined(context)) {
     throw new Error("useTypingContext must be used within a TypingProvider");
   }
-  return context;
+  return context as TypingContextType;
 }; 

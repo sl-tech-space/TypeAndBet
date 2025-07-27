@@ -1,5 +1,5 @@
-import { GraphQLServerClient } from "../utils";
 import { SESSION_GOLD_UPDATE } from "../queries/user";
+import { GraphQLServerClient } from "../utils";
 
 export class UserService {
   private static get graphqlClient() {

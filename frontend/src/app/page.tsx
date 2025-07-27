@@ -1,8 +1,11 @@
-import styles from "./page.module.scss";
-import { ModeSelectorWrapper } from "@/features/games";
-import { MessageProvider, Supporter } from "@/components/common";
+import { type ReactElement } from "react";
 
-export default function Home() {
+import { MessageProvider, Supporter } from "@/components/common";
+import { ModeSelectorWrapper } from "@/features/games";
+
+import styles from "./page.module.scss";
+
+export default function Home(): ReactElement {
   return (
     <MessageProvider>
       <section className={styles.container}>

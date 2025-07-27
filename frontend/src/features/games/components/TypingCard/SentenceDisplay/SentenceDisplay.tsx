@@ -1,16 +1,19 @@
 "use client";
 
-import styles from "./SentenceDisplay.module.scss";
+import { type ReactElement, type ReactNode } from "react";
+
+import { Text } from "@/components/ui";
 import { useTyping } from "@/features/games";
 import { useTypingContext } from "@/features/games/contexts/TypingContext";
-import { Text } from "@/components/ui";
+
+import styles from "./SentenceDisplay.module.scss";
 
 /**
  * クライアントコンポーネント
  * タイピング対象の文章を表示するコンポーネント
  * @returns タイピング対象の文章を表示するコンポーネント
  */
-export const SentenceDisplay = () => {
+export const SentenceDisplay = (): ReactElement => {
   const {
     targetSentence,
     isLoading,
@@ -23,10 +26,10 @@ export const SentenceDisplay = () => {
   } = useTyping();
 
   // 正タイプ数と正タイプ率はContextから取得
-  const { correctTypeCount, accuracy } = useTypingContext();
+  useTypingContext();
 
   // ローマ字表示用の関数
-  const renderRomaji = () => {
+  const renderRomaji = (): ReactNode => {
     if (!targetSentence.current || !isReady) return null;
 
     // romajiProgressを使用する
@@ -70,23 +73,20 @@ export const SentenceDisplay = () => {
               {/* 正しい入力のヒント */}
               <span className={styles.sentence__hint}>
                 {/* ミスタイプ時 */}
-                {!isValid && (
-                  <>
-                    {shortRomaji && shortRomaji.length > typed.length && (
-                      <>
-                        {inputString && (
-                          <span className={styles.sentence__correct}>
-                            {inputString}
-                          </span>
-                        )}
-
-                        {shortRomaji[typed.length].substring(
-                          inputString.length + (expectedChar ? 1 : 0)
-                        )}
-                      </>
-                    )}
-                  </>
-                )}
+                {!isValid &&
+                  shortRomaji &&
+                  shortRomaji.length > typed.length && (
+                    <>
+                      {inputString && (
+                        <span className={styles.sentence__correct}>
+                          {inputString}
+                        </span>
+                      )}
+                      {shortRomaji[typed.length].substring(
+                        inputString.length + (expectedChar ? 1 : 0)
+                      )}
+                    </>
+                  )}
 
                 {/* 正しい入力の場合 */}
                 {isValid && (
@@ -128,7 +128,7 @@ export const SentenceDisplay = () => {
   };
 
   // 表示内容の決定（優先度が高い順）
-  const renderContent = () => {
+  const renderContent = (): ReactNode => {
     // タイマー終了時
     if (isFinished) {
       return (
@@ -193,5 +193,3 @@ export const SentenceDisplay = () => {
 
   return <div className={styles.sentence}>{renderContent()}</div>;
 };
-
-export default SentenceDisplay;

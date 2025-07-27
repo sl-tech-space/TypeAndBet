@@ -1,19 +1,21 @@
 "use client";
 
-import { ReactNode } from "react";
 import Image from "next/image";
-import styles from "./ModeSelector.module.scss";
-import { Button, Text } from "@/components/ui";
+import { type ReactElement } from "react";
+
 import { useMessage } from "@/components/common";
+import { Button, Text } from "@/components/ui";
 import { GAME_MODE_MESSAGES, GAME_MODE } from "@/constants";
 import { useNavigator, useSession } from "@/hooks";
+
+import styles from "./ModeSelector.module.scss";
 
 /**
  * クライアントコンポーネント
  * ゲームモードを選択するコンポーネント
  * @returns ゲームモードを選択するコンポーネント
  */
-export const ModeSelector = (): ReactNode => {
+export const ModeSelector = (): ReactElement => {
   const { isAuthenticated, accessToken } = useSession();
   const { setMessage } = useMessage();
   const { toSimulate, toPlay } = useNavigator();
@@ -76,5 +78,3 @@ export const ModeSelector = (): ReactNode => {
     </div>
   );
 };
-
-export default ModeSelector;

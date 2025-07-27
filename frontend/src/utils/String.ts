@@ -1,4 +1,10 @@
 /**
+ * stringUtil内の定数
+ */
+const REGEX_SPACE: RegExp = /[\s\u3000\t\n]/g;
+const EMAIL_VISIBLE_CHARS: number = 2; // メールアドレスの先頭で表示する文字数
+
+/**
  * 文字列からスペースを削除する
  * @param str 対象の文字列
  * @returns スペースが削除された文字列
@@ -6,7 +12,7 @@
 export const removeSpaces = (str: string): string => {
   if (!str) return "";
   // 半角スペース、全角スペース、タブ、改行を削除
-  return str.replace(/[\s\u3000\t\n]/g, "");
+  return str.replace(REGEX_SPACE, "");
 };
 
 /**
@@ -24,8 +30,8 @@ export const removeSpacesFromArray = (strArray: string[]): string[] => {
  * @param email メールアドレス
  * @returns マスク処理されたメールアドレス
  */
-export const maskEmail = (email: string) => {
+export const maskEmail = (email: string): string => {
   const atIndex = email.indexOf("@");
-  if (atIndex <= 2) return email;
-  return email.slice(0, 2) + "***" + email.slice(atIndex);
+  if (atIndex <= EMAIL_VISIBLE_CHARS) return email;
+  return email.slice(0, EMAIL_VISIBLE_CHARS) + "***" + email.slice(atIndex);
 };

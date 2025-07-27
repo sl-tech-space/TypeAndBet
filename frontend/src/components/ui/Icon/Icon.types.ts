@@ -1,14 +1,14 @@
-import { CommonColor } from "@/types";
+import type { CommonColor } from "@/types";
 
 /**
  * アイコンのサイズ
  */
-export type IconSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
+export type IconSize = "xs" | "sm" | "md" | "lg" | "xl" | "xxl";
 
 /**
  * アイコンの特殊効果
  */
-export type IconEffect = 'none' | 'glow' | 'pulse';
+export type IconEffect = "none" | "glow" | "pulse";
 
 /**
  * アイコンの基本プロパティ

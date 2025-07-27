@@ -1,4 +1,5 @@
 import { useSession as useNextAuthSession } from "next-auth/react";
+
 import type { User } from "@/types";
 
 /**

@@ -1,2 +1,1 @@
-export { default as HeaderActions } from "./HeaderActions";
-export * from "./HeaderActions";
+export { HeaderActions } from "./HeaderActions";

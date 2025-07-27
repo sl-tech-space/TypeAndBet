@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react";
 import { getCharacterPatterns } from "jp-transliterator";
+import { useState, useCallback } from "react";
+
 import { generateText } from "@/actions/games";
 import { useAsyncState } from "@/hooks";
+
 import type { TextPair, Sentence, PromptDetail } from "./generator.types";
 
 /**

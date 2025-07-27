@@ -1,11 +1,12 @@
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 import "@/lib/apollo-server";
 
-import type { Session } from "next-auth";
-import { AuthService } from "@/graphql";
 import { OAUTH_PROVIDER } from "@/constants";
+import { AuthService } from "@/graphql";
+
+import type { Session } from "next-auth";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   providers: [

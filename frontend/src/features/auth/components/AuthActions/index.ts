@@ -1,2 +1,1 @@
-export * from "./AuthActions";
-export { default as AuthActions } from "./AuthActions";
+export { AuthActions } from "./AuthActions";

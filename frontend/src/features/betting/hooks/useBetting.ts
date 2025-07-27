@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { GAME_TIME_LIMIT, GAME_BET_LIMIT, GAME_MODE_ID } from "@/constants";
-import { useAsyncState, useBaseRouter, useNavigator } from "@/hooks";
-import { useTimer } from "@/features/games";
+
 import { createGameSession } from "@/actions";
+import { GAME_TIME_LIMIT, GAME_BET_LIMIT, GAME_MODE_ID } from "@/constants";
+import { useTimer } from "@/features/games";
+import { useAsyncState, useBaseRouter, useNavigator } from "@/hooks";
+
 import type { UseBettingReturn, UseBettingProps } from "./betting.types";
 
 /**

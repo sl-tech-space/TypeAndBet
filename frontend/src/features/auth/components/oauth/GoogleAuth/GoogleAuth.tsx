@@ -1,16 +1,19 @@
 "use client";
 
-import { signInWithGoogle } from "@/lib/actions/auth";
-import { Button } from "@/components/ui/Button/Button";
 import Image from "next/image";
+import { type ReactElement } from "react";
+
+import { Button } from "@/components/ui";
+import { signInWithGoogle } from "@/lib/actions/auth";
+
 import styles from "./GoogleAuth.module.scss";
 
 /**
  * クライアントコンポーネント
  * Google認証用のボタンコンポーネント
- * @returns Google認証用のボタンコンポーネン用用
+ * @returns Google認証用のボタンコンポーネント
  */
-export const GoogleAuth = () => {
+export const GoogleAuth = (): ReactElement => {
   return (
     <Button
       type="button"
@@ -33,5 +36,3 @@ export const GoogleAuth = () => {
     </Button>
   );
 };
-
-export default GoogleAuth;

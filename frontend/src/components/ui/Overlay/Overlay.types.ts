@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { type ReactNode } from "react";
 
 /**
  * オーバーレイコンポーネントのプロパティ
@@ -8,5 +8,6 @@ export interface OverlayProps {
   children: ReactNode;
   /** オーバーレイが表示されているかどうか */
   isVisible?: boolean;
+  /** 追加のクラス名 */
   className?: string;
 }

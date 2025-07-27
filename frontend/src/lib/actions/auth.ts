@@ -1,9 +1,10 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+
+import { auth, signIn } from "@/auth";
 import { OAUTH_PROVIDER, ROUTE } from "@/constants";
 import { AuthService } from "@/graphql";
-import { revalidatePath } from "next/cache";
-import { auth, signIn } from "@/auth";
 
 /**
  * Google認証を行う

@@ -1,7 +1,10 @@
 "use client";
 
-import { LabelProps } from "./Label.types";
+import { type ReactElement } from "react";
+
 import styles from "./Label.module.scss";
+
+import type { LabelProps } from "./Label.types";
 
 /**
  * クライアントコンポーネント
@@ -19,7 +22,7 @@ export const Label = ({
   required = false,
   children,
   className = "",
-}: LabelProps) => {
+}: LabelProps): ReactElement => {
   return (
     <label
       htmlFor={htmlFor}
@@ -30,6 +33,4 @@ export const Label = ({
       {children}
     </label>
   );
-};
-
-export default Label; 
+}; 

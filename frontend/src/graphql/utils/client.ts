@@ -41,13 +41,18 @@ export class GraphQLClient {
 
   /**
    * クエリの実行
+   * @template TData - クエリの戻り値の型
+   * @template TVariables - クエリの変数の型
    */
-  public async executeQuery<T = any, V extends OperationVariables = any>(
+  public async executeQuery<
+    TData extends Record<string, unknown>,
+    TVariables extends OperationVariables = OperationVariables
+  >(
     query: DocumentNode,
-    variables?: V
-  ): Promise<T> {
+    variables?: TVariables
+  ): Promise<TData> {
     try {
-      const { data } = await this.client.query<T, V>({
+      const { data } = await this.client.query<TData, TVariables>({
         query,
         variables,
       });
@@ -59,13 +64,18 @@ export class GraphQLClient {
 
   /**
    * ミューテーションの実行
+   * @template TData - ミューテーションの戻り値の型
+   * @template TVariables - ミューテーションの変数の型
    */
-  public async executeMutation<T = any, V extends OperationVariables = any>(
+  public async executeMutation<
+    TData extends Record<string, unknown>,
+    TVariables extends OperationVariables = OperationVariables
+  >(
     mutation: DocumentNode,
-    variables?: V
-  ): Promise<T> {
+    variables?: TVariables
+  ): Promise<TData> {
     try {
-      const { data } = await this.client.mutate<T, V>({
+      const { data } = await this.client.mutate<TData, TVariables>({
         mutation,
         variables,
       });

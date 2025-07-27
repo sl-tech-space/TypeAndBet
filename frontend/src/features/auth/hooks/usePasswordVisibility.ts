@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+
 import { InputProps } from "@/components/ui/Input/Input.types";
 
 type InputType = InputProps["type"];

@@ -1,8 +1,9 @@
 "use server";
 
 import { ApolloError } from "@apollo/client";
-import { GamesService } from "@/graphql";
+
 import { ERROR_MESSAGE } from "@/constants";
+import { GamesService } from "@/graphql";
 import "@/lib/apollo-server";
 
 /**

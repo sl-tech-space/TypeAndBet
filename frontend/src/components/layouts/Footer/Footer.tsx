@@ -1,6 +1,8 @@
 import Link from "next/link";
-import styles from "./Footer.module.scss";
+
 import { ROUTE, ROUTE_NAME } from "@/constants";
+
+import styles from "./Footer.module.scss";
 
 /**
  * サーバコンポーネント
