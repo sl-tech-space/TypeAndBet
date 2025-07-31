@@ -1,11 +1,12 @@
-import { HeaderActionsClient } from "./HeaderActionsClient";
 import { SessionProvider } from "next-auth/react";
+
+import { HeaderActionsClient } from "./HeaderActionsClient";
 
 /**
  * ヘッダーのアクションコンポーネント
  * @returns ヘッダーアクションコンポーネント
  */
-export const HeaderActions = () => {
+export const HeaderActions = (): React.ReactNode => {
   return (
     <SessionProvider>
       <HeaderActionsClient />

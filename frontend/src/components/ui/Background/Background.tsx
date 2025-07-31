@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import { type ReactElement } from "react";
+
 import styles from "./Background.module.scss";
 
 /**
@@ -8,7 +9,7 @@ import styles from "./Background.module.scss";
  * カジノテーマの背景コンポーネント
  * @returns 背景コンポーネント
  */
-export const Background = () => {
+export const Background = (): ReactElement => {
   return (
     <div className={styles["casino-background"]}>
       {/* メインのグラデーション背景（緑色ベース） */}
@@ -40,5 +41,3 @@ export const Background = () => {
     </div>
   );
 };
-
-export default Background;

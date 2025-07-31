@@ -1,12 +1,20 @@
 "use client";
 
-import React from "react";
-import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import styles from "./Supporter.module.scss";
+import {
+  type ReactElement,
+  type ReactNode,
+  useState,
+  useEffect,
+  useRef,
+  Fragment
+} from "react";
+
+import { useMessage } from "@/components/common/context";
 import { Icon } from "@/components/ui";
-import { useMessage } from "@/components/common";
 import { PATH_DEFAULT_MESSAGES } from "@/constants";
+
+import styles from "./Supporter.module.scss";
 
 /**
  * クライアントコンポーネント
@@ -14,7 +22,7 @@ import { PATH_DEFAULT_MESSAGES } from "@/constants";
  * 右下に固定表示され、通知を表示
  * @returns Supporterコンポーネント
  */
-export const Supporter = () => {
+export const Supporter = (): ReactElement => {
   const [isHovering, setIsHovering] = useState(false);
   const [shouldAnimate, setShouldAnimate] = useState(false);
   const [isFooterVisible, setIsFooterVisible] = useState(false);
@@ -22,6 +30,7 @@ export const Supporter = () => {
   const prevMessageRef = useRef<string | null>(null);
   const supporterRef = useRef<HTMLDivElement>(null);
   const path = usePathname();
+
   // フッターの表示状態を監視
   useEffect(() => {
     // インターセクションオブザーバーの設定
@@ -32,7 +41,7 @@ export const Supporter = () => {
     };
 
     // フッターが表示されたかどうかを監視するコールバック
-    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+    const observerCallback = (entries: IntersectionObserverEntry[]): void => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           // フッターが表示された
@@ -66,12 +75,12 @@ export const Supporter = () => {
   }, []);
 
   // 改行コードを<br>タグに変換する関数
-  const formatMessage = (text: string) => {
+  const formatMessage = (text: string): ReactNode => {
     return text.split("\n").map((line, i) => (
-      <React.Fragment key={i}>
+      <Fragment key={i}>
         {line}
         {i !== text.split("\n").length - 1 && <br />}
-      </React.Fragment>
+      </Fragment>
     ));
   };
 
@@ -128,7 +137,7 @@ export const Supporter = () => {
   }, [path]); // パスが変わるたびに実行
 
   // ページトップへスクロール
-  const scrollToTop = () => {
+  const scrollToTop = (): void => {
     document.body.scrollTop = 0;
 
     // スクロール時もアニメーションを必ず実行
@@ -180,5 +189,3 @@ export const Supporter = () => {
     </div>
   );
 };
-
-export default Supporter;

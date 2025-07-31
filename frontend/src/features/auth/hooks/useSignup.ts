@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+
 import { signup as signupAction } from "@/actions/auth";
 import {
   ROUTE,
@@ -10,13 +11,23 @@ import {
   SIGNUP_SUCCESS_DECREMENT,
   SIGNUP_SUCCESS_COUNTDOWN_MIN,
 } from "@/constants";
+
 import { SignupResult } from "./useSignup.types";
 
 /**
  * サインアップフック
  * @returns サインアップフック
  */
-export const useSignup = () => {
+export const useSignup = (): {
+  signup: (
+    name: string,
+    email: string,
+    password: string,
+    passwordConfirmation: string
+  ) => Promise<SignupResult>;
+  isLoading: boolean;
+  countdown: number | null;
+} => {
   const [isLoading, setIsLoading] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const router = useRouter();
@@ -82,7 +93,8 @@ export const useSignup = () => {
         success: false,
         error: "予期せぬエラーが発生しました",
       };
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error("サインアップエラー:", error);
       return {
         success: false,
         error:

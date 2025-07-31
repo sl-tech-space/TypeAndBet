@@ -1,5 +1,8 @@
+import { type ReactElement } from "react";
+
 import styles from "./Text.module.scss";
-import { TextProps } from "./Text.types";
+
+import type { TextProps } from "./Text.types";
 
 /**
  * サーバコンポーネント
@@ -21,7 +24,7 @@ export const Text = ({
   color = "",
   children,
   className = "",
-}: TextProps) => {
+}: TextProps): ReactElement => {
   const Component = variant;
   return (
     <Component
@@ -31,5 +34,3 @@ export const Text = ({
     </Component>
   );
 };
-
-export default Text;

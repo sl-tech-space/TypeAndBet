@@ -1,2 +1,2 @@
-export { default as ModeSelector } from "./ModeSelector";
-export * from "./ModeSelector";
+export { ModeSelector } from "./ModeSelector";
+export { ModeSelectorWrapper } from "./ModeSelectorWrapper";

@@ -1,13 +1,15 @@
 import Link from "next/link";
-import styles from "./Footer.module.scss";
+
 import { ROUTE, ROUTE_NAME } from "@/constants";
+
+import styles from "./Footer.module.scss";
 
 /**
  * サーバコンポーネント
  * フッターコンポーネント
  * @returns フッターコンポーネント
  */
-export const Footer = () => {
+export const Footer = (): React.ReactNode => {
   const currentYear = new Date().getFullYear();
 
   return (

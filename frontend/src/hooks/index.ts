@@ -3,3 +3,4 @@ export * from "./useSubmitting";
 export * from "./useLoading";
 export * from "./useAsyncState";
 export * from "./useSession";
+export * from "./routing";

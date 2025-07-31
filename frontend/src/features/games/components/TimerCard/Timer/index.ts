@@ -1,2 +1,1 @@
-export { default as Timer } from "./Timer";
-export * from "./Timer";
+export { Timer } from "./Timer";

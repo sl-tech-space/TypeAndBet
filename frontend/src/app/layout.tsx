@@ -1,9 +1,11 @@
 import "./globals.css";
-import { createMetadata } from "@/utils";
-import { META_TITLE, META_DESCRIPTION, META_KEYWORDS } from "@/constants";
 import { Metadata } from "next";
+import { type ReactNode } from "react";
+
 import { Header, Footer } from "@/components/layouts";
 import { Background } from "@/components/ui";
+import { META_TITLE, META_DESCRIPTION, META_KEYWORDS } from "@/constants";
+import { createMetadata } from "@/utils";
 
 /**
  * メタデータを動的に生成
@@ -20,8 +22,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
-}>) {
+  children: ReactNode;
+}>): React.ReactElement {
   return (
     <html lang="ja">
       <body>

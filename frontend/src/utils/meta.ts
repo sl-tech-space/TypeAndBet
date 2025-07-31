@@ -1,4 +1,5 @@
 import { SITE_NAME } from "@/constants";
+
 import type { Metadata } from "next";
 
 /**

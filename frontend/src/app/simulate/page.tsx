@@ -1,8 +1,9 @@
-import styles from "./page.module.scss";
-import { GoldBetCard } from "@/features/betting";
 import { GAME_MODE_ID } from "@/constants";
+import { GoldBetCard } from "@/features/betting";
 
-export default function SimulatePage() {
+import styles from "./page.module.scss";
+
+export default function SimulatePage(): React.ReactNode {
   const balance = 1000;
 
   return (

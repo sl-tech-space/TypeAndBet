@@ -1,21 +1,29 @@
 "use client";
 
-import styles from "./LoginForm.module.scss";
 import Image from "next/image";
-import { FormEvent, useState } from "react";
+import {
+  type FormEvent,
+  type ChangeEvent,
+  type ReactElement,
+  useState,
+} from "react";
+
 import { Button, Input, Label } from "@/components/ui";
-import { usePasswordVisibility } from "@/features/auth";
 import {
   FORM_LABEL,
   FORM_PLACEHOLDER,
   ERROR_MESSAGE,
   ROUTE_NAME,
 } from "@/constants";
+import { usePasswordVisibility } from "@/features/auth";
 import {
   useLogin,
   usePasswordValidation,
   useEmailValidation,
 } from "@/features/auth";
+
+import styles from "./LoginForm.module.scss";
+
 import type { LoginResult } from "@/features/auth";
 
 /**
@@ -23,7 +31,7 @@ import type { LoginResult } from "@/features/auth";
  * ログインフォーム
  * @returns ログインフォーム
  */
-export const LoginForm = () => {
+export const LoginForm = (): ReactElement => {
   const { isVisible, toggleVisibility, inputType } = usePasswordVisibility();
   const { login, isLoading } = useLogin();
   const { errors: passwordErrors, validatePassword } = usePasswordValidation();
@@ -36,7 +44,7 @@ export const LoginForm = () => {
   /**
    * メールアドレス入力時のバリデーション
    */
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const newEmail = e.target.value;
     setEmail(newEmail);
     validateEmail(newEmail);
@@ -48,7 +56,7 @@ export const LoginForm = () => {
   /**
    * パスワード入力時のバリデーション
    */
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const newPassword = e.target.value;
     setPassword(newPassword);
     validatePassword(newPassword);
@@ -61,7 +69,7 @@ export const LoginForm = () => {
    * ログインフォームの送信
    * @param e フォームのイベント
    */
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setError(null);
 
@@ -203,5 +211,3 @@ export const LoginForm = () => {
     </form>
   );
 };
-
-export default LoginForm;

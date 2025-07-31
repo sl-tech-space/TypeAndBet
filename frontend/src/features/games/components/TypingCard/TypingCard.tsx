@@ -1,7 +1,10 @@
-import { SentenceDisplay } from "./SentenceDisplay";
-import { InputKeyboard } from "./InputKeyboard";
-import styles from "./TypingCard.module.scss";
+import { type ReactElement } from "react";
+
 import { Card } from "@/components/ui";
+
+import { InputKeyboard } from "./InputKeyboard";
+import { SentenceDisplay } from "./SentenceDisplay";
+import styles from "./TypingCard.module.scss";
 
 /**
  * サーバコンポーネント
@@ -9,7 +12,7 @@ import { Card } from "@/components/ui";
  * タイピングゲームのカードコンポーネント
  * @returns タイピングゲームのカードコンポーネント
  */
-export const TypingCard = () => {
+export const TypingCard = (): ReactElement => {
   return (
     <Card
       variant="default"
@@ -35,5 +38,3 @@ export const TypingCard = () => {
     </Card>
   );
 };
-
-export default TypingCard;

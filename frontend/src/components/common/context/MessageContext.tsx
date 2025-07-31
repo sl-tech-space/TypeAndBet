@@ -1,6 +1,14 @@
 "use client";
 
-import { createContext, useState, useContext, ReactNode } from "react";
+import {
+  type ReactNode,
+  type ReactElement,
+  createContext,
+  useState,
+  useContext,
+} from "react";
+
+import { isUndefined } from "@/utils";
 
 // コンテキストの型定義
 type MessageContextType = {
@@ -12,7 +20,11 @@ type MessageContextType = {
 const MessageContext = createContext<MessageContextType | undefined>(undefined);
 
 // コンテキストプロバイダーコンポーネント
-export const MessageProvider = ({ children }: { children: ReactNode }) => {
+export const MessageProvider = ({
+  children,
+}: {
+  children: ReactNode;
+}): ReactElement => {
   const [message, setMessage] = useState<string | null>(null);
 
   return (
@@ -25,8 +37,8 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
 // カスタムフック
 export const useMessage = (): MessageContextType => {
   const context = useContext(MessageContext);
-  if (context === undefined) {
+  if (isUndefined(context)) {
     throw new Error("useMessage must be used within a MessageProvider");
   }
-  return context;
+  return context as MessageContextType;
 };

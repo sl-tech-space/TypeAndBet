@@ -1,10 +1,14 @@
 "use client";
 
-import styles from "./AuthActions.module.scss";
 import Link from "next/link";
-import { GoogleAuth } from "../oauth";
+import { type ReactElement } from "react";
+
 import { AUTH_ACTIONS, ROUTE } from "@/constants";
 import { useAuthPath } from "@/features/auth";
+
+import { GoogleAuth } from "../oauth";
+
+import styles from "./AuthActions.module.scss";
 
 /**
  * クライアントコンポーネント
@@ -12,7 +16,7 @@ import { useAuthPath } from "@/features/auth";
  * 各認証フォームの下部に表示される
  * @returns 認証アクションコンポーネント
  */
-export const AuthActions = () => {
+export const AuthActions = (): ReactElement => {
   const { isLoginScreen } = useAuthPath();
 
   return (
@@ -44,5 +48,3 @@ export const AuthActions = () => {
     </div>
   );
 };
-
-export default AuthActions;

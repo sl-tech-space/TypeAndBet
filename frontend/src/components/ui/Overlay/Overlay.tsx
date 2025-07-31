@@ -1,4 +1,7 @@
+import { type ReactElement } from "react";
+
 import styles from "./Overlay.module.scss";
+
 import type { OverlayProps } from "./Overlay.types";
 
 /**
@@ -13,7 +16,7 @@ export const Overlay = ({
   children,
   isVisible = true,
   className = "",
-}: OverlayProps) => {
+}: OverlayProps): ReactElement | null => {
   if (!isVisible) return null;
 
   return (
@@ -24,5 +27,3 @@ export const Overlay = ({
     </div>
   );
 };
-
-export default Overlay;

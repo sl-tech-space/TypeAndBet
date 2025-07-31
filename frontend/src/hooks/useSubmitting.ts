@@ -20,7 +20,11 @@ import { useState, useCallback } from "react";
  * };
  * ```
  */
-export const useSubmitting = () => {
+export const useSubmitting = (): {
+  isSubmitting: boolean;
+  setIsSubmitting: (isSubmitting: boolean) => void;
+  withSubmitting: <T>(fn: () => Promise<T>) => () => Promise<T>;
+} => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   /**

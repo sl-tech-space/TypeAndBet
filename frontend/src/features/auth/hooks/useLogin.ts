@@ -1,17 +1,22 @@
 "use client";
 
-import { login as loginAction } from "@/actions/auth";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ROUTE } from "@/constants";
 import { signIn } from "next-auth/react";
+import { useState } from "react";
+
+import { login as loginAction } from "@/actions/auth";
+import { ROUTE } from "@/constants";
+
 import { LoginResult } from "./useLogin.types";
 
 /**
  * ログインフック
  * @returns ログインフック
  */
-export const useLogin = () => {
+export const useLogin = (): {
+  login: (email: string, password: string) => Promise<LoginResult>;
+  isLoading: boolean;
+} => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -55,7 +60,7 @@ export const useLogin = () => {
         success: false,
         error: "予期せぬエラーが発生しました。",
       };
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("ログイン処理でエラーが発生:", error);
       return {
         success: false,

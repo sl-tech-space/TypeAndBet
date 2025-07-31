@@ -5,14 +5,14 @@ import { SITE_NAME } from "@/constants";
  */
 export type GameModeKey = "SIMULATE" | "PLAY";
 
-export type GameModes = {
+export type GameMode = {
   [key in GameModeKey]: string;
 };
 
 /**
  * ゲームモード
  */
-export const GAME_MODES: GameModes = {
+export const GAME_MODE: GameMode = {
   SIMULATE: "シミュレートモード",
   PLAY: `${SITE_NAME}モード`,
 };

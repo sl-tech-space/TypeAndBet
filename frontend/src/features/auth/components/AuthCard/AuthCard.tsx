@@ -1,5 +1,7 @@
 import { Card, Text } from "@/components/ui";
+
 import styles from "./AuthCard.module.scss";
+
 import type { AuthCardProps } from "./AuthCard.types";
 
 /**
@@ -7,7 +9,10 @@ import type { AuthCardProps } from "./AuthCard.types";
  * 認証用のカード
  * @returns 認証用のカード
  */
-export const AuthCard = ({ title, children }: AuthCardProps) => {
+export const AuthCard = ({
+  title,
+  children,
+}: AuthCardProps): React.ReactNode => {
   return (
     <div className={styles.wrapper}>
       <Card

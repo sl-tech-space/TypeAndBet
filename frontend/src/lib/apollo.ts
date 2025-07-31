@@ -1,4 +1,5 @@
 import { ApolloClient, InMemoryCache, NormalizedCacheObject } from "@apollo/client";
+
 import { GraphQLClient } from "@/graphql";
 
 const GRAPHQL_ENDPOINT: string =

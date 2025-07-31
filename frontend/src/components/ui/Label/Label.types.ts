@@ -1,9 +1,11 @@
-import { CommonColor } from "@/types";
+import { type ReactNode } from "react";
+
+import type { CommonColor } from "@/types";
 
 export type LabelProps = {
   htmlFor: string;
   color?: CommonColor;
   required?: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
 }; 

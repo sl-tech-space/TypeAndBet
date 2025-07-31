@@ -1,2 +1,3 @@
 export * from "./meta";
-export * from './String';
+export * from "./string";
+export * from "./object";

@@ -10,3 +10,13 @@ export type User = {
   createdAt: string;
   updatedAt: string;
 };
+
+/**
+ * セッションゴールド同期更新レスポンス
+ */
+export interface SessionGoldUpdateResponse extends Record<string, unknown> {
+  sessionGoldUpdate: {
+    success: boolean;
+    error: string | null;
+  };
+}

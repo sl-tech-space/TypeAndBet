@@ -1,7 +1,15 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode, useMemo } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useMemo,
+} from "react";
+
 import { INITIAL_VALUE } from "@/constants";
+import { isUndefined } from "@/utils";
 
 /**
  * タイピングコンテキストの型
@@ -28,34 +36,40 @@ const TypingContext = createContext<TypingContextType | undefined>(undefined);
 /**
  * タイピングプロバイダー
  */
-export const TypingProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const TypingProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   // 正タイプ数と総タイプ数のカウント
-  const [correctTypeCount, setCorrectTypeCount] = useState<number>(INITIAL_VALUE);
+  const [correctTypeCount, setCorrectTypeCount] =
+    useState<number>(INITIAL_VALUE);
   const [totalTypeCount, setTotalTypeCount] = useState<number>(INITIAL_VALUE);
-  
+
   // 現在入力中のキーとその正誤状態
   const [currentKeyStatus, setCurrentKeyStatusState] = useState<{
     key: string;
     isCorrect: boolean | null;
   }>({
-    key: '',
-    isCorrect: null
+    key: "",
+    isCorrect: null,
   });
 
   // 現在のキーの状態を更新する関数
-  const setCurrentKeyStatus = (key: string, isCorrect: boolean | null) => {
+  const setCurrentKeyStatus = (
+    key: string,
+    isCorrect: boolean | null
+  ): void => {
     setCurrentKeyStatusState({
       key,
-      isCorrect
+      isCorrect,
     });
 
     // 一定時間後に状態をリセット
     if (isCorrect !== null) {
       setTimeout(() => {
-        setCurrentKeyStatusState(prev => {
+        setCurrentKeyStatusState((prev) => {
           // 同じキーの場合のみリセット
           if (prev.key === key) {
-            return { key: '', isCorrect: null };
+            return { key: "", isCorrect: null };
           }
           return prev;
         });
@@ -77,23 +91,21 @@ export const TypingProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     setTotalTypeCount,
     accuracy,
     currentKeyStatus,
-    setCurrentKeyStatus
+    setCurrentKeyStatus,
   };
 
   return (
-    <TypingContext.Provider value={value}>
-      {children}
-    </TypingContext.Provider>
+    <TypingContext.Provider value={value}>{children}</TypingContext.Provider>
   );
 };
 
 /**
  * タイピングコンテキストのカスタムフック
  */
-export const useTypingContext = () => {
+export const useTypingContext = (): TypingContextType => {
   const context = useContext(TypingContext);
-  if (context === undefined) {
+  if (isUndefined(context)) {
     throw new Error("useTypingContext must be used within a TypingProvider");
   }
-  return context;
-}; 
+  return context as TypingContextType;
+};

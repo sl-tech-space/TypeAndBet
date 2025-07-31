@@ -1,6 +1,9 @@
 "use client";
 
+import { type ReactElement } from "react";
+
 import styles from "./Button.module.scss";
+
 import type { ButtonProps } from "./Button.types";
 
 /**
@@ -38,7 +41,7 @@ export const Button = ({
   isRound = false,
   className = "",
   onClick = () => {},
-}: ButtonProps) => {
+}: ButtonProps): ReactElement => {
   return (
     <button
       type={type}

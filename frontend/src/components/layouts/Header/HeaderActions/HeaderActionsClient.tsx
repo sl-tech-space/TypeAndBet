@@ -1,13 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import styles from "./HeaderActions.module.scss";
+import { signOut } from "next-auth/react";
+import { useState } from "react";
+
 import { Button, Text, Icon } from "@/components/ui";
 import { ROUTE, ROUTE_NAME } from "@/constants";
-import { signOut, useSession } from "next-auth/react";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useBaseRouter, useNavigator, useSession } from "@/hooks";
 import { maskEmail } from "@/utils";
+
+import styles from "./HeaderActions.module.scss";
 
 /**
  * クライアントコンポーネント
@@ -15,26 +17,32 @@ import { maskEmail } from "@/utils";
  * インタラクティブな部分を担当するため、クライアントコンポーネントとして実装
  * @returns ヘッダーアクションコンポーネント
  */
-export const HeaderActionsClient = () => {
-  const { data: session, status } = useSession();
+export const HeaderActionsClient = (): React.ReactNode => {
+  const { user, isAuthenticated, accessToken } = useSession();
   const [isOpen, setIsOpen] = useState(false);
-  const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const { refresh } = useBaseRouter();
+  const { toHome } = useNavigator();
 
-  const isLoggedIn = status === "authenticated" && session?.accessToken;
+  const isLoggedIn = isAuthenticated && accessToken && !isLoggingOut;
 
-  const handleLogout = async () => {
+  const handleLogout = async (): Promise<void> => {
     try {
+      setIsLoggingOut(true);
       await signOut({
         redirect: false,
       });
-      router.push(ROUTE.HOME);
-    } catch (error) {
+      toHome();
+      refresh();
+    } catch (error: unknown) {
+      console.error("ログアウトエラー:", error);
+      setIsLoggingOut(false);
       // エラー処理
     }
   };
 
   // ログイン済みの場合
-  if (isLoggedIn && session.user) {
+  if (isLoggedIn && user) {
     return (
       <div className={styles.user}>
         <div className={styles["user__info"]}>
@@ -44,14 +52,14 @@ export const HeaderActionsClient = () => {
               color="gold"
               className={styles["user__text__name"]}
             >
-              {session.user.name || "ゲスト"}
+              {user.name || "ゲスト"}
             </Text>
             <Text
               variant="h3"
               color="gold"
               className={styles["user__text__gold"]}
             >
-              {(session.user.gold || 0).toLocaleString()}G
+              {(user.gold || 0).toLocaleString()}G
             </Text>
           </div>
           <div className={styles["user__icon-container"]}>
@@ -60,11 +68,9 @@ export const HeaderActionsClient = () => {
               onClick={() => setIsOpen(!isOpen)}
             >
               <Icon
-                icon={session.user.icon || "/assets/images/default-icon.png"}
+                icon={user.icon || "/assets/images/default-icon.png"}
                 alt={
-                  session.user.name
-                    ? `${session.user.name}のアイコン`
-                    : "デフォルトアイコン"
+                  user.name ? `${user.name}のアイコン` : "デフォルトアイコン"
                 }
                 size="sm"
                 isBorder
@@ -78,9 +84,7 @@ export const HeaderActionsClient = () => {
               <div className={styles["user__dropdown"]}>
                 <div className={styles["user__dropdown__email"]}>
                   <Text variant="h3" color="gold">
-                    {session.user.email
-                      ? maskEmail(session.user.email)
-                      : "メールアドレスなし"}
+                    {user.email ? maskEmail(user.email) : "メールアドレスなし"}
                   </Text>
                 </div>
                 <div className={styles["user__dropdown__button"]}>
@@ -92,6 +96,7 @@ export const HeaderActionsClient = () => {
                     isRound={true}
                     buttonSize="small"
                     onClick={handleLogout}
+                    isDisabled={isLoggingOut}
                   >
                     {ROUTE_NAME.LOGOUT}
                   </Button>

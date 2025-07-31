@@ -1,15 +1,18 @@
 "use client";
 
-import styles from "./DetailCard.module.scss";
+import { type ReactElement } from "react";
+
 import { Card, Text } from "@/components/ui";
-import { useTypingContext } from "@/features/games/contexts/TypingContext";
+import { useTypingContext } from "@/features/games";
+
+import styles from "./DetailCard.module.scss";
 
 /**
  * クライアントコンポーネント
  * ユーザのタイピング詳細情報を表示するカード
  * @returns ユーザのタイピング詳細情報を表示するカード
  */
-export const DetailCard = () => {
+export const DetailCard = (): ReactElement => {
   const { accuracy, correctTypeCount } = useTypingContext();
 
   return (
@@ -39,5 +42,3 @@ export const DetailCard = () => {
     </div>
   );
 };
-
-export default DetailCard;

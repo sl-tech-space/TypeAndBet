@@ -1,9 +1,16 @@
 import Link from "next/link";
-import styles from "./HomeButton.module.scss";
-import { Button } from "@/components/ui/Button/Button";
-import { HOME_BACK_BUTTON } from "@/constants/route";
+import { type ReactElement } from "react";
 
-export const HomeButton = () => {
+import { Button } from "@/components/ui";
+import { HOME_BACK_BUTTON } from "@/constants";
+
+import styles from "./HomeButton.module.scss";
+
+/**
+ * ホームに戻るボタンコンポーネント
+ * @returns ホームに戻るボタンコンポーネント
+ */
+export const HomeButton = (): ReactElement => {
   return (
     <div className={styles.container}>
       <Link href={HOME_BACK_BUTTON.ROUTE}>

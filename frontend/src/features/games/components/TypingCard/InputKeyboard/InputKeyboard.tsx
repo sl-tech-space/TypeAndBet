@@ -1,7 +1,11 @@
 "use client";
 
-import styles from "./InputKeyboard.module.scss";
+import { type ReactElement } from "react";
+
 import { useTypingContext } from "@/features/games/contexts/TypingContext";
+
+import styles from "./InputKeyboard.module.scss";
+
 import type { KeyboardLayout } from "./InputKeyboard.types";
 
 /**
@@ -111,7 +115,7 @@ const keyboardLayout: KeyboardLayout = [
  * 入力したキーの正誤判定を表示する
  * @returns キーボードコンポーネント
  */
-export const InputKeyboard = () => {
+export const InputKeyboard = (): ReactElement => {
   const { currentKeyStatus } = useTypingContext();
 
   // 現在のキーコードを計算
@@ -166,5 +170,3 @@ export const InputKeyboard = () => {
     </div>
   );
 };
-
-export default InputKeyboard;

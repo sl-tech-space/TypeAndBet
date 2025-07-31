@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+
+import { createGameSession } from "@/actions";
 import { GAME_TIME_LIMIT, GAME_BET_LIMIT, GAME_MODE_ID } from "@/constants";
-import { useAsyncState } from "@/hooks";
-import { UseBettingReturn, UseBettingProps } from "./betting.types";
-import { useTimer } from "@/features/games/hooks/useTimer";
+import { useTimer } from "@/features/games";
+import { useAsyncState, useBaseRouter, useNavigator } from "@/hooks";
+
+import type { UseBettingReturn, UseBettingProps } from "./betting.types";
 
 /**
  * ベッティング機能用のカスタムフック
@@ -20,8 +22,13 @@ export const useBetting = ({
 }: UseBettingProps): UseBettingReturn => {
   const [betAmount, setBetAmount] = useState(minBet);
   const [displayBalance, setDisplayBalance] = useState(balance);
-  const { error: asyncStateError, isSubmitting, withAsyncSubmit } = useAsyncState();
-  const router = useRouter();
+  const {
+    error: asyncStateError,
+    isSubmitting,
+    withAsyncSubmit,
+  } = useAsyncState();
+  const { back } = useBaseRouter();
+  const { toSimulateById } = useNavigator();
   const { startTimer, stopTimer } = useTimer();
 
   // アニメーション付きで残高を更新する関数
@@ -53,7 +60,7 @@ export const useBetting = ({
   ///////////////
 
   // ベット額に応じて制限時間を計算
-  const _calculateTimeLimit = (amount: number) => {
+  const calculateTimeLimit = (amount: number): number => {
     return (
       GAME_TIME_LIMIT.MIN_TIME +
       Math.floor((maxBet - amount) * GAME_TIME_LIMIT.TIME_PER_BET)
@@ -61,7 +68,7 @@ export const useBetting = ({
   };
 
   // 現在のベット額に基づく制限時間
-  const timeLimit = _calculateTimeLimit(betAmount);
+  const timeLimit = calculateTimeLimit(betAmount);
 
   // ベット額が残高を超えているかどうか
   const isExceedingBalance = betAmount > balance;
@@ -71,7 +78,7 @@ export const useBetting = ({
   //////////////////////
 
   // ベット額のバリデーション
-  const _validateBetAmount = () => {
+  const validateBetAmount = (): void => {
     if (betAmount < minBet) {
       throw new Error("ベット額が最小ベット額を下回っています");
     }
@@ -86,19 +93,23 @@ export const useBetting = ({
   };
 
   // ベット処理の実装
-  const _executeBet = async () => {
+  const executeBet = async (): Promise<void> => {
     // ベット額のバリデーション
-    _validateBetAmount();
+    validateBetAmount();
 
     // 制限時間を設定
     startTimer(timeLimit);
 
     // シミュレートモードの場合はベット処理を実行せずタイピング画面に遷移
     if (gameModeId === GAME_MODE_ID.SIMULATE) {
-      const id = Math.random().toString(36).substring(2, 10);
-      // 残高を更新
-      animateBalance(balance - betAmount);
-      await Promise.resolve(router.push(`/simulate/${id}`));
+      try {
+        const session = await createGameSession(betAmount);
+        // 残高を更新
+        animateBalance(balance - betAmount);
+        toSimulateById(session.id);
+      } catch (error) {
+        throw error;
+      }
       return;
     }
 
@@ -111,13 +122,13 @@ export const useBetting = ({
   };
 
   // 前のページに戻る
-  const handleCancel = () => {
+  const handleCancel = (): void => {
     stopTimer();
-    router.back();
+    back();
   };
 
   // ベット処理を実行（エラー処理とサブミット状態管理付き）
-  const handleBet = withAsyncSubmit(_executeBet);
+  const handleBet = withAsyncSubmit(executeBet);
 
   return {
     betAmount,

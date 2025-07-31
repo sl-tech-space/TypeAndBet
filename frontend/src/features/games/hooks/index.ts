@@ -1,5 +1,3 @@
-export { useGameMode } from "./useGameMode";
-export * from "./useGameMode";
 export { useGenerator } from "./useGenerator";
 export * from "./useGenerator";
 export { useTyping } from "./useTyping";

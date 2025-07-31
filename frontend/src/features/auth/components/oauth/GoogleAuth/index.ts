@@ -1,2 +1,1 @@
-export { default as GoogleAuth } from "./GoogleAuth";
-export * from "./GoogleAuth";
+export { GoogleAuth } from "./GoogleAuth";

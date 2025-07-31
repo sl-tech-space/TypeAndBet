@@ -1,7 +1,10 @@
 "use client";
 
-import styles from "./Icon.module.scss";
 import Image from "next/image";
+import { type ReactElement } from "react";
+
+import styles from "./Icon.module.scss";
+
 import type { IconProps, IconSize } from "./Icon.types";
 
 /**
@@ -45,7 +48,7 @@ export const Icon = ({
   isRound,
   hasHoverEffect,
   className = "",
-}: IconProps) => {
+}: IconProps): ReactElement => {
   // サイズの決定（個別指定、またはプリセットサイズ）
   const finalWidth = width || DEFAULT_SIZES[size].width;
   const finalHeight = height || DEFAULT_SIZES[size].height;
@@ -73,5 +76,3 @@ export const Icon = ({
     </div>
   );
 };
-
-export default Icon;

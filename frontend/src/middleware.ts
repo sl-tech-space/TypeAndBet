@@ -1,23 +1,27 @@
-import { auth } from "@/auth";
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { refreshToken } from "@/lib/actions/auth";
-import { ROUTE, AUTH_PATH, ONE_SECOND_MS } from "@/constants";
 import { Session } from "next-auth";
 
+import { auth } from "@/auth";
+import { ROUTE, AUTH_PATH, ONE_SECOND_MS } from "@/constants";
+import { refreshToken } from "@/lib";
+
+import type { NextRequest } from "next/server";
+
+
+
 // 認証が必要なパスかチェック
-const isProtectedRoute = (pathname: string) => {
+const isProtectedRoute = (pathname: string): boolean => {
   return AUTH_PATH.some(
     ({ href }) => pathname === href || pathname.startsWith(href)
   );
 };
 
 // 認証ページかチェック
-const isAuthPage = (pathname: string) => {
+const isAuthPage = (pathname: string): boolean => {
   return pathname.startsWith(ROUTE.LOGIN) || pathname.startsWith(ROUTE.SIGNUP);
 };
 
-export async function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest): Promise<NextResponse> {
   const pathname: string = request.nextUrl.pathname;
 
   // セッションチェック
@@ -36,7 +40,10 @@ export async function middleware(request: NextRequest) {
     }
 
     // アクセストークンの有効期限チェック
-    if (session.expiresAt && Number(session.expiresAt) * ONE_SECOND_MS < Date.now()) {
+    if (
+      session.expiresAt &&
+      Number(session.expiresAt) * ONE_SECOND_MS < Date.now()
+    ) {
       const success = await refreshToken();
       if (!success) {
         return NextResponse.redirect(new URL(ROUTE.LOGIN, request.url));

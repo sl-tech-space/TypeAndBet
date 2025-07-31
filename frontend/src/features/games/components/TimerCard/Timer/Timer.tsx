@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
+import { type ReactElement, useEffect, useState, useRef } from "react";
+
 import { Text } from "@/components/ui";
 import { useTimer } from "@/features/games/hooks/useTimer";
+
 import styles from "./Timer.module.scss";
 
 /**
@@ -11,7 +13,7 @@ import styles from "./Timer.module.scss";
  * タイマー本体
  * @returns タイマー本体を返す
  */
-export const Timer = () => {
+export const Timer = (): ReactElement => {
   const { time, formatTime } = useTimer();
   const [progress, setProgress] = useState(100);
   const initialTimeRef = useRef<number | null>(null);
@@ -50,5 +52,3 @@ export const Timer = () => {
     </div>
   );
 };
-
-export default Timer;

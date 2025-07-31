@@ -1,11 +1,13 @@
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 import "@/lib/apollo-server";
 
-import type { Session } from "next-auth";
-import { AuthService } from "@/graphql";
 import { OAUTH_PROVIDER } from "@/constants";
+import { AuthService } from "@/graphql";
+
+import type { Session } from "next-auth";
+import type { User } from "next-auth";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   providers: [
@@ -15,7 +17,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         email: { type: "text" },
         password: { type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials): Promise<User> {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("メールアドレスとパスワードを入力してください");
         }
@@ -33,6 +35,10 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             throw new Error("認証に失敗しました");
           }
 
+          if (!data.loginUser.user || !data.loginUser.tokens) {
+            throw new Error("ユーザー情報の取得に失敗しました");
+          }
+
           // 認証成功時はユーザー情報とトークンを返す
           return {
             id: data.loginUser.user.id,
@@ -42,7 +48,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             icon: data.loginUser.user.icon,
             accessToken: data.loginUser.tokens.accessToken,
             refreshToken: data.loginUser.tokens.refreshToken,
-            expiresAt: data.loginUser.tokens.expiresAt,
+            expiresAt: Number(data.loginUser.tokens.expiresAt),
           };
         } catch (error) {
           console.error("認証エラー:", error);
@@ -67,7 +73,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     async signIn({ user, account }) {
       if (account?.provider === OAUTH_PROVIDER.GOOGLE) {
         try {
-          console.log("Google認証開始:", { email: user.email, name: user.name });
           // Google認証から取得したアイコンURLを使用
           const icon: string = user.image || "/assets/images/default-icon.png";
           const { data } = await AuthService.googleAuth(
@@ -76,8 +81,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             icon
           );
 
-          if (!data?.googleAuth) {
-            console.error("Google認証失敗: データが空です");
+          if (!data?.googleAuth?.user || !data?.googleAuth?.tokens) {
+            console.error("Google認証失敗: ユーザー情報の取得に失敗しました");
             return;
           }
 
@@ -90,7 +95,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             icon: data.googleAuth.user.icon,
             gold: data.googleAuth.user.gold,
           });
-          console.log("ユーザー情報更新完了:", user);
         } catch (error) {
           console.error("OAuth認証に失敗:", error);
           if (error instanceof Error) {
@@ -115,15 +119,18 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         if (account.provider === OAUTH_PROVIDER.GOOGLE) {
           try {
             // Google認証から取得したアイコンURLを使用
-            const icon: string = user.image || "/assets/images/default-icon.png";
+            const icon: string =
+              user.image || "/assets/images/default-icon.png";
             const { data } = await AuthService.googleAuth(
               user.email,
               user.name,
               icon
             );
 
-            if (!data?.googleAuth) {
-              throw new Error("OAuth認証に失敗しました");
+            if (!data?.googleAuth?.user || !data?.googleAuth?.tokens) {
+              throw new Error(
+                "OAuth認証に失敗しました: ユーザー情報の取得に失敗"
+              );
             }
 
             // トークン情報を更新
@@ -164,13 +171,13 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           if (data?.refreshToken) {
             return {
               ...token,
-              accessToken: data.tokens.accessToken,
-              refreshToken: data.tokens.refreshToken,
-              expiresAt: data.tokens.expiresAt,
-              error: undefined,
+              accessToken: data.refreshToken.accessToken,
+              refreshToken: data.refreshToken.refreshToken,
+              expiresAt: data.refreshToken.expiresAt,
             };
           }
-        } catch (error) {
+        } catch (error: unknown) {
+          console.error("トークン更新エラー:", error);
           return { ...token, error: "RefreshAccessTokenError" };
         }
       }

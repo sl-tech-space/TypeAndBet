@@ -18,13 +18,14 @@ export interface SignupCredentials {
 /**
  * OAuth認証レスポンス
  */
-export interface OAuthResponse {
-  oauthAuthenticate?: {
+export interface OAuthResponse extends Record<string, unknown> {
+  googleAuth: {
     user: {
       id: string;
       name: string;
       email: string;
       icon?: string;
+      gold: number;
     };
     tokens: {
       accessToken: string;
@@ -38,6 +39,49 @@ export interface OAuthResponse {
  * トークン更新レスポンス
  */
 export interface RefreshTokenResponse {
+  refreshToken?: {
+    accessToken: string;
+    refreshToken: string;
+    expiresAt: number;
+  };
+}
+
+/**
+ * ログインレスポンス
+ */
+export interface LoginUserResponse extends Record<string, unknown> {
+  loginUser: {
+    success: boolean;
+    errors?: string[];
+    user?: {
+      id: string;
+      name: string;
+      email: string;
+      icon?: string;
+      gold: number;
+    };
+    tokens?: {
+      accessToken: string;
+      refreshToken: string;
+      expiresAt: string;
+    };
+  };
+}
+
+/**
+ * サインアップレスポンス
+ */
+export interface SignupUserResponse extends Record<string, unknown> {
+  signupUser: {
+    success: boolean;
+    errors?: string[];
+  };
+}
+
+/**
+ * トークン更新レスポンス
+ */
+export interface RefreshTokenResponse extends Record<string, unknown> {
   refreshToken?: {
     accessToken: string;
     refreshToken: string;

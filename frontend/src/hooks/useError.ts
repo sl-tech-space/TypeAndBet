@@ -37,7 +37,16 @@ export interface ErrorState {
  * };
  * ```
  */
-export const useError = () => {
+export const useError = (): {
+  error: ErrorState | null;
+  setError: (error: ErrorState | null) => void;
+  clearError: () => void;
+  handleError: (err: unknown) => void;
+  withErrorHandling: <T>(
+    fn: () => Promise<T>,
+    customErrorHandler?: (err: unknown) => void
+  ) => () => Promise<T>;
+} => {
   // エラー状態の管理
   const [error, setError] = useState<ErrorState | null>(null);
 
@@ -71,23 +80,23 @@ export const useError = () => {
   }, []);
 
   // エラー処理をラップする高階関数
-  const withErrorHandling = useCallback(<T,>(
-    fn: () => Promise<T>,
-    customErrorHandler?: (err: unknown) => void
-  ) => {
-    return async (): Promise<T> => {
-      try {
-        return await fn();
-      } catch (err) {
-        if (customErrorHandler) {
-          customErrorHandler(err);
-        } else {
-          handleError(err);
+  const withErrorHandling = useCallback(
+    <T>(fn: () => Promise<T>, customErrorHandler?: (err: unknown) => void) => {
+      return async (): Promise<T> => {
+        try {
+          return await fn();
+        } catch (err) {
+          if (customErrorHandler) {
+            customErrorHandler(err);
+          } else {
+            handleError(err);
+          }
+          throw err;
         }
-        throw err;
-      }
-    };
-  }, [handleError]);
+      };
+    },
+    [handleError]
+  );
 
   return {
     /** 現在のエラー状態 */

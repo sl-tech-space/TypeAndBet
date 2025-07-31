@@ -1,3 +1,2 @@
-export { default as InputKeyboard } from "./InputKeyboard";
-export * from "./InputKeyboard";
-export * from "./InputKeyboard.types";
+export { InputKeyboard } from "./InputKeyboard";
+export type * from "./InputKeyboard.types";
