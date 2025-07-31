@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { useError } from "./useError";
+import { ErrorState, useError } from "./useError";
 import { useLoading } from "./useLoading";
 import { useSubmitting } from "./useSubmitting";
 
@@ -43,7 +43,20 @@ import { useSubmitting } from "./useSubmitting";
  * };
  * ```
  */
-export const useAsyncState = () => {
+export const useAsyncState = (): {
+  error: ErrorState | null;
+  isLoading: boolean;
+  isSubmitting: boolean;
+  isProcessing: boolean;
+  withAsyncLoading: <T>(
+    fn: () => Promise<T>,
+    customErrorHandler?: (err: unknown) => void
+  ) => () => Promise<T>;
+  withAsyncSubmit: <T>(
+    fn: () => Promise<T>,
+    customErrorHandler?: (err: unknown) => void
+  ) => () => Promise<T>;
+} => {
   const { error, handleError, clearError } = useError();
   const { isLoading, withLoading } = useLoading();
   const { isSubmitting, withSubmitting } = useSubmitting();

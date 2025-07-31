@@ -12,7 +12,10 @@ import {
  * パスワードのバリデーションフック
  * @returns パスワードのバリデーションフック
  */
-export const usePasswordValidation = () => {
+export const usePasswordValidation = (): {
+  errors: string[];
+  validatePassword: (password: string) => boolean;
+} => {
   const [errors, setErrors] = useState<string[]>([]);
 
   const validatePassword = (password: string): boolean => {
@@ -86,7 +89,10 @@ export const usePasswordValidation = () => {
  * メールアドレスのバリデーションフック
  * @returns メールアドレスのバリデーションフック
  */
-export const useEmailValidation = () => {
+export const useEmailValidation = (): {
+  errors: string[];
+  validateEmail: (email: string) => boolean;
+} => {
   const [errors, setErrors] = useState<string[]>([]);
 
   const validateEmail = (email: string): boolean => {
@@ -122,7 +128,10 @@ export const useEmailValidation = () => {
  * 名前のバリデーションフック
  * @returns 名前のバリデーションフック
  */
-export const useNameValidation = () => {
+export const useNameValidation = (): {
+  errors: string[];
+  validateName: (name: string) => boolean;
+} => {
   const [errors, setErrors] = useState<string[]>([]);
 
   const validateName = (name: string): boolean => {

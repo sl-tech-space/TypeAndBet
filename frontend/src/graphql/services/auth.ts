@@ -1,10 +1,23 @@
-import { GraphQLServerClient, GOOGLE_AUTH, REFRESH_TOKEN, LOGIN, SIGNUP } from "@/graphql";
+import {
+  GraphQLServerClient,
+  GOOGLE_AUTH,
+  REFRESH_TOKEN,
+  LOGIN,
+  SIGNUP,
+} from "@/graphql";
+
+import type {
+  LoginUserResponse,
+  OAuthResponse,
+  RefreshTokenResponse,
+  SignupUserResponse,
+} from "@/types";
 
 /**
  * 認証サービスクラス
  */
 export class AuthService {
-  private static get graphqlClient() {
+  private static get graphqlClient(): GraphQLServerClient {
     return GraphQLServerClient.getInstance();
   }
 
@@ -14,13 +27,19 @@ export class AuthService {
    * @param password パスワード
    * @returns
    */
-  public static async login(email: string, password: string) {
+  public static async login(
+    email: string,
+    password: string
+  ): Promise<{ data: LoginUserResponse }> {
     const variables = {
       email,
       password,
     };
 
-    return this.graphqlClient.executeMutation(LOGIN, variables);
+    return this.graphqlClient.executeMutation<
+      LoginUserResponse,
+      typeof variables
+    >(LOGIN, variables);
   }
 
   /**
@@ -31,7 +50,12 @@ export class AuthService {
    * @param passwordConfirmation パスワード確認
    * @returns
    */
-  public static async signup(name: string, email: string, password: string, passwordConfirmation: string) {
+  public static async signup(
+    name: string,
+    email: string,
+    password: string,
+    passwordConfirmation: string
+  ): Promise<{ data: SignupUserResponse }> {
     const variables = {
       name,
       email,
@@ -39,7 +63,10 @@ export class AuthService {
       passwordConfirm: passwordConfirmation,
     };
 
-    return this.graphqlClient.executeMutation(SIGNUP, variables);
+    return this.graphqlClient.executeMutation<
+      SignupUserResponse,
+      typeof variables
+    >(SIGNUP, variables);
   }
 
   /**
@@ -49,14 +76,21 @@ export class AuthService {
    * @param icon アイコン
    * @returns
    */
-  public static async googleAuth(email: string, name: string, icon?: string) {
+  public static async googleAuth(
+    email: string,
+    name: string,
+    icon?: string
+  ): Promise<{ data: OAuthResponse }> {
     const variables = {
       email,
       name,
       ...(icon && { icon }),
     };
 
-    return this.graphqlClient.executeMutation(GOOGLE_AUTH, variables);
+    return this.graphqlClient.executeMutation<OAuthResponse, typeof variables>(
+      GOOGLE_AUTH,
+      variables
+    );
   }
 
   /**
@@ -64,7 +98,9 @@ export class AuthService {
    * @param refreshToken リフレッシュトークン
    * @returns
    */
-  public static async refreshToken(refreshToken: string) {
+  public static async refreshToken(
+    refreshToken: string
+  ): Promise<{ data: RefreshTokenResponse }> {
     return this.graphqlClient.executeMutation(REFRESH_TOKEN, { refreshToken });
   }
 }

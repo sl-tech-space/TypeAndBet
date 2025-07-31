@@ -23,3 +23,17 @@ export type GameSessionIdProps = {
     sessionId: string;
   };
 };
+
+/**
+ * テキスト生成レスポンス
+ */
+export interface GenerateTextResponse extends Record<string, unknown> {
+  generateText: {
+    theme: string;
+    category: string;
+    pairs: {
+      kanji: string;
+      hiragana: string;
+    }[];
+  };
+}

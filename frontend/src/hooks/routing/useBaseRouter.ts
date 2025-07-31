@@ -4,7 +4,13 @@ import { useRouter } from "next/navigation";
  * ベースルーター
  * @returns ベースルーター
  */
-export const useBaseRouter = () => {
+export const useBaseRouter = (): {
+  push: (path: string) => void;
+  back: () => void;
+  refresh: () => void;
+  replace: (path: string) => void;
+  prefetch: (path: string) => void;
+} => {
   const router = useRouter();
 
   return {

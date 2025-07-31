@@ -8,7 +8,7 @@ import { KeydownEvent } from "./keydown.types";
  * キーダウンイベントのハンドラー
  * キーダウンイベントを受け取り、キーの押されたキーとコードを返す
  */
-export const useKeydown = (onKeydown: (event: KeydownEvent) => void) => {
+export const useKeydown = (onKeydown: (event: KeydownEvent) => void): void => {
   const handleKeydown = useCallback(
     (event: KeyboardEvent) => {
       onKeydown({

@@ -13,7 +13,9 @@ import styles from "./page.module.scss";
 
 import type { GameSessionIdProps } from "@/types";
 
-export default async function SimulateByIdPage({ params }: GameSessionIdProps) {
+export default async function SimulateByIdPage({
+  params,
+}: GameSessionIdProps): Promise<React.ReactNode> {
   const { sessionId } = await params;
   const isValid = await isValidGameSession(sessionId);
   if (!isValid) {

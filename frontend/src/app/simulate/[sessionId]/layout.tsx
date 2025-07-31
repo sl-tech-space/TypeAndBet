@@ -15,6 +15,6 @@ export default function SimulateByIdLayout({
   children,
 }: {
   children: React.ReactNode;
-}) {
+}): React.ReactNode {
   return children;
 }

@@ -7,7 +7,16 @@ import { useTimerStore } from "@/features/games/stores";
  * タイマーの時間、実行中かどうか、終了したかどうかを管理する
  * @returns タイマーの時間、実行中かどうか、終了したかどうかを返す
  */
-export const useTimer = () => {
+export const useTimer = (): {
+  time: number;
+  isRunning: boolean;
+  isFinished: boolean;
+  startTimer: (initialTime: number) => void;
+  stopTimer: () => void;
+  resetTimer: () => void;
+  start: () => void;
+  formatTime: (seconds: number) => string;
+} => {
   const {
     time,
     isRunning,

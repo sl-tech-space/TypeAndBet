@@ -25,7 +25,11 @@ import { useState, useCallback } from "react";
  * };
  * ```
  */
-export const useLoading = () => {
+export const useLoading = (): {
+  isLoading: boolean;
+  setIsLoading: (isLoading: boolean) => void;
+  withLoading: <T>(fn: () => Promise<T>) => () => Promise<T>;
+} => {
   const [isLoading, setIsLoading] = useState(false);
 
   /**

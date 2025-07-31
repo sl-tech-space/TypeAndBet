@@ -17,7 +17,7 @@ import styles from "./HeaderActions.module.scss";
  * インタラクティブな部分を担当するため、クライアントコンポーネントとして実装
  * @returns ヘッダーアクションコンポーネント
  */
-export const HeaderActionsClient = () => {
+export const HeaderActionsClient = (): React.ReactNode => {
   const { user, isAuthenticated, accessToken } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -26,7 +26,7 @@ export const HeaderActionsClient = () => {
 
   const isLoggedIn = isAuthenticated && accessToken && !isLoggingOut;
 
-  const handleLogout = async () => {
+  const handleLogout = async (): Promise<void> => {
     try {
       setIsLoggingOut(true);
       await signOut({
@@ -34,7 +34,8 @@ export const HeaderActionsClient = () => {
       });
       toHome();
       refresh();
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error("ログアウトエラー:", error);
       setIsLoggingOut(false);
       // エラー処理
     }

@@ -10,7 +10,7 @@ import { AuthService } from "@/graphql";
  * Google認証を行う
  * @returns 認証成功時にはリダイレクト先のパスを返す
  */
-export const signInWithGoogle = async () => {
+export const signInWithGoogle = async (): Promise<void> => {
   await signIn(OAUTH_PROVIDER.GOOGLE, {
     redirectTo: ROUTE.HOME,
   });
@@ -20,7 +20,7 @@ export const signInWithGoogle = async () => {
  * トークンを更新する
  * @returns トークン更新成功時にはtrueを返す
  */
-export async function refreshToken() {
+export async function refreshToken(): Promise<boolean> {
   try {
     const session = await auth();
     if (!session?.refreshToken) return false;

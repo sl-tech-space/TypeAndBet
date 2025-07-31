@@ -15,6 +15,6 @@ export default function SimulateLayout({
   children,
 }: {
   children: React.ReactNode;
-}) {
+}): React.ReactNode {
   return children;
 }

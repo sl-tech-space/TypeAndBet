@@ -79,7 +79,8 @@ export async function getGameSession(id: string): Promise<GameSession | null> {
     }
 
     return session;
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error(error);
     // JSONパースエラーの場合はCookieを削除
     const cookieStore = await cookies();
     cookieStore.delete(`${GAME_SESSION_COOKIE_NAME}-${id}`);

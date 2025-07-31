@@ -6,7 +6,7 @@ import { HeaderActionsClient } from "./HeaderActionsClient";
  * ヘッダーのアクションコンポーネント
  * @returns ヘッダーアクションコンポーネント
  */
-export const HeaderActions = () => {
+export const HeaderActions = (): React.ReactNode => {
   return (
     <SessionProvider>
       <HeaderActionsClient />

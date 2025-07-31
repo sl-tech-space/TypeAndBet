@@ -8,19 +8,43 @@ import {
   INITIAL_SENTENCE_COUNT,
 } from "@/constants";
 import { RomajiTrie, buildRomajiTrie } from "@/features/games";
+import { ErrorState } from "@/hooks/useError";
 import { removeSpaces, removeSpacesFromArray } from "@/utils";
 
 import { useTypingContext } from "../contexts/TypingContext";
 
 import { useGenerator, useTimer, useKeydown } from "./";
 
-import type { KeydownEvent, Sentence, InputState, RomajiProgress } from "./";
+import type {
+  KeydownEvent,
+  Sentence,
+  InputState,
+  RomajiProgress,
+  PromptDetail,
+} from "./";
 
 /**
  * タイピングゲームのロジックを管理するフック
  * @returns タイピングゲーム関連の状態と関数
  */
-export const useTyping = () => {
+export const useTyping = (): {
+  targetSentence: React.RefObject<Sentence | null>;
+  promptDetail: PromptDetail | null;
+  isLoading: boolean;
+  isReady: boolean;
+  isCountingDown: boolean;
+  countdown: number;
+  time: number;
+  isFinished: boolean;
+  stopTimer: () => void;
+  error: ErrorState | null;
+  inputState: InputState;
+  expectedChar: () => string[];
+  romajiProgress: RomajiProgress;
+  correctTypeCount: number;
+  totalTypeCount: number;
+  accuracy: number;
+} => {
   // TypingContextから正タイプ数と正タイプ率を取得
   const {
     correctTypeCount,
@@ -337,7 +361,7 @@ export const useTyping = () => {
   }, [inputState, isReady]);
 
   // カウントダウン処理
-  const _handleCountdownStart = useCallback(
+  const handleCountdownStart = useCallback(
     (event: KeydownEvent) => {
       if (
         event.key === "Enter" &&
@@ -364,7 +388,7 @@ export const useTyping = () => {
   );
 
   // ゲーム開始後のタイピング処理
-  const _handleTypingProcess = useCallback(
+  const handleTypingProcess = useCallback(
     (event: KeydownEvent) => {
       if (
         !isReady ||
@@ -526,10 +550,10 @@ export const useTyping = () => {
   // キーイベントのハンドリング
   const handleKeyDown = useCallback(
     (event: KeydownEvent) => {
-      _handleCountdownStart(event);
-      _handleTypingProcess(event);
+      handleCountdownStart(event);
+      handleTypingProcess(event);
     },
-    [_handleCountdownStart, _handleTypingProcess]
+    [handleCountdownStart, handleTypingProcess]
   );
 
   // useKeydownフックを使用してキーイベントを監視

@@ -8,7 +8,19 @@ import { useBaseRouter } from "./useBaseRouter";
  * アプリのカスタムナビゲーター
  * @returns アプリのカスタムナビゲーター
  */
-export function useNavigator() {
+export const useNavigator = (): {
+  toHome: () => void;
+  toLogin: () => void;
+  toSignup: () => void;
+  toPlay: () => void;
+  toPlayById: (sessionId: string) => void;
+  toSimulate: () => void;
+  toSimulateById: (sessionId: string) => void;
+  toError: {
+    to404: () => void;
+    to500: () => void;
+  };
+} => {
   const { push } = useBaseRouter();
 
   return {
@@ -27,4 +39,4 @@ export function useNavigator() {
       to500: () => push(ROUTE.SERVER_ERROR),
     },
   };
-}
+};

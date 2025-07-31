@@ -20,3 +20,12 @@ export interface PromptDetail {
   theme: string;
   category: string;
 }
+
+/**
+ * 生成結果の型
+ */
+export interface GeneratorResult {
+  pairs: TextPair[];
+  theme: string;
+  category: string;
+}

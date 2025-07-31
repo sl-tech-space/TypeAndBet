@@ -60,7 +60,7 @@ export const useBetting = ({
   ///////////////
 
   // ベット額に応じて制限時間を計算
-  const _calculateTimeLimit = (amount: number) => {
+  const calculateTimeLimit = (amount: number): number => {
     return (
       GAME_TIME_LIMIT.MIN_TIME +
       Math.floor((maxBet - amount) * GAME_TIME_LIMIT.TIME_PER_BET)
@@ -68,7 +68,7 @@ export const useBetting = ({
   };
 
   // 現在のベット額に基づく制限時間
-  const timeLimit = _calculateTimeLimit(betAmount);
+  const timeLimit = calculateTimeLimit(betAmount);
 
   // ベット額が残高を超えているかどうか
   const isExceedingBalance = betAmount > balance;
@@ -78,7 +78,7 @@ export const useBetting = ({
   //////////////////////
 
   // ベット額のバリデーション
-  const _validateBetAmount = () => {
+  const validateBetAmount = (): void => {
     if (betAmount < minBet) {
       throw new Error("ベット額が最小ベット額を下回っています");
     }
@@ -93,9 +93,9 @@ export const useBetting = ({
   };
 
   // ベット処理の実装
-  const _executeBet = async () => {
+  const executeBet = async (): Promise<void> => {
     // ベット額のバリデーション
-    _validateBetAmount();
+    validateBetAmount();
 
     // 制限時間を設定
     startTimer(timeLimit);
@@ -122,13 +122,13 @@ export const useBetting = ({
   };
 
   // 前のページに戻る
-  const handleCancel = () => {
+  const handleCancel = (): void => {
     stopTimer();
     back();
   };
 
   // ベット処理を実行（エラー処理とサブミット状態管理付き）
-  const handleBet = withAsyncSubmit(_executeBet);
+  const handleBet = withAsyncSubmit(executeBet);
 
   return {
     betAmount,

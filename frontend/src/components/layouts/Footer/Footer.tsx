@@ -9,7 +9,7 @@ import styles from "./Footer.module.scss";
  * フッターコンポーネント
  * @returns フッターコンポーネント
  */
-export const Footer = () => {
+export const Footer = (): React.ReactNode => {
   const currentYear = new Date().getFullYear();
 
   return (

@@ -3,7 +3,7 @@ import { GoldBetCard } from "@/features/betting";
 
 import styles from "./page.module.scss";
 
-export default function SimulatePage() {
+export default function SimulatePage(): React.ReactNode {
   const balance = 1000;
 
   return (
