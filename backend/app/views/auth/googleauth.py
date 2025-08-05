@@ -14,7 +14,7 @@ logger = logging.getLogger("app")
 
 # JWTの設定
 JWT_SECRET = os.getenv("JWT_SECRET", secrets.token_hex(32))
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+ACCESS_TOKEN_EXPIRE_DAYS = 14  # フロントエンド側のセッション戦略に合わせて14日間に変更
 REFRESH_TOKEN_EXPIRE_DAYS = 30
 
 
@@ -50,10 +50,8 @@ class TokenType(graphene.ObjectType):
 def generate_tokens(user):
     try:
         logger.info(f"トークン生成開始: user_id={user.id}")
-        # アクセストークン（1時間有効）
-        access_token_expires = datetime.now() + timedelta(
-            minutes=ACCESS_TOKEN_EXPIRE_MINUTES
-        )
+        # アクセストークン（14日間有効）
+        access_token_expires = datetime.now() + timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS)
         access_token = jwt.encode(
             {
                 "user_id": str(user.id),
