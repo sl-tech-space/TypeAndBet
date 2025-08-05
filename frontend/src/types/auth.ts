@@ -35,16 +35,6 @@ export interface OAuthResponse extends Record<string, unknown> {
   };
 }
 
-/**
- * トークン更新レスポンス
- */
-export interface RefreshTokenResponse {
-  refreshToken?: {
-    accessToken: string;
-    refreshToken: string;
-    expiresAt: number;
-  };
-}
 
 /**
  * ログインレスポンス
@@ -82,9 +72,13 @@ export interface SignupUserResponse extends Record<string, unknown> {
  * トークン更新レスポンス
  */
 export interface RefreshTokenResponse extends Record<string, unknown> {
-  refreshToken?: {
-    accessToken: string;
-    refreshToken: string;
-    expiresAt: number;
-  };
+  refreshToken: {
+    success: boolean;
+    errors?: string[];
+    tokens?: {
+      accessToken: string;
+      refreshToken: string;
+      expiresAt: number;
+    };
+  } | null;
 }

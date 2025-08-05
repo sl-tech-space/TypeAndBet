@@ -37,3 +37,15 @@ export interface GenerateTextResponse extends Record<string, unknown> {
     }[];
   };
 }
+
+/**
+ * シミュレーション完了処理レスポンス
+ */
+export interface CompleteSimulateResponse extends Record<string, unknown> {
+  completePractice: {
+    success: boolean;
+    errors: string[];
+    score: number;
+    goldChange: number;
+  };
+}

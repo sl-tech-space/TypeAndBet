@@ -1,13 +1,18 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 
+import { completeSimulate } from "@/actions/games";
 import {
   COUNT_DOWN_TIME,
   INITIAL_VALUE,
   INITIAL_SENTENCE_COUNT,
+  ROUTE,
 } from "@/constants";
 import { RomajiTrie, buildRomajiTrie } from "@/features/games";
+import { useResultStore } from "@/features/result/stores/resultStore";
+import { useNavigator } from "@/hooks/routing/useNavigator";
 import { ErrorState } from "@/hooks/useError";
 import { removeSpaces, removeSpacesFromArray } from "@/utils";
 
@@ -592,6 +597,46 @@ export const useTyping = (): {
       setCurrentSentenceIndex(0);
     }
   }, [currentSentenceIndex]);
+
+  // タイピング終了時の処理
+  const pathName = usePathname();
+  const { toResult } = useNavigator();
+
+  useEffect(() => {
+    if (isFinished) {
+      // ここでスコアの送信などの処理を行う
+      const handleGameEnd = async (): Promise<void> => {
+        try {
+          if (pathName.includes(ROUTE.SIMULATE)) {
+            const { success, score, goldChange, error } =
+              await completeSimulate(accuracy, correctTypeCount);
+
+            // 結果をストアに保存
+            useResultStore.getState().setResult({
+              success,
+              score,
+              goldChange,
+              error: error || "",
+            });
+
+            // 結果ページへ遷移
+            toResult();
+          }
+        } catch (error) {
+          console.error("タイピング結果の送信に失敗:", error);
+        }
+      };
+
+      handleGameEnd();
+    }
+  }, [
+    isFinished,
+    correctTypeCount,
+    totalTypeCount,
+    accuracy,
+    pathName,
+    toResult,
+  ]);
 
   return {
     targetSentence,

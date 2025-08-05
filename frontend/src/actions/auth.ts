@@ -2,9 +2,9 @@
 
 import { signIn } from "@/auth";
 import { ERROR_MESSAGE } from "@/constants";
-import { AuthService } from "@/graphql";
+import { AuthService, GraphQLServerClient } from "@/graphql";
+import { getAuthorizedServerClient } from "@/lib/apollo-server";
 
-import "@/lib/apollo-server";
 import type { LoginUserResponse, SignupUserResponse } from "@/types";
 
 /**
@@ -21,7 +21,10 @@ export async function login(
   error: string | null;
 }> {
   try {
+    const rawClient = await getAuthorizedServerClient();
+
     const { data }: { data: LoginUserResponse } = await AuthService.login(
+      new GraphQLServerClient(rawClient),
       email,
       password
     );
@@ -72,7 +75,10 @@ export async function signup(
   error: string | null;
 }> {
   try {
+    const rawClient = await getAuthorizedServerClient();
+
     const { data }: { data: SignupUserResponse } = await AuthService.signup(
+      new GraphQLServerClient(rawClient),
       name,
       email,
       password,

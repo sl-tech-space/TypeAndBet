@@ -1,10 +1,10 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
-import "@/lib/apollo-server";
 
 import { OAUTH_PROVIDER } from "@/constants";
-import { AuthService } from "@/graphql";
+import { AuthService, GraphQLServerClient } from "@/graphql";
+import { getAuthorizedServerClient } from "@/lib/apollo-server";
 
 import type { Session } from "next-auth";
 import type { User } from "next-auth";
@@ -22,8 +22,11 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           throw new Error("メールアドレスとパスワードを入力してください");
         }
 
+        const rawClient = await getAuthorizedServerClient();
+
         try {
           const { data } = await AuthService.login(
+            new GraphQLServerClient(rawClient),
             credentials.email as string,
             credentials.password as string
           );
@@ -75,7 +78,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         try {
           // Google認証から取得したアイコンURLを使用
           const icon: string = user.image || "/assets/images/default-icon.png";
+          const rawClient = await getAuthorizedServerClient();
           const { data } = await AuthService.googleAuth(
+            new GraphQLServerClient(rawClient),
             user.email,
             user.name,
             icon
@@ -121,7 +126,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             // Google認証から取得したアイコンURLを使用
             const icon: string =
               user.image || "/assets/images/default-icon.png";
+            const rawClient = await getAuthorizedServerClient();
             const { data } = await AuthService.googleAuth(
+              new GraphQLServerClient(rawClient),
               user.email,
               user.name,
               icon
@@ -156,26 +163,33 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         }
       }
 
-      // トークンの有効期限チェック
-      if (!token.expiresAt || Date.now() >= Number(token.expiresAt) * 1000) {
+      // トークンの有効期限チェック（expiresAtはUnixTime秒）
+      const now = Math.floor(Date.now() / 1000);
+      if (!token.expiresAt || now >= Number(token.expiresAt)) {
         if (!token.refreshToken) {
           return { ...token, error: "RefreshAccessTokenError" };
         }
 
         try {
           // リフレッシュトークンを使用して新しいアクセストークンを取得
+          const rawClient = await getAuthorizedServerClient();
           const { data } = await AuthService.refreshToken(
+            new GraphQLServerClient(rawClient),
             token.refreshToken as string
           );
 
-          if (data?.refreshToken) {
-            return {
-              ...token,
-              accessToken: data.refreshToken.accessToken,
-              refreshToken: data.refreshToken.refreshToken,
-              expiresAt: data.refreshToken.expiresAt,
-            };
+          if (!data?.refreshToken?.success || !data?.refreshToken?.tokens) {
+            console.error("トークン更新エラー:", data.refreshToken?.errors);
+            return { ...token, error: "RefreshAccessTokenError" };
           }
+
+          // 成功時は新しいトークンで更新
+          return {
+            ...token,
+            accessToken: data.refreshToken.tokens.accessToken,
+            refreshToken: data.refreshToken.tokens.refreshToken,
+            expiresAt: data.refreshToken.tokens.expiresAt,
+          };
         } catch (error: unknown) {
           console.error("トークン更新エラー:", error);
           return { ...token, error: "RefreshAccessTokenError" };

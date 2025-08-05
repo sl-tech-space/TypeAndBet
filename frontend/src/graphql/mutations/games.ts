@@ -12,3 +12,14 @@ export const GENERATE_TEXT = gql`
     }
   }
 `;
+
+export const COMPLETE_SIMULATE = gql`
+  mutation CompletePractice($accuracy: Float!, $correctTyped: Int!) {
+    completePractice(accuracy: $accuracy, correctTyped: $correctTyped) {
+      success
+      errors
+      score
+      goldChange
+    }
+  }
+`;

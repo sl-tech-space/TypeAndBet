@@ -2,8 +2,13 @@
 
 import { useState, useCallback } from "react";
 
-import { createGameSession } from "@/actions";
-import { GAME_TIME_LIMIT, GAME_BET_LIMIT, GAME_MODE_ID } from "@/constants";
+import { createGameSession, createBet } from "@/actions";
+import {
+  GAME_TIME_LIMIT,
+  GAME_BET_LIMIT,
+  GAME_MODE_ID,
+  ERROR_MESSAGE,
+} from "@/constants";
 import { useTimer } from "@/features/games";
 import { useAsyncState, useBaseRouter, useNavigator } from "@/hooks";
 
@@ -13,9 +18,34 @@ import type { UseBettingReturn, UseBettingProps } from "./betting.types";
  * ベッティング機能用のカスタムフック
  * ベット額の管理と制限時間の計算、残高チェックなどを行う
  */
+// 本番用ベット計算処理
+const calculateBet = async (balance: number, amount: number): Promise<number> => {
+  const { success, result, error } = await createBet(balance, amount);
+
+  if (!success) {
+    throw new Error(error ?? ERROR_MESSAGE.CREATE_BET_FAILED);
+  }
+
+  if (!result) {
+    throw new Error(error ?? ERROR_MESSAGE.CREATE_BET_FAILED);
+  }
+
+  return result.game.betAmount;
+};
+
 export const useBetting = ({
   balance,
-  onBet = () => Promise.resolve({ success: true }),
+  onBet = async (amount: number) => {
+    try {
+      const betAmount: number = await calculateBet(balance, amount);
+
+
+      
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error as string };
+    }
+  },
   minBet = GAME_BET_LIMIT.MIN_BET,
   maxBet = GAME_BET_LIMIT.MAX_BET,
   gameModeId,
@@ -28,7 +58,7 @@ export const useBetting = ({
     withAsyncSubmit,
   } = useAsyncState();
   const { back } = useBaseRouter();
-  const { toSimulateById } = useNavigator();
+  const { toSimulateById, toPlayById } = useNavigator();
   const { startTimer, stopTimer } = useTimer();
 
   // アニメーション付きで残高を更新する関数
@@ -119,6 +149,13 @@ export const useBetting = ({
       stopTimer();
       throw new Error("ベットに失敗しました");
     }
+
+    const session = await createGameSession(betAmount);
+
+    // 残高を更新
+    animateBalance(balance - betAmount);
+
+    toPlayById(session.id);
   };
 
   // 前のページに戻る

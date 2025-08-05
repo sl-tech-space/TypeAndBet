@@ -13,7 +13,8 @@ export type RouteKey =
   | "PRIVACY"
   | "CONTACT"
   | "NOT_FOUND"
-  | "SERVER_ERROR";
+  | "SERVER_ERROR"
+  | "RESULT";
 
 export type Routes = {
   [key in RouteKey]: string;
@@ -35,6 +36,7 @@ export const ROUTE: Routes = {
   CONTACT: "/contact",
   NOT_FOUND: "/404",
   SERVER_ERROR: "/500",
+  RESULT: "/result",
 };
 
 /**
@@ -61,6 +63,7 @@ export const ROUTE_NAME: RouteNames = {
   CONTACT: "お問い合わせ",
   NOT_FOUND: "ページが見つかりません",
   SERVER_ERROR: "サーバーエラー",
+  RESULT: "結果",
 };
 
 /**

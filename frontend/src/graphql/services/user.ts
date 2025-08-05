@@ -4,18 +4,15 @@ import { GraphQLServerClient } from "../utils";
 import type { SessionGoldUpdateResponse } from "@/types/user";
 
 export class UserService {
-  private static get graphqlClient(): GraphQLServerClient {
-    return GraphQLServerClient.getInstance();
-  }
-
   public static async sessionGoldUpdate(
+    client: GraphQLServerClient,
     id: string
   ): Promise<{ data: SessionGoldUpdateResponse }> {
-    return this.graphqlClient.executeQuery<
-      SessionGoldUpdateResponse,
-      { userId: string }
-    >(SESSION_GOLD_UPDATE, {
-      userId: id,
-    });
+    return client.executeQuery<SessionGoldUpdateResponse, { userId: string }>(
+      SESSION_GOLD_UPDATE,
+      {
+        userId: id,
+      }
+    );
   }
 }

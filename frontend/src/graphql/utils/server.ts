@@ -15,23 +15,24 @@ interface GraphQLErrorResponse {
 }
 
 export class GraphQLServerClient {
-  private static instance: GraphQLServerClient;
-  private client: GraphQLClient;
+  // private static instance: GraphQLServerClient;
+  // private client: GraphQLClient;
 
-  private constructor(client: GraphQLClient) {
-    this.client = client;
-  }
+  // private constructor(client: GraphQLClient) {
+  //   this.client = client;
+  // }
 
-  public static initialize(client: GraphQLClient): void {
-    this.instance = new GraphQLServerClient(client);
-  }
+  // public static initialize(client: GraphQLClient): void {
+  //   this.instance = new GraphQLServerClient(client);
+  // }
 
-  public static getInstance(): GraphQLServerClient {
-    if (!this.instance) {
-      throw new Error("GraphQLServerClientが初期化されていません");
-    }
-    return this.instance;
-  }
+  // public static getInstance(): GraphQLServerClient {
+  //   if (!this.instance) {
+  //     throw new Error("GraphQLServerClientが初期化されていません");
+  //   }
+  //   return this.instance;
+  // }
+  constructor(private readonly client: GraphQLClient) {}
 
   /**
    * GraphQLエラーを処理する

@@ -152,6 +152,7 @@ class RefreshToken(graphene.Mutation):
 
     success = graphene.Boolean()
     errors = graphene.List(graphene.String)
+    tokens = graphene.Field(TokenType)
 
     @classmethod
     def mutate(cls, root, info, **kwargs):
@@ -188,7 +189,6 @@ class RefreshToken(graphene.Mutation):
             logger.info(f"新しいトークン生成完了: user_id={user.id}")
 
             return RefreshToken(
-                user=user,
                 tokens=TokenType(**tokens),
                 success=True,
                 errors=[],

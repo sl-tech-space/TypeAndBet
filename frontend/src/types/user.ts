@@ -15,8 +15,7 @@ export type User = {
  * セッションゴールド同期更新レスポンス
  */
 export interface SessionGoldUpdateResponse extends Record<string, unknown> {
-  sessionGoldUpdate: {
-    success: boolean;
-    error: string | null;
+  userInfo: {
+    gold: number;
   };
 }
