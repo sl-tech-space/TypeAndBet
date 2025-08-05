@@ -70,7 +70,12 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.google",
 ]
 
-GRAPHENE = {"SCHEMA": "app.schema.schema"}
+GRAPHENE = {
+    "SCHEMA": "app.schema.schema",
+    "MIDDLEWARE": [
+        "app.utils.jwt_middleware.JWTAuthenticationMiddleware",
+    ],
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

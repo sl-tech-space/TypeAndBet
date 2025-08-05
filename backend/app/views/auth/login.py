@@ -1,6 +1,6 @@
 import graphene
 from graphene_django.types import DjangoObjectType
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import authenticate
 from app.models.user import User
 import logging
 from app.utils.errors import BaseError, ErrorHandler
@@ -16,7 +16,7 @@ logger = logging.getLogger("app")
 
 # JWTの設定
 JWT_SECRET = os.getenv("JWT_SECRET", secrets.token_hex(32))
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+ACCESS_TOKEN_EXPIRE_DAYS = 14  # フロントエンド側のセッション戦略に合わせて14日間に変更
 REFRESH_TOKEN_EXPIRE_DAYS = 30
 
 
@@ -52,10 +52,8 @@ class TokenType(graphene.ObjectType):
 def generate_tokens(user):
     try:
         logger.info(f"トークン生成開始: user_id={user.id}")
-        # アクセストークン（1時間有効）
-        access_token_expires = datetime.now() + timedelta(
-            minutes=ACCESS_TOKEN_EXPIRE_MINUTES
-        )
+        # アクセストークン（14日間有効）
+        access_token_expires = datetime.now() + timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS)
         access_token = jwt.encode(
             {
                 "user_id": str(user.id),
@@ -141,10 +139,9 @@ class LoginUser(graphene.Mutation):
                     details=[AuthErrorMessages.INVALID_CREDENTIALS],
                 )
 
-            # ログイン処理
-            logger.info(f"ログイン処理開始: user_id={user.id}, email={email}")
-            login(info.context, user)
-            logger.info(f"ログイン成功: user_id={user.id}, email={email}")
+            # JWT認証ではDjangoのセッションログインは不要
+            logger.info(f"JWT認証処理開始: user_id={user.id}, email={email}")
+            logger.info(f"JWT認証成功: user_id={user.id}, email={email}")
 
             # トークン生成
             tokens = generate_tokens(user)
