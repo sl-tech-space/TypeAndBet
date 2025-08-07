@@ -41,8 +41,6 @@ class TextGenerator:
             base_path = Path(__file__).parent.parent.parent / "text_generation"
             logger.info(f"設定ファイル読み込み開始: {base_path}")
 
-            with open(base_path / "themes.yaml", "r", encoding="utf-8") as f:
-                self.theme_categories = yaml.safe_load(f)
             with open(base_path / "prompts.yaml", "r", encoding="utf-8") as f:
                 self.prompts = yaml.safe_load(f)
 
@@ -54,84 +52,88 @@ class TextGenerator:
                 details=[str(e)],
             )
 
-    def _get_random_theme(self):
-        logger.info("ランダムテーマ選択開始")
+    def _call_ai_for_text_generation(self, prompt):
+        """AIを呼び出してテキストを生成するヘルパーメソッド"""
         try:
-            category = random.choice(list(self.theme_categories.keys()))
-            theme = random.choice(self.theme_categories[category])
-            logger.info(f"テーマ選択完了: category={category}, theme={theme}")
-            return theme, category
-        except Exception as e:
-            logger.error(f"テーマ選択エラー: {str(e)}", exc_info=True)
+            response = self.model.generate_content(prompt)
+            return response.text
+        except genai.types.BlockedPromptException as e:
+            logger.warning(f"AIテキスト生成でブロックされました: {e}")
             raise TextGeneratorError(
-                message=TextGeneratorErrorMessages.THEME_SELECTION_ERROR,
+                message=TextGeneratorErrorMessages.TEXT_GENERATION_ERROR,
                 details=[str(e)],
             )
-
-    def _generate_prompt(self, theme, category=None):
-        logger.info(f"プロンプト生成開始: theme={theme}, category={category}")
-        try:
-            category_info = f"（カテゴリー: {category}）" if category else ""
-            prompt = self.prompts["typing_prompt"].format(
-                theme=theme, category_info=category_info
-            )
-            logger.info("プロンプト生成完了")
-            return prompt
         except Exception as e:
-            logger.error(f"プロンプト生成エラー: {str(e)}", exc_info=True)
+            logger.warning(f"AIテキスト生成でエラーが発生しました: {e}")
             raise TextGeneratorError(
-                message=TextGeneratorErrorMessages.PROMPT_GENERATION_ERROR,
+                message=TextGeneratorErrorMessages.TEXT_GENERATION_ERROR,
                 details=[str(e)],
             )
 
     def generate_text(self):
         logger.info("テキスト生成開始")
         try:
-            # ランダムなテーマとカテゴリーを選択
-            theme, category = self._get_random_theme()
-
-            # プロンプトを生成
-            prompt = self._generate_prompt(theme, category)
+            # プロンプトを取得
+            prompt = self.prompts["typing_prompt"]
+            logger.info(f"プロンプト取得完了: {len(prompt)}文字")
 
             # AIにリクエストを送る
             logger.info("AIリクエスト送信")
-            try:
-                response = self.model.generate_content(prompt)
-                generated_text = response.text
-                logger.info("AIレスポンス受信")
-            except Exception as e:
-                logger.error(f"AIリクエストエラー: {str(e)}", exc_info=True)
-                raise TextGeneratorError(
-                    message=TextGeneratorErrorMessages.AI_REQUEST_ERROR,
-                    details=[str(e)],
-                )
+            generated_text = self._call_ai_for_text_generation(prompt)
+            logger.info("AIレスポンス受信")
+            logger.info(f"生成されたテキストの長さ: {len(generated_text)}文字")
 
             # 生成されたテキストを整形
             try:
-                parts = generated_text.split("。")
-                kanji_hiragana_pairs = []
+                lines = [
+                    line.strip()
+                    for line in generated_text.strip().split("\n")
+                    if line.strip()
+                ]  # 空行を削除し、各行をトリム
 
-                for i in range(0, len(parts) - 1, 2):
-                    if i + 1 >= len(parts):
-                        break
+                logger.info(f"生成された行数: {len(lines)}")
 
-                    kanji_text = parts[i].strip()
-                    hiragana_text = parts[i + 1].strip()
+                # 期待される行数（100行）のチェック
+                # 50行以上生成できれば成功とする
+                if len(lines) < 50:
+                    logger.warning(
+                        f"生成された行数が最小要件を満たしていません: {len(lines)}行 (最小要件: 50行)。"
+                    )
+                    raise TextGeneratorError(
+                        message=TextGeneratorErrorMessages.RESPONSE_PROCESSING_ERROR,
+                        details=[
+                            f"生成された行数が最小要件(50行)を満たしていません。現在の行数: {len(lines)}"
+                        ],
+                    )
 
-                    # 空のペアはスキップ
-                    if kanji_text and hiragana_text:
-                        kanji_hiragana_pairs.append(
-                            {"kanji": kanji_text, "hiragana": hiragana_text}
-                        )
+                # 各文章をそのまま使用
+                sentences = []
+                for i, line in enumerate(lines):
+                    if line:
+                        sentences.append({"text": line})
+                        if i < 5:  # 最初の5行をログに出力
+                            logger.info(f"文章{i + 1}: {line}")
 
-                logger.info(
-                    f"テキスト生成完了: pairs_count={len(kanji_hiragana_pairs)}"
-                )
-                return {
-                    "theme": theme,
-                    "category": category,
-                    "pairs": kanji_hiragana_pairs,
+                # 最終的な文章数のチェック (最小20文章以上を期待)
+                if len(sentences) < 20:
+                    logger.warning(
+                        f"生成された文章数が最小要件を満たしていません: {len(sentences)}文章 (最小要件: 20文章)。"
+                    )
+                    raise TextGeneratorError(
+                        message=TextGeneratorErrorMessages.RESPONSE_PROCESSING_ERROR,
+                        details=[
+                            f"生成された文章数が最小要件(20文章)を満たしていません。現在の文章数: {len(sentences)}"
+                        ],
+                    )
+
+                logger.info(f"テキスト生成完了: sentences_count={len(sentences)}")
+                result = {
+                    "sentences": sentences,
                 }
+                logger.info(f"返却する結果: {result}")
+                return result
+            except TextGeneratorError:  # TextGeneratorErrorの場合は再スロー
+                raise
             except Exception as e:
                 logger.error(f"レスポンス処理エラー: {str(e)}", exc_info=True)
                 raise TextGeneratorError(
@@ -139,28 +141,25 @@ class TextGenerator:
                     details=[str(e)],
                 )
 
-        except TextGeneratorError as e:
-            logger.error(f"テキスト生成エラー: {str(e)}", exc_info=True)
-            return {"error": str(e)}
+        except TextGeneratorError:
+            raise
         except Exception as e:
-            logger.error(f"予期せぬエラー: {str(e)}", exc_info=True)
-            return {
-                "error": f"{TextGeneratorErrorMessages.TEXT_GENERATION_ERROR}: {str(e)}"
-            }
+            logger.error(f"テキスト生成エラー: {str(e)}", exc_info=True)
+            raise TextGeneratorError(
+                message=TextGeneratorErrorMessages.TEXT_GENERATION_ERROR,
+                details=[str(e)],
+            )
 
 
-class TextPairType(graphene.ObjectType):
-    kanji = graphene.String()
-    hiragana = graphene.String()
+class TextSentenceType(graphene.ObjectType):
+    text = graphene.String()
 
 
 class GenerateText(graphene.Mutation):
     class Arguments:
         pass
 
-    theme = graphene.String()
-    category = graphene.String()
-    pairs = graphene.List(TextPairType)
+    sentences = graphene.List(TextSentenceType)
     error = graphene.String()
 
     @classmethod
@@ -170,16 +169,28 @@ class GenerateText(graphene.Mutation):
             generator = TextGenerator()
             result = generator.generate_text()
 
+            logger.info(f"TextGenerator結果: {result}")
+
             if "error" in result:
                 logger.error(f"テキスト生成失敗: {result['error']}")
                 return GenerateText(error=result["error"])
 
+            if "sentences" not in result:
+                logger.error(f"sentencesフィールドが見つかりません: {result}")
+                return GenerateText(error="sentencesフィールドが見つかりません")
+
             logger.info("テキスト生成成功")
+            sentences = [
+                TextSentenceType(**sentence) for sentence in result["sentences"]
+            ]
+            logger.info(f"生成されたsentences数: {len(sentences)}")
+
             return GenerateText(
-                theme=result["theme"],
-                category=result["category"],
-                pairs=[TextPairType(**pair) for pair in result["pairs"]],
+                sentences=sentences,
             )
+        except TextGeneratorError as e:
+            logger.error(f"TextGeneratorError: {str(e)}", exc_info=True)
+            return GenerateText(error=f"{e.message}: {str(e)}")
         except Exception as e:
             logger.error(f"テキスト生成ミューテーションエラー: {str(e)}", exc_info=True)
             return GenerateText(
