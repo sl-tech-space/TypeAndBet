@@ -108,7 +108,6 @@ class TextGenerator:
                 result = {
                     "sentences": saved_sentences,
                 }
-                logger.info(f"返却する結果: {result}")
                 return result
             except TextGeneratorError:
                 raise

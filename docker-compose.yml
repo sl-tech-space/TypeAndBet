@@ -61,6 +61,34 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
+  # cronジョブ専用サービス
+  cron-jobs:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tab-cron-jobs
+    volumes:
+      - ./backend:/app
+    environment:
+      - DJANGO_ENV=development
+      - DEBUG=True
+      - SECRET_KEY=${SECRET_KEY}
+      - TZ=${TIMEZONE}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_INTERNAL_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - JWT_SECRET=${JWT_SECRET}
+      - PYTHONIOENCODING=${PYTHONIOENCODING}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_MODEL=${GEMINI_MODEL}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - default
+    command: ["/bin/bash", "-c", "./setup_cron_jobs.sh"]
 
   db:
     image: postgres:15-alpine
