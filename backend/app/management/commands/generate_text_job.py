@@ -1,7 +1,8 @@
 import logging
+
 from django.core.management.base import BaseCommand
+
 from app.views.game.textgenerator import TextGenerator
-from app.utils.constants import TextGeneratorErrorMessages
 
 logger = logging.getLogger("app")
 

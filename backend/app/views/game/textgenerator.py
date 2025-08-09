@@ -1,14 +1,15 @@
-import yaml
-import google.generativeai as genai
-from pathlib import Path
-import graphene
-from django.conf import settings
 import logging
+from pathlib import Path
+
+import google.generativeai as genai
+import graphene
+import yaml
+from django.conf import settings
 from django.db import transaction
+
+from app.models.game import TextPair
 from app.utils.constants import TextGeneratorErrorMessages
 from app.utils.errors import BaseError
-from typing import List, Optional
-from app.models.game import TextPair
 
 logger = logging.getLogger("app")
 
@@ -20,7 +21,7 @@ class TextGeneratorError(BaseError):
         self,
         message: str,
         code: str = "TEXT_GENERATOR_ERROR",
-        details: Optional[List[str]] = None,
+        details: list[str] | None = None,
     ):
         super().__init__(
             message=message,
@@ -42,7 +43,7 @@ class TextGenerator:
             base_path = Path(__file__).parent.parent.parent / "text_generation"
             logger.info(f"設定ファイル読み込み開始: {base_path}")
 
-            with open(base_path / "prompts.yaml", "r", encoding="utf-8") as f:
+            with open(base_path / "prompts.yaml", encoding="utf-8") as f:
                 self.prompts = yaml.safe_load(f)
 
             logger.info("TextGenerator初期化完了")

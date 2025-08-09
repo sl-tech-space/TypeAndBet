@@ -1,17 +1,17 @@
 import graphene
 from graphene_django.types import DjangoObjectType
-from app.models import User
-from app.views.ranking.overall import RankingType
+
+from app.models import Game, User
 from app.views.game.result import GameResult, GameResultType
-from app.models import Game
 from app.views.game.textpair import (
-    GetTextPairsType,
     GetConvertedTextPairsType,
     GetRandomTextPairType,
-    resolve_get_text_pairs,
+    GetTextPairsType,
     resolve_get_converted_text_pairs,
     resolve_get_random_text_pair,
+    resolve_get_text_pairs,
 )
+from app.views.ranking.overall import RankingType
 
 
 class UserType(DjangoObjectType):

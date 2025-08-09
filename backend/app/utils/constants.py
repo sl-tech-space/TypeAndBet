@@ -16,7 +16,7 @@ class AuthErrorMessages:
     LOGIN_REQUIRED = "ログインが必要です"
     PASSWORD_UPPERCASE_REQUIRED = "パスワードには大文字を2文字以上含める必要があります"
     PASSWORD_NUMBER_REQUIRED = "パスワードには数字を2文字以上含める必要があります"
-    PASSWORD_SYMBOL_REQUIRED = "パスワードには記号を2文字以上含める必要があります"
+    PASSWORD_SYMBOL_REQUIRED = "パスワードには記号を1文字以上含める必要があります"
     REQUIRED_FIELDS_MISSING = "メールアドレスとパスワードは必須です"
 
 

@@ -1,16 +1,17 @@
-import graphene
-from graphene_django.types import DjangoObjectType
-from django.contrib.auth import authenticate
-from app.models.user import User
 import logging
-from app.utils.errors import BaseError, ErrorHandler
-from app.utils.validators import ValidationError
-from app.utils.constants import AuthErrorMessages
-from typing import List, Optional
-import jwt
-from datetime import datetime, timedelta
 import os
 import secrets
+from datetime import datetime, timedelta
+
+import graphene
+import jwt
+from django.contrib.auth import authenticate
+from graphene_django.types import DjangoObjectType
+
+from app.models.user import User
+from app.utils.constants import AuthErrorMessages
+from app.utils.errors import BaseError, ErrorHandler
+from app.utils.validators import ValidationError
 
 logger = logging.getLogger("app")
 
@@ -27,7 +28,7 @@ class AuthenticationError(BaseError):
         self,
         message: str,
         code: str = "AUTHENTICATION_ERROR",
-        details: Optional[List[str]] = None,
+        details: list[str] | None = None,
     ):
         super().__init__(
             message=message,

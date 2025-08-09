@@ -1,10 +1,11 @@
+import re
+
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import EmailValidator
+from graphql import GraphQLError
+
 from app.models import User
 from app.utils.constants import AuthErrorMessages, GameErrorMessages
-from graphql import GraphQLError
-from typing import List, Optional
-import re
 
 
 class ValidationError(GraphQLError):
@@ -13,7 +14,7 @@ class ValidationError(GraphQLError):
     def __init__(
         self,
         message: str,
-        details: Optional[List[str]] = None,
+        details: list[str] | None = None,
     ):
         super().__init__(
             message=message,
@@ -82,7 +83,7 @@ class UserValidator:
                 details=[AuthErrorMessages.PASSWORD_NUMBER_REQUIRED],
             )
 
-        if len(re.findall(r"[!@#$%^&*(),.?:|]", password)) < 2:
+        if len(re.findall(r"[!@#$%^&*(),.?:|]", password)) < 1:
             raise ValidationError(
                 message=AuthErrorMessages.INVALID_INPUT,
                 details=[AuthErrorMessages.PASSWORD_SYMBOL_REQUIRED],

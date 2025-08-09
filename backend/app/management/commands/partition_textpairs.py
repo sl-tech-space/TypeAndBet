@@ -1,8 +1,8 @@
 import logging
 from datetime import datetime, timedelta
+
 from django.core.management.base import BaseCommand
 from django.db import connection
-from django.conf import settings
 
 logger = logging.getLogger("app")
 
@@ -84,9 +84,8 @@ class Command(BaseCommand):
                         f"パーティション作成スキップ: {partition_name} - {error_msg}"
                     )
                     return False
-                else:
-                    # その他のエラーは再発生させる
-                    raise e
+                # その他のエラーは再発生させる
+                raise e
 
     def cleanup_old_partitions(self):
         """3日より古いパーティションを削除"""

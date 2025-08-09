@@ -1,5 +1,5 @@
-import statistics
 import logging
+import statistics
 
 logger = logging.getLogger("app")
 
@@ -31,30 +31,29 @@ class GameCalculator:
         """
         if z_score >= 3.0:
             return 3.0  # 上位0.1%
-        elif z_score >= 2.5:
+        if z_score >= 2.5:
             return 2.5  # 上位0.6%
-        elif z_score >= 2.0:
+        if z_score >= 2.0:
             return 2.0  # 上位2.3%
-        elif z_score >= 1.5:
+        if z_score >= 1.5:
             return 1.75  # 上位6.7%
-        elif z_score >= 1.0:
+        if z_score >= 1.0:
             return 1.5  # 上位15.9%
-        elif z_score >= 0.5:
+        if z_score >= 0.5:
             return 1.25  # 上位30.9%
-        elif z_score >= 0.0:
+        if z_score >= 0.0:
             return 1.0  # 上位50%
-        elif z_score >= -0.5:
+        if z_score >= -0.5:
             return -1.0  # 下位30.9%
-        elif z_score >= -1.0:
+        if z_score >= -1.0:
             return -1.5  # 下位15.9%
-        elif z_score >= -1.5:
+        if z_score >= -1.5:
             return -2.0  # 下位6.7%
-        elif z_score >= -2.0:
+        if z_score >= -2.0:
             return -2.5  # 下位2.3%
-        elif z_score >= -2.5:
+        if z_score >= -2.5:
             return -3.0  # 下位0.6%
-        else:
-            return -4.0  # 下位0.1%
+        return -4.0  # 下位0.1%
 
     @staticmethod
     def calculate_gold_change(
@@ -65,10 +64,9 @@ class GameCalculator:
         """
         if multiplier >= 0:
             return int(bet_amount * multiplier)
-        else:
-            base_loss = int(bet_amount * abs(multiplier))
-            additional_loss = int(bet_amount * 0.1)
-            total_loss = base_loss + additional_loss
-            if user_gold is not None and total_loss > user_gold:
-                total_loss = user_gold
-            return -total_loss
+        base_loss = int(bet_amount * abs(multiplier))
+        additional_loss = int(bet_amount * 0.1)
+        total_loss = base_loss + additional_loss
+        if user_gold is not None and total_loss > user_gold:
+            total_loss = user_gold
+        return -total_loss

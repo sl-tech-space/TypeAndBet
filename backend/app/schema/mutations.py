@@ -1,11 +1,12 @@
 import graphene
-from app.views.auth.register import RegisterUser
-from app.views.auth.login import LoginUser
+
 from app.views.auth.googleauth import GoogleAuth, RefreshToken
-from app.views.game.typeandbet import CreateBet, UpdateGameScore
-from app.views.game.textgenerator import GenerateText
-from app.views.game.textpair import GetRandomTextPair, ConvertToHiragana
+from app.views.auth.login import LoginUser
+from app.views.auth.register import RegisterUser
 from app.views.game.simulation import CompletePractice
+from app.views.game.textgenerator import GenerateText
+from app.views.game.textpair import ConvertToHiragana, GetRandomTextPair
+from app.views.game.typeandbet import CreateBet, UpdateGameScore
 
 
 class Mutation(graphene.ObjectType):

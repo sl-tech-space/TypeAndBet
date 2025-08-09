@@ -1,11 +1,13 @@
-from graphene import Mutation, String, Int, Boolean, List
-from django.db import transaction
 import logging
-from app.models import Game
+
 import graphene
-from app.utils.validators import GameValidator
-from app.utils.game_calculator import GameCalculator
 from django.core.exceptions import ValidationError
+from django.db import transaction
+from graphene import Boolean, Int, List, Mutation, String
+
+from app.models import Game
+from app.utils.game_calculator import GameCalculator
+from app.utils.validators import GameValidator
 
 logger = logging.getLogger("app")
 

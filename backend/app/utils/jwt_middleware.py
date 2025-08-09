@@ -1,10 +1,10 @@
-import jwt
 import logging
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AnonymousUser
-from django.conf import settings
 import os
 import secrets
+
+import jwt
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 
 logger = logging.getLogger("app")
 
@@ -25,11 +25,11 @@ class JWTAuthenticationMiddleware:
         try:
             # リクエストオブジェクトを取得
             request = info.context
-            
+
             # 既に認証済みの場合はスキップ
-            if hasattr(request, '_jwt_authenticated'):
+            if hasattr(request, "_jwt_authenticated"):
                 return next(root, info, **args)
-            
+
             # Authorizationヘッダーからトークンを取得
             auth_header = request.META.get("HTTP_AUTHORIZATION", "")
 

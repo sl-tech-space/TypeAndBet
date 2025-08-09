@@ -1,7 +1,9 @@
 import logging
+
 import MeCab
 from django.core.management.base import BaseCommand
 from django.db import transaction
+
 from app.models.game import TextPair
 
 logger = logging.getLogger("app")

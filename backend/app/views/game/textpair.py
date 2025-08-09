@@ -1,7 +1,9 @@
-import graphene
-from django.db import transaction
-import MeCab
 import logging
+
+import graphene
+import MeCab
+from django.db import transaction
+
 from app.models.game import TextPair
 
 logger = logging.getLogger("app")

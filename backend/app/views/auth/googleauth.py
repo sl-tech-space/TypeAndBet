@@ -1,14 +1,15 @@
-import graphene
-from graphene_django.types import DjangoObjectType
-from app.models.user import User
-import jwt
-from datetime import datetime, timedelta
+import logging
 import os
 import secrets
-import logging
-from app.utils.errors import BaseError, ErrorHandler
+from datetime import datetime, timedelta
+
+import graphene
+import jwt
+from graphene_django.types import DjangoObjectType
+
+from app.models.user import User
 from app.utils.constants import AuthErrorMessages
-from typing import List, Optional
+from app.utils.errors import BaseError, ErrorHandler
 
 logger = logging.getLogger("app")
 
@@ -25,7 +26,7 @@ class OAuthError(BaseError):
         self,
         message: str,
         code: str = "OAUTH_ERROR",
-        details: Optional[List[str]] = None,
+        details: list[str] | None = None,
     ):
         super().__init__(
             message=message,
