@@ -1,13 +1,14 @@
 import yaml
-import random
 import google.generativeai as genai
 from pathlib import Path
 import graphene
 from django.conf import settings
 import logging
+from django.db import transaction
 from app.utils.constants import TextGeneratorErrorMessages
 from app.utils.errors import BaseError
 from typing import List, Optional
+from app.models.game import TextPair
 
 logger = logging.getLogger("app")
 
@@ -81,58 +82,35 @@ class TextGenerator:
             logger.info("AIリクエスト送信")
             generated_text = self._call_ai_for_text_generation(prompt)
             logger.info("AIレスポンス受信")
-            logger.info(f"生成されたテキストの長さ: {len(generated_text)}文字")
 
             # 生成されたテキストを整形
             try:
-                lines = [
-                    line.strip()
-                    for line in generated_text.strip().split("\n")
-                    if line.strip()
+                sentences = [
+                    sentence.strip()
+                    for sentence in generated_text.strip().split("\n")
+                    if sentence.strip()
                 ]  # 空行を削除し、各行をトリム
 
-                logger.info(f"生成された行数: {len(lines)}")
+                # 各文章をTextPairテーブルに保存
+                saved_sentences = []
+                with transaction.atomic():
+                    for i, sentence in enumerate(sentences):
+                        if sentence:
+                            # TextPairテーブルに保存
+                            text_pair = TextPair.objects.create(
+                                kanji=sentence, is_converted=False
+                            )
+                            saved_sentences.append(
+                                {"text": sentence, "id": text_pair.id}
+                            )
 
-                # 期待される行数（100行）のチェック
-                # 50行以上生成できれば成功とする
-                if len(lines) < 50:
-                    logger.warning(
-                        f"生成された行数が最小要件を満たしていません: {len(lines)}行 (最小要件: 50行)。"
-                    )
-                    raise TextGeneratorError(
-                        message=TextGeneratorErrorMessages.RESPONSE_PROCESSING_ERROR,
-                        details=[
-                            f"生成された行数が最小要件(50行)を満たしていません。現在の行数: {len(lines)}"
-                        ],
-                    )
-
-                # 各文章をそのまま使用
-                sentences = []
-                for i, line in enumerate(lines):
-                    if line:
-                        sentences.append({"text": line})
-                        if i < 5:  # 最初の5行をログに出力
-                            logger.info(f"文章{i + 1}: {line}")
-
-                # 最終的な文章数のチェック (最小20文章以上を期待)
-                if len(sentences) < 20:
-                    logger.warning(
-                        f"生成された文章数が最小要件を満たしていません: {len(sentences)}文章 (最小要件: 20文章)。"
-                    )
-                    raise TextGeneratorError(
-                        message=TextGeneratorErrorMessages.RESPONSE_PROCESSING_ERROR,
-                        details=[
-                            f"生成された文章数が最小要件(20文章)を満たしていません。現在の文章数: {len(sentences)}"
-                        ],
-                    )
-
-                logger.info(f"テキスト生成完了: sentences_count={len(sentences)}")
+                logger.info(f"テキスト生成完了: sentences_count={len(saved_sentences)}")
                 result = {
-                    "sentences": sentences,
+                    "sentences": saved_sentences,
                 }
                 logger.info(f"返却する結果: {result}")
                 return result
-            except TextGeneratorError:  # TextGeneratorErrorの場合は再スロー
+            except TextGeneratorError:
                 raise
             except Exception as e:
                 logger.error(f"レスポンス処理エラー: {str(e)}", exc_info=True)
@@ -152,10 +130,15 @@ class TextGenerator:
 
 
 class TextSentenceType(graphene.ObjectType):
+    """テキスト生成結果の型定義"""
+
+    id = graphene.Int()
     text = graphene.String()
 
 
 class GenerateText(graphene.Mutation):
+    """テキスト生成ミューテーション"""
+
     class Arguments:
         pass
 
