@@ -1,9 +1,17 @@
 import graphene
 from graphene_django.types import DjangoObjectType
-from app.models import User
-from app.views.ranking.overall import RankingType
+
+from app.models import Game, User
 from app.views.game.result import GameResult, GameResultType
-from app.models import Game
+from app.views.game.textpair import (
+    GetConvertedTextPairsType,
+    GetRandomTextPairType,
+    GetTextPairsType,
+    resolve_get_converted_text_pairs,
+    resolve_get_random_text_pair,
+    resolve_get_text_pairs,
+)
+from app.views.ranking.overall import RankingType
 
 
 class UserType(DjangoObjectType):
@@ -18,6 +26,19 @@ class Query(graphene.ObjectType):
     user_info = graphene.Field(UserType, user_id=graphene.UUID(required=True))
     rankings = graphene.List(RankingType, limit=graphene.Int(), offset=graphene.Int())
     game_result = graphene.Field(GameResultType, game_id=graphene.UUID(required=True))
+    get_text_pairs = graphene.Field(
+        GetTextPairsType,
+        limit=graphene.Int(default_value=10),
+        offset=graphene.Int(default_value=0),
+        converted_only=graphene.Boolean(default_value=False),
+    )
+    get_converted_text_pairs = graphene.Field(
+        GetConvertedTextPairsType,
+        limit=graphene.Int(default_value=10),
+        offset=graphene.Int(default_value=0),
+        random=graphene.Boolean(default_value=False),
+    )
+    get_random_text_pair = graphene.Field(GetRandomTextPairType)
 
     def resolve_users(self, info):
         return User.objects.all()
@@ -38,12 +59,27 @@ class Query(graphene.ObjectType):
         user = info.context.user
         if not user.is_authenticated:
             raise Exception("ログインが必要です")
-            
+
         game = Game.objects.get(id=game_id)
-        
+
+        # 所有者チェック追加
+        if game.user != user:
+            raise Exception("このゲームの結果を見る権限がありません")
+
+        game = Game.objects.get(id=game_id)
+
         # 所有者チェック追加
         if game.user != user:
             raise Exception("このゲームの結果を見る権限がありません")
 
         result = GameResult(user, game)
         return result.get_result()
+
+    def resolve_get_text_pairs(self, info, **kwargs):
+        return resolve_get_text_pairs(self, info, **kwargs)
+
+    def resolve_get_converted_text_pairs(self, info, **kwargs):
+        return resolve_get_converted_text_pairs(self, info, **kwargs)
+
+    def resolve_get_random_text_pair(self, info):
+        return resolve_get_random_text_pair(self, info)

@@ -1,12 +1,12 @@
-from typing import Dict, Optional
-from app.models import User, Game
-from django.db.models import Sum, Count
-import graphene
 import logging
+
+import graphene
+from django.db.models import Count, Sum
 from graphene_django.types import DjangoObjectType
+
+from app.models import Game, User
 from app.utils.constants import ResultErrorMessages
 from app.utils.errors import BaseError
-from typing import List
 
 logger = logging.getLogger("app")
 
@@ -18,7 +18,7 @@ class ResultError(BaseError):
         self,
         message: str,
         code: str = "RESULT_ERROR",
-        details: Optional[List[str]] = None,
+        details: list[str] | None = None,
     ):
         super().__init__(
             message=message,
@@ -35,6 +35,8 @@ class GameType(DjangoObjectType):
 
 
 class GameResultType(graphene.ObjectType):
+    """ゲーム結果のGraphQL型定義"""
+
     current_gold = graphene.Int()
     bet_amount = graphene.Int()
     loss_amount = graphene.Int()
@@ -50,7 +52,7 @@ class GameResult:
         self.game = game
         logger.info(f"ゲーム結果初期化: user_id={user.id}, game_id={game.id}")
 
-    def get_result(self) -> Dict:
+    def get_result(self) -> dict:
         try:
             logger.info(
                 f"ゲーム結果取得開始: user_id={self.user.id}, game_id={self.game.id}"
@@ -162,7 +164,7 @@ class GameResult:
                 details=[str(e)],
             )
 
-    def _get_next_rank_gold(self) -> Optional[int]:
+    def _get_next_rank_gold(self) -> int | None:
         logger.info(f"次のランク必要金額取得開始: user_id={self.user.id}")
         try:
             next_rank_user = (

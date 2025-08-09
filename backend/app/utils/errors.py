@@ -1,6 +1,6 @@
-from graphql import GraphQLError
-from typing import List, Optional
 import logging
+
+from graphql import GraphQLError
 
 logger = logging.getLogger("app")
 
@@ -13,7 +13,7 @@ class BaseError(GraphQLError):
         message: str,
         code: str,
         status: int,
-        details: Optional[List[str]] = None,
+        details: list[str] | None = None,
     ):
         super().__init__(
             message=message,
@@ -26,7 +26,7 @@ class ErrorHandler:
 
     @staticmethod
     def handle_unexpected_error(
-        error: Exception, context: Optional[str] = None
+        error: Exception, context: str | None = None
     ) -> BaseError:
         """予期せぬエラーの処理"""
         logger.error(

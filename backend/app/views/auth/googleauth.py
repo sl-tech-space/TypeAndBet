@@ -1,14 +1,15 @@
-import graphene
-from graphene_django.types import DjangoObjectType
-from app.models.user import User
-import jwt
-from datetime import datetime, timedelta
+import logging
 import os
 import secrets
-import logging
-from app.utils.errors import BaseError, ErrorHandler
+from datetime import datetime, timedelta
+
+import graphene
+import jwt
+from graphene_django.types import DjangoObjectType
+
+from app.models.user import User
 from app.utils.constants import AuthErrorMessages
-from typing import List, Optional
+from app.utils.errors import BaseError, ErrorHandler
 
 logger = logging.getLogger("app")
 
@@ -25,7 +26,7 @@ class OAuthError(BaseError):
         self,
         message: str,
         code: str = "OAUTH_ERROR",
-        details: Optional[List[str]] = None,
+        details: list[str] | None = None,
     ):
         super().__init__(
             message=message,
@@ -42,6 +43,8 @@ class UserType(DjangoObjectType):
 
 
 class TokenType(graphene.ObjectType):
+    """Google認証トークンのGraphQL型定義"""
+
     accessToken = graphene.String()
     refreshToken = graphene.String()
     expiresAt = graphene.Int()
@@ -96,6 +99,8 @@ def generate_tokens(user):
 
 
 class GoogleAuth(graphene.Mutation):
+    """GoogleのOAuth認証を行い、ユーザー登録/ログインを処理するミューテーション"""
+
     class Arguments:
         email = graphene.String(required=True)
         name = graphene.String(required=True)
@@ -145,6 +150,8 @@ class GoogleAuth(graphene.Mutation):
 
 
 class RefreshToken(graphene.Mutation):
+    """リフレッシュトークンを使用して新しいアクセストークンを発行するミューテーション"""
+
     class Arguments:
         refreshToken = graphene.String(required=True)
 

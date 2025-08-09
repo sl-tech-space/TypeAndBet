@@ -1,10 +1,11 @@
+import logging
+
 import graphene
 from graphene_django.types import DjangoObjectType
+
 from app.models.ranking import Ranking
-import logging
 from app.utils.constants import RankingErrorMessages
 from app.utils.errors import BaseError
-from typing import List, Optional
 
 logger = logging.getLogger("app")
 
@@ -16,7 +17,7 @@ class RankingError(BaseError):
         self,
         message: str,
         code: str = "RANKING_ERROR",
-        details: Optional[List[str]] = None,
+        details: list[str] | None = None,
     ):
         super().__init__(
             message=message,
@@ -49,6 +50,8 @@ class RankingType(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
+    """ランキング関連のクエリを定義するGraphQL型"""
+
     rankings = graphene.List(RankingType, limit=graphene.Int(), offset=graphene.Int())
 
     def resolve_rankings(self, info, limit=10, offset=0):

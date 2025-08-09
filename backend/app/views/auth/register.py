@@ -1,13 +1,14 @@
-import graphene
-from graphene_django.types import DjangoObjectType
-from app.models import User
-import uuid
-from django.db import transaction
-from app.utils.validators import ValidationError, UserValidator
 import logging
-from app.utils.errors import BaseError, ErrorHandler
+import uuid
+
+import graphene
+from django.db import transaction
+from graphene_django.types import DjangoObjectType
+
+from app.models import User
 from app.utils.constants import AuthErrorMessages
-from typing import List, Optional
+from app.utils.errors import BaseError, ErrorHandler
+from app.utils.validators import UserValidator, ValidationError
 
 logger = logging.getLogger("app")
 
@@ -19,7 +20,7 @@ class RegistrationError(BaseError):
         self,
         message: str,
         code: str = "REGISTRATION_ERROR",
-        details: Optional[List[str]] = None,
+        details: list[str] | None = None,
     ):
         super().__init__(
             message=message,
@@ -36,6 +37,8 @@ class UserType(DjangoObjectType):
 
 
 class RegisterUser(graphene.Mutation):
+    """新しいユーザーを登録し、アクセストークンを発行するミューテーション"""
+
     class Arguments:
         name = graphene.String(required=True)
         email = graphene.String(required=True)

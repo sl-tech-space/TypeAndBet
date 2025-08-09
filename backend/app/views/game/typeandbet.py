@@ -1,12 +1,14 @@
+import logging
+
 import graphene
-from graphene_django.types import DjangoObjectType
-from django.db import transaction
-from app.models import Game, Ranking
 from django.core.exceptions import ValidationError
-from app.utils.validators import GameValidator
+from django.db import transaction
+from graphene_django.types import DjangoObjectType
+
+from app.models import Game, Ranking
 from app.utils.constants import GameErrorMessages
 from app.utils.game_calculator import GameCalculator
-import logging
+from app.utils.validators import GameValidator
 
 logger = logging.getLogger("app")
 
@@ -18,6 +20,8 @@ class GameType(DjangoObjectType):
 
 
 class CreateBet(graphene.Mutation):
+    """新しいベット（ゲーム）を作成するミューテーション"""
+
     class Arguments:
         bet_amount = graphene.Int(required=True)
 
@@ -69,6 +73,8 @@ class CreateBet(graphene.Mutation):
 
 
 class UpdateGameScore(graphene.Mutation):
+    """ゲームのスコアを更新し、結果に基づいてゴールドを増減するミューテーション"""
+
     class Arguments:
         game_id = graphene.UUID(required=True)
         correct_typed = graphene.Int(required=True)
