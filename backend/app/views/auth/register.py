@@ -36,6 +36,8 @@ class UserType(DjangoObjectType):
 
 
 class RegisterUser(graphene.Mutation):
+    """新しいユーザーを登録し、アクセストークンを発行するミューテーション"""
+
     class Arguments:
         name = graphene.String(required=True)
         email = graphene.String(required=True)

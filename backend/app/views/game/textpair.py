@@ -177,7 +177,7 @@ class ConvertToHiragana(graphene.Mutation):
 
 
 class GetTextPairsType(graphene.ObjectType):
-    """TextPair取得結果の型定義"""
+    """TextPairの一覧取得結果を表すGraphQL型定義"""
 
     text_pairs = graphene.List(TextPairType)
     total_count = graphene.Int()
@@ -227,7 +227,7 @@ def resolve_get_text_pairs(root, info, limit=10, offset=0, converted_only=False)
 
 
 class GetConvertedTextPairsType(graphene.ObjectType):
-    """変換済みのTextPair取得結果の型定義"""
+    """変換済みTextPairの取得結果を表すGraphQL型定義"""
 
     text_pairs = graphene.List(TextPairType)
     total_count = graphene.Int()
@@ -281,7 +281,7 @@ def resolve_get_converted_text_pairs(root, info, limit=10, offset=0, random=Fals
 
 
 class GetRandomTextPairType(graphene.ObjectType):
-    """ランダムTextPair取得結果の型定義"""
+    """ランダムTextPair取得結果を表すGraphQL型定義"""
 
     text_pair = graphene.Field(TextPairType)
     success = graphene.Boolean()

@@ -42,6 +42,8 @@ class UserType(DjangoObjectType):
 
 
 class TokenType(graphene.ObjectType):
+    """Google認証トークンのGraphQL型定義"""
+
     accessToken = graphene.String()
     refreshToken = graphene.String()
     expiresAt = graphene.Int()
@@ -96,6 +98,8 @@ def generate_tokens(user):
 
 
 class GoogleAuth(graphene.Mutation):
+    """GoogleのOAuth認証を行い、ユーザー登録/ログインを処理するミューテーション"""
+
     class Arguments:
         email = graphene.String(required=True)
         name = graphene.String(required=True)
@@ -145,6 +149,8 @@ class GoogleAuth(graphene.Mutation):
 
 
 class RefreshToken(graphene.Mutation):
+    """リフレッシュトークンを使用して新しいアクセストークンを発行するミューテーション"""
+
     class Arguments:
         refreshToken = graphene.String(required=True)
 

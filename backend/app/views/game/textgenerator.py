@@ -129,14 +129,14 @@ class TextGenerator:
 
 
 class TextSentenceType(graphene.ObjectType):
-    """テキスト生成結果の型定義"""
+    """生成された文章のGraphQL型定義"""
 
     id = graphene.Int()
     text = graphene.String()
 
 
 class GenerateText(graphene.Mutation):
-    """テキスト生成ミューテーション"""
+    """AIAPIを使用して漢字を含む文章を100文生成し、テーブルのkanjiカラムに格納するミューテーション"""
 
     class Arguments:
         pass

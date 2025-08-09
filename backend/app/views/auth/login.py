@@ -44,6 +44,8 @@ class UserType(DjangoObjectType):
 
 
 class TokenType(graphene.ObjectType):
+    """認証トークンのGraphQL型定義"""
+
     accessToken = graphene.String()
     refreshToken = graphene.String()
     expiresAt = graphene.Int()
@@ -98,6 +100,8 @@ def generate_tokens(user):
 
 
 class LoginUser(graphene.Mutation):
+    """ユーザーのログイン認証を行い、アクセストークンを発行するミューテーション"""
+
     class Arguments:
         email = graphene.String(required=True)
         password = graphene.String(required=True)

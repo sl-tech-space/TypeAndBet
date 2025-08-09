@@ -11,6 +11,8 @@ logger = logging.getLogger("app")
 
 
 class CompletePractice(Mutation):
+    """練習完了処理を行うミューテーション"""
+
     class Arguments:
         correct_typed = graphene.Int(required=True)
         accuracy = graphene.Float(required=True)

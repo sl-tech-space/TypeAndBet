@@ -35,6 +35,8 @@ class GameType(DjangoObjectType):
 
 
 class GameResultType(graphene.ObjectType):
+    """ゲーム結果のGraphQL型定義"""
+
     current_gold = graphene.Int()
     bet_amount = graphene.Int()
     loss_amount = graphene.Int()

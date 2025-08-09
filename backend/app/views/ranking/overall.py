@@ -49,6 +49,8 @@ class RankingType(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
+    """ランキング関連のクエリを定義するGraphQL型"""
+
     rankings = graphene.List(RankingType, limit=graphene.Int(), offset=graphene.Int())
 
     def resolve_rankings(self, info, limit=10, offset=0):
