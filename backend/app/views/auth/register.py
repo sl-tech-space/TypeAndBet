@@ -9,6 +9,7 @@ from app.models import User
 from app.utils.constants import AuthErrorMessages
 from app.utils.errors import BaseError, ErrorHandler
 from app.utils.validators import UserValidator, ValidationError
+from app.utils.sanitizer import sanitize_email, sanitize_password, sanitize_string
 
 logger = logging.getLogger("app")
 
@@ -53,6 +54,12 @@ class RegisterUser(graphene.Mutation):
     @transaction.atomic
     def mutate(cls, root, info, name, email, password, password_confirm):
         try:
+            # サニタイジング
+            name = sanitize_string(name, max_length=255)
+            email = sanitize_email(email)
+            password = sanitize_password(password)
+            password_confirm = sanitize_password(password_confirm)
+
             logger.info(f"ユーザー登録開始: email={email}, name={name}")
 
             logger.info("バリデーション開始")

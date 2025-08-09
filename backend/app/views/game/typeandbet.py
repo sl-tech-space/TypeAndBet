@@ -9,6 +9,7 @@ from app.models import Game, Ranking
 from app.utils.constants import GameErrorMessages
 from app.utils.game_calculator import GameCalculator
 from app.utils.validators import GameValidator
+from app.utils.sanitizer import sanitize_string
 
 logger = logging.getLogger("app")
 
@@ -33,6 +34,10 @@ class CreateBet(graphene.Mutation):
     @transaction.atomic
     def mutate(cls, root, info, bet_amount):
         try:
+            # 数値は基本GraphQLで型制約されるが念のため文字列から来た場合を考慮
+            if isinstance(bet_amount, str):
+                bet_amount = sanitize_string(bet_amount)
+                bet_amount = int(bet_amount) if bet_amount.isdigit() else -1
             logger.info(f"掛け金設定開始: bet_amount={bet_amount}")
 
             # ユーザー情報の取得
@@ -88,6 +93,19 @@ class UpdateGameScore(graphene.Mutation):
     @transaction.atomic
     def mutate(cls, root, info, game_id, correct_typed, accuracy):
         try:
+            # 文字列で来た場合のサニタイジングと安全変換
+            if isinstance(game_id, str):
+                game_id = sanitize_string(game_id)
+            if isinstance(correct_typed, str):
+                raw = sanitize_string(correct_typed)
+                correct_typed = int(raw) if raw.isdigit() else -1
+            if isinstance(accuracy, str):
+                raw = sanitize_string(accuracy)
+                try:
+                    accuracy = float(raw)
+                except Exception:
+                    accuracy = -1
+
             logger.info(
                 f"スコア更新開始: game_id={game_id}, correct_typed={correct_typed}, accuracy={accuracy}"
             )

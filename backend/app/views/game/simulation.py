@@ -8,6 +8,7 @@ from graphene import Boolean, Int, List, Mutation, String
 from app.models import Game
 from app.utils.game_calculator import GameCalculator
 from app.utils.validators import GameValidator
+from app.utils.sanitizer import sanitize_string
 
 logger = logging.getLogger("app")
 
@@ -28,6 +29,16 @@ class CompletePractice(Mutation):
     @transaction.atomic
     def mutate(cls, root, info, correct_typed, accuracy):
         try:
+            # 文字列で来た場合のサニタイジングと安全変換
+            if isinstance(correct_typed, str):
+                raw = sanitize_string(correct_typed)
+                correct_typed = int(raw) if raw.isdigit() else -1
+            if isinstance(accuracy, str):
+                raw = sanitize_string(accuracy)
+                try:
+                    accuracy = float(raw)
+                except Exception:
+                    accuracy = -1
             user = info.context.user
             logger.info(
                 f"練習完了処理開始: user_id={user.id if user.is_authenticated else '未認証'}"

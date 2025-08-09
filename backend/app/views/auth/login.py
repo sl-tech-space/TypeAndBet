@@ -12,6 +12,7 @@ from app.models.user import User
 from app.utils.constants import AuthErrorMessages
 from app.utils.errors import BaseError, ErrorHandler
 from app.utils.validators import ValidationError
+from app.utils.sanitizer import sanitize_email, sanitize_password
 
 logger = logging.getLogger("app")
 
@@ -115,6 +116,10 @@ class LoginUser(graphene.Mutation):
     @classmethod
     def mutate(cls, root, info, email: str, password: str):
         try:
+            # サニタイジング
+            email = sanitize_email(email)
+            password = sanitize_password(password)
+
             logger.info(f"ログイン試行開始: email={email}")
 
             # 入力値のバリデーション

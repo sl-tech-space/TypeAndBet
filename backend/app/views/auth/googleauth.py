@@ -10,6 +10,7 @@ from graphene_django.types import DjangoObjectType
 from app.models.user import User
 from app.utils.constants import AuthErrorMessages
 from app.utils.errors import BaseError, ErrorHandler
+from app.utils.sanitizer import sanitize_email, sanitize_string
 
 logger = logging.getLogger("app")
 
@@ -114,9 +115,13 @@ class GoogleAuth(graphene.Mutation):
     @classmethod
     def mutate(cls, root, info, **kwargs):
         try:
-            email = kwargs.get("email")
-            name = kwargs.get("name")
-            icon = kwargs.get("icon")
+            email = sanitize_email(kwargs.get("email"))
+            name = sanitize_string(kwargs.get("name"), max_length=255)
+            icon = (
+                sanitize_string(kwargs.get("icon"), max_length=255)
+                if kwargs.get("icon")
+                else None
+            )
 
             logger.info(f"Google認証開始: email={email}, name={name}")
 
