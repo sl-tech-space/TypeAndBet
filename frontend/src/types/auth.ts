@@ -35,7 +35,6 @@ export interface OAuthResponse extends Record<string, unknown> {
   };
 }
 
-
 /**
  * ログインレスポンス
  */

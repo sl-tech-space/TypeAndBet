@@ -4,6 +4,8 @@ import { FlatCompat } from "@eslint/eslintrc";
 import typescriptPlugin from "@typescript-eslint/eslint-plugin";
 import typescriptParser from "@typescript-eslint/parser";
 import importPlugin from "eslint-plugin-import";
+import prettierPlugin from "eslint-plugin-prettier";
+import prettierConfig from "eslint-config-prettier";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -18,7 +20,8 @@ const eslintConfig = [
     files: ["**/*.ts", "**/*.tsx"],
     plugins: {
       "@typescript-eslint": typescriptPlugin,
-      "import": importPlugin
+      "import": importPlugin,
+      "prettier": prettierPlugin
     },
     languageOptions: {
       parser: typescriptParser,
@@ -65,8 +68,13 @@ const eslintConfig = [
           "caseInsensitive": true
         }
       }],
+
+      // Prettier関連
+      "prettier/prettier": "error",
     },
   },
+  // Prettierとの競合を回避
+  prettierConfig,
 ];
 
 export default eslintConfig;

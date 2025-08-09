@@ -20,4 +20,4 @@ export interface GoldBetCardProps {
   maxBet?: number;
   /** ゲームモード識別子 */
   gameModeId: string;
-} 
+}

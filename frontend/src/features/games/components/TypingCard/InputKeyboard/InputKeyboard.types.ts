@@ -19,4 +19,4 @@ export interface KeyboardKey {
   code: string;
   wide?: boolean;
   extraWide?: boolean;
-} 
+}

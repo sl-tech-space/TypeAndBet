@@ -77,7 +77,7 @@ export class GraphQLServerClient {
    */
   public async executeQuery<
     TData extends Record<string, unknown>,
-    TVariables extends Record<string, unknown> = Record<string, never>
+    TVariables extends Record<string, unknown> = Record<string, never>,
   >(
     query: TypedDocumentNode<TData, TVariables> | string,
     variables?: TVariables
@@ -98,7 +98,7 @@ export class GraphQLServerClient {
    */
   public async executeMutation<
     TData extends Record<string, unknown>,
-    TVariables extends Record<string, unknown> = Record<string, never>
+    TVariables extends Record<string, unknown> = Record<string, never>,
   >(
     mutation: TypedDocumentNode<TData, TVariables> | string,
     variables?: TVariables

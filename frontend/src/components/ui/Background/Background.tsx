@@ -25,19 +25,41 @@ export const Background = (): ReactElement => {
       <div className={styles["casino-background__right-border"]}></div>
 
       {/* カジノライトエフェクト */}
-      <div className={`${styles["casino-background__light-effect"]} ${styles["casino-background__light-green1"]}`}></div>
-      <div className={`${styles["casino-background__light-effect"]} ${styles["casino-background__light-green2"]}`}></div>
-      <div className={`${styles["casino-background__light-effect"]} ${styles["casino-background__light-green3"]}`}></div>
+      <div
+        className={`${styles["casino-background__light-effect"]} ${styles["casino-background__light-green1"]}`}
+      ></div>
+      <div
+        className={`${styles["casino-background__light-effect"]} ${styles["casino-background__light-green2"]}`}
+      ></div>
+      <div
+        className={`${styles["casino-background__light-effect"]} ${styles["casino-background__light-green3"]}`}
+      ></div>
 
       {/* 上下の暗いグラデーション */}
       <div className={styles["casino-background__top-darkness"]}></div>
       <div className={styles["casino-background__bottom-darkness"]}></div>
 
       {/* カジノの浮遊要素 */}
-      <div className={`${styles["casino-background__floating-element"]} ${styles["casino-background__spade"]}`}>♠</div>
-      <div className={`${styles["casino-background__floating-element"]} ${styles["casino-background__heart"]}`}>♥</div>
-      <div className={`${styles["casino-background__floating-element"]} ${styles["casino-background__diamond"]}`}>♦</div>
-      <div className={`${styles["casino-background__floating-element"]} ${styles["casino-background__club"]}`}>♣</div>
+      <div
+        className={`${styles["casino-background__floating-element"]} ${styles["casino-background__spade"]}`}
+      >
+        ♠
+      </div>
+      <div
+        className={`${styles["casino-background__floating-element"]} ${styles["casino-background__heart"]}`}
+      >
+        ♥
+      </div>
+      <div
+        className={`${styles["casino-background__floating-element"]} ${styles["casino-background__diamond"]}`}
+      >
+        ♦
+      </div>
+      <div
+        className={`${styles["casino-background__floating-element"]} ${styles["casino-background__club"]}`}
+      >
+        ♣
+      </div>
     </div>
   );
 };

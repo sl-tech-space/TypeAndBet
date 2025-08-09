@@ -8,4 +8,4 @@ export type LabelProps = {
   required?: boolean;
   children: ReactNode;
   className?: string;
-}; 
+};

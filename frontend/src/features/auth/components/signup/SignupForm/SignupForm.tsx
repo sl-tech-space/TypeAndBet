@@ -75,7 +75,9 @@ export const SignupForm = (): ReactElement => {
   /**
    * パスワード入力時のバリデーション
    */
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  const handlePasswordChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ): void => {
     const newPassword = e.target.value;
     setPassword(newPassword);
     validatePassword(newPassword);

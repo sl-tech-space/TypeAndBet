@@ -20,7 +20,9 @@ import type { GameSession } from "@/types/games";
 export async function isValidGameSession(sessionId: string): Promise<boolean> {
   try {
     const cookieStore = await cookies();
-    const sessionCookie = cookieStore.get(`${GAME_SESSION_COOKIE_NAME}-${sessionId}`);
+    const sessionCookie = cookieStore.get(
+      `${GAME_SESSION_COOKIE_NAME}-${sessionId}`
+    );
     if (!sessionCookie) return false;
 
     const session = JSON.parse(sessionCookie.value) as GameSession;

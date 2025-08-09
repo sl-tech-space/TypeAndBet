@@ -45,4 +45,3 @@ type IconWithBorderProps = BaseIconProps & {
  * アイコンのプロパティ（条件付き型）
  */
 export type IconProps = IconWithoutBorderProps | IconWithBorderProps;
-

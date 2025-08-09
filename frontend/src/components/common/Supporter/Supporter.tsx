@@ -7,7 +7,7 @@ import {
   useState,
   useEffect,
   useRef,
-  Fragment
+  Fragment,
 } from "react";
 
 import { useMessage } from "@/components/common/context";
@@ -88,7 +88,10 @@ export const Supporter = (): ReactElement => {
   const hasMessage = !!message;
 
   // 表示するメッセージを決定
-  const pathMessage = path in PATH_DEFAULT_MESSAGES ? PATH_DEFAULT_MESSAGES[path as keyof typeof PATH_DEFAULT_MESSAGES] : null;
+  const pathMessage =
+    path in PATH_DEFAULT_MESSAGES
+      ? PATH_DEFAULT_MESSAGES[path as keyof typeof PATH_DEFAULT_MESSAGES]
+      : null;
   const displayMessage = message || pathMessage || "";
 
   // メッセージの変更を監視し、アニメーションをトリガー
@@ -104,7 +107,7 @@ export const Supporter = (): ReactElement => {
       // アニメーションを再開するため少し遅延を設ける
       const startTimer = setTimeout(() => {
         setShouldAnimate(true);
-        
+
         // アニメーション表示後、一定時間後に状態を戻す
         animationTimer = setTimeout(() => {
           setShouldAnimate(false);
@@ -126,11 +129,11 @@ export const Supporter = (): ReactElement => {
   useEffect(() => {
     // パスが変更された時にアニメーションを実行
     setShouldAnimate(true);
-    
+
     const animationTimer = setTimeout(() => {
       setShouldAnimate(false);
     }, 1000);
-    
+
     return () => {
       clearTimeout(animationTimer);
     };

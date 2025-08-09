@@ -46,11 +46,8 @@ export class GraphQLClient {
    */
   public async executeQuery<
     TData extends Record<string, unknown>,
-    TVariables extends OperationVariables = OperationVariables
-  >(
-    query: DocumentNode,
-    variables?: TVariables
-  ): Promise<TData> {
+    TVariables extends OperationVariables = OperationVariables,
+  >(query: DocumentNode, variables?: TVariables): Promise<TData> {
     try {
       const { data } = await this.client.query<TData, TVariables>({
         query,
@@ -69,11 +66,8 @@ export class GraphQLClient {
    */
   public async executeMutation<
     TData extends Record<string, unknown>,
-    TVariables extends OperationVariables = OperationVariables
-  >(
-    mutation: DocumentNode,
-    variables?: TVariables
-  ): Promise<TData> {
+    TVariables extends OperationVariables = OperationVariables,
+  >(mutation: DocumentNode, variables?: TVariables): Promise<TData> {
     try {
       const { data } = await this.client.mutate<TData, TVariables>({
         mutation,

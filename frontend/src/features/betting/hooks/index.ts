@@ -1,1 +1,1 @@
-export * from './useBetting';
+export * from "./useBetting";

@@ -9,8 +9,10 @@
     "lint": "next lint",
     "lint:all": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --max-warnings=0",
     "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
+    "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "type-check": "tsc --noEmit",
-    "check:all": "yarn lint:all && yarn type-check"
+    "check:all": "yarn lint:all && yarn type-check && yarn format:check"
   },
   "dependencies": {
     "@apollo/client": "^3.13.8",
@@ -38,8 +40,11 @@
     "@typescript-eslint/parser": "^8.38.0",
     "eslint": "^9",
     "eslint-config-next": "15.2.4",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-ja": "^0.1.0",
+    "eslint-plugin-prettier": "^5.5.4",
+    "prettier": "^3.6.2",
     "sass": "^1.86.0",
     "typescript": "^5"
   }

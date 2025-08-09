@@ -67,10 +67,8 @@ export const usePersistentSession = (): {
 
   // ゴールド同期関数（UI保持機能付き）
   const syncGold = useCallback(async (): Promise<void> => {
+    // ユーザーがログインしていない場合はスキップ
     if (!session?.user?.id) {
-      console.warn(
-        "ユーザーがログインしていないため、ゴールド同期をスキップします"
-      );
       return;
     }
 
@@ -98,6 +96,11 @@ export const usePersistentSession = (): {
 
   // 定期的なゴールド同期（30秒間隔）
   useEffect(() => {
+    // ユーザーがログインしていない場合はスキップ
+    if (!session?.user?.id) {
+      return;
+    }
+
     const startPolling = (): void => {
       if (intervalRef.current) return; // 既にポーリング中
 
