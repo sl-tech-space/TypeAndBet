@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import { Button, Text, Icon } from "@/components/ui";
 import { ROUTE, ROUTE_NAME } from "@/constants";
-import { useBaseRouter, useNavigator, useSession } from "@/hooks";
-import { maskEmail } from "@/utils";
+import { useBaseRouter, useNavigator, usePersistentSession } from "@/hooks";
+import { maskEmail, isRevalidateRoute } from "@/utils";
 
 import styles from "./HeaderActions.module.scss";
 
@@ -18,13 +18,46 @@ import styles from "./HeaderActions.module.scss";
  * @returns ヘッダーアクションコンポーネント
  */
 export const HeaderActionsClient = (): React.ReactNode => {
-  const { user, isAuthenticated, accessToken } = useSession();
+  const {
+    persistentUser,
+    isAuthenticated,
+    accessToken,
+    isLoading,
+    isSyncing,
+    syncGold,
+  } = usePersistentSession();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { refresh } = useBaseRouter();
   const { toHome } = useNavigator();
+  const hasUpdated = useRef(false);
 
-  const isLoggedIn = isAuthenticated && accessToken && !isLoggingOut;
+  // ゴールド同期ロジック（特定ルートでのみ）
+  useEffect(() => {
+    // ローディング中は何もしない
+    if (isLoading) return;
+
+    // 認証されていない場合は何もしない
+    if (!isAuthenticated || !persistentUser) return;
+
+    // 既に更新済みの場合は何もしない
+    if (hasUpdated.current) return;
+
+    // 現在のパスを取得
+    const pathname = window.location.pathname;
+
+    // 再検証ルートの場合、ゴールドを同期（一度だけ）
+    if (isRevalidateRoute(pathname)) {
+      hasUpdated.current = true;
+      syncGold().catch((error) => {
+        console.error("ゴールド同期エラー:", error);
+      });
+    }
+  }, [isLoading, isAuthenticated, persistentUser, syncGold]);
+
+  // persistentUserが存在する限り、ログイン済みとして扱う（同期中でもちらつかない）
+  const isLoggedIn =
+    (persistentUser || (isAuthenticated && accessToken)) && !isLoggingOut;
 
   const handleLogout = async (): Promise<void> => {
     try {
@@ -42,7 +75,7 @@ export const HeaderActionsClient = (): React.ReactNode => {
   };
 
   // ログイン済みの場合
-  if (isLoggedIn && user) {
+  if (isLoggedIn && persistentUser) {
     return (
       <div className={styles.user}>
         <div className={styles["user__info"]}>
@@ -52,14 +85,22 @@ export const HeaderActionsClient = (): React.ReactNode => {
               color="gold"
               className={styles["user__text__name"]}
             >
-              {user.name || "ゲスト"}
+              {persistentUser.name || "ゲスト"}
             </Text>
             <Text
               variant="h3"
               color="gold"
               className={styles["user__text__gold"]}
             >
-              {(user.gold || 0).toLocaleString()}G
+              {(persistentUser.gold || 0).toLocaleString()}G
+              {isSyncing && (
+                <Icon
+                  icon="/assets/svg/sync.svg"
+                  alt="同期中"
+                  size="xs"
+                  className={styles["user__text__sync"]}
+                />
+              )}
             </Text>
           </div>
           <div className={styles["user__icon-container"]}>
@@ -68,9 +109,11 @@ export const HeaderActionsClient = (): React.ReactNode => {
               onClick={() => setIsOpen(!isOpen)}
             >
               <Icon
-                icon={user.icon || "/assets/images/default-icon.png"}
+                icon={persistentUser.icon || "/assets/images/default-icon.png"}
                 alt={
-                  user.name ? `${user.name}のアイコン` : "デフォルトアイコン"
+                  persistentUser.name
+                    ? `${persistentUser.name}のアイコン`
+                    : "デフォルトアイコン"
                 }
                 size="sm"
                 isBorder
@@ -84,7 +127,9 @@ export const HeaderActionsClient = (): React.ReactNode => {
               <div className={styles["user__dropdown"]}>
                 <div className={styles["user__dropdown__email"]}>
                   <Text variant="h3" color="gold">
-                    {user.email ? maskEmail(user.email) : "メールアドレスなし"}
+                    {persistentUser.email
+                      ? maskEmail(persistentUser.email)
+                      : "メールアドレスなし"}
                   </Text>
                 </div>
                 <div className={styles["user__dropdown__button"]}>

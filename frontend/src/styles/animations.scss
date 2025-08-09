@@ -2,6 +2,13 @@
 // アニメーション共通定義
 // ========================================
 
+/**
+ * 使用例
+ * .animate-class {
+ *   animation: fadeIn 1s ease-in-out;
+ * }
+ */
+
 // フェードイン
 @keyframes fadeIn {
   from {

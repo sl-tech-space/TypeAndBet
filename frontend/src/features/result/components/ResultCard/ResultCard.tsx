@@ -1,41 +1,51 @@
-import { usePathname } from "next/navigation";
+"use client";
+
+import Link from "next/link";
 import { type ReactElement } from "react";
 
-import { Card, Text } from "@/components/ui";
-import { RESULT_CONTENTS, RESULT_TITLE, ROUTE } from "@/constants";
-import { useResultStore } from "@/features/result/stores";
+import { Card, Text, Loading, Button } from "@/components/ui";
+import {
+  HOME_BACK_BUTTON,
+  RESULT_CONTENTS,
+  RESULT_TITLE,
+  RETRY,
+  ROUTE,
+} from "@/constants";
+import { useResult } from "@/features/result/hooks";
+
+import { ResultContent, type ResultContentProps } from "../ResultContent";
 
 import styles from "./ResultCard.module.scss";
 
 export const ResultCard = (): ReactElement => {
-  const pathName = usePathname();
+  const { result, isLoading, isSimulate, isPlay } = useResult();
 
-  const result = useResultStore((state) => state.result);
-
-  /**
-   * 結果の内容を表示する
-   * @param content 結果の内容
-   * @param value 結果の値
-   * @param change 結果の変化量
-   * @returns 結果の内容を表示する
-   */
-  const contentView = (
-    content: string,
-    value: number | "-",
-    unit: string,
-    change?: number
-  ): ReactElement => {
-    return (
-      <div className={styles.card__container__content}>
-        <Text variant="p" size="large" color="gold">
-          {content} : {value} {unit}
-        </Text>
-        <Text variant="p" size="large" color="gold">
-          {change ? `${change}` : ""}
-        </Text>
-      </div>
-    );
-  };
+  const contents: ResultContentProps[] = [
+    {
+      content: RESULT_CONTENTS.SCORE,
+      value: result?.score || 0,
+      unit: "点",
+      change: "",
+    },
+    {
+      content: RESULT_CONTENTS.GOLD,
+      value: result?.currentGold || "-",
+      unit: "G",
+      change: result?.goldChange || "",
+    },
+    {
+      content: RESULT_CONTENTS.RANKING,
+      value: result?.currentRank || "-",
+      unit: "位",
+      change: result?.rankChange || "",
+    },
+    {
+      content: RESULT_CONTENTS.NEXT_RANKING,
+      value: result?.nextRankGold || "-",
+      unit: "G",
+      change: "",
+    },
+  ];
 
   return (
     <div className={styles.wrapper}>
@@ -43,35 +53,77 @@ export const ResultCard = (): ReactElement => {
         variant="default"
         backgroundColor="tertiary"
         isBorder={true}
-        borderColor="tertiary"
+        borderColor="gold"
         isRound={false}
         isHoverable={false}
         hasShadow={true}
         shadowColor="gold"
         padding="small"
-        size="small"
+        size="large"
         className={styles.card}
       >
         <div className={styles.card__container}>
-          <Text variant="h3" size="large" color="gold">
+          <Text
+            variant="h3"
+            size="xxlarge"
+            color="gold"
+            className={styles.card__title}
+          >
             {RESULT_TITLE}
           </Text>
-          {pathName === ROUTE.PLAY && (
-            <>
-              {contentView(RESULT_CONTENTS.SCORE, result?.score || 0, "点")}
-              {contentView(RESULT_CONTENTS.GOLD, 100, "G", 10)}
-              {contentView(RESULT_CONTENTS.RANKING, 100, "位", 10)}
-              {contentView(RESULT_CONTENTS.NEXT_RANKING, 100, "G", 10)}
-            </>
+          {isLoading && (
+            <div className={styles.card__loading}>
+              <Loading />
+            </div>
           )}
-          {pathName === ROUTE.SIMULATE && (
-            <>
-              {contentView(RESULT_CONTENTS.SCORE, result?.score || 0, "点")}
-              {contentView(RESULT_CONTENTS.GOLD, "-", "G", result?.goldChange)}
-              {contentView(RESULT_CONTENTS.RANKING, "-", "位")}
-              {contentView(RESULT_CONTENTS.NEXT_RANKING, "-", "G")}
-            </>
+          {!isLoading && result === null && (
+            <div className={styles.card__no_result}>
+              <Text variant="p" size="xlarge" color="gold">
+                タイピング結果がありません
+              </Text>
+            </div>
           )}
+          {!isLoading && result !== null && (
+            <div className={styles.card__content}>
+              {isSimulate && (
+                <Text
+                  variant="p"
+                  size="large"
+                  className={styles.card__warning_text}
+                >
+                  シミュレートモードのため結果は反映されません
+                </Text>
+              )}
+              {contents.map((content, index) => (
+                <ResultContent key={index} {...content} data-index={index} />
+              ))}
+            </div>
+          )}
+          <div className={styles.card__result_form}>
+            <Link href={ROUTE.HOME}>
+              <Button
+                textColor="gold"
+                backgroundColor="tertiary"
+                isBorder={true}
+                borderColor="gold"
+                isRound={true}
+              >
+                {HOME_BACK_BUTTON.TEXT}
+              </Button>
+            </Link>
+            <Link href={isPlay ? ROUTE.PLAY : ROUTE.SIMULATE}>
+              <Button
+                textColor="gold"
+                backgroundColor="tertiary"
+                isBorder={true}
+                borderColor="gold"
+                isRound={true}
+                className={styles.card__result_form__retry}
+              >
+                {RETRY}
+              </Button>
+            </Link>
+          </div>
         </div>
       </Card>
     </div>

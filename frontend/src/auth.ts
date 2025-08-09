@@ -118,7 +118,13 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     },
   },
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger, session }) {
+      if (trigger === "update") {
+        return {
+          ...token,
+          gold: session.user.gold,
+        };
+      }
       // 初回サインイン時またはユーザー情報更新時
       if (account && user) {
         if (account.provider === OAUTH_PROVIDER.GOOGLE) {

@@ -1,5 +1,8 @@
 import { gql } from "@apollo/client";
 
+/**
+ * ベット
+ */
 export const BET = gql`
   mutation Bet($betAmount: Int!) {
     createBet(betAmount: $betAmount) {

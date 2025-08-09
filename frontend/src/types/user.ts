@@ -12,9 +12,9 @@ export type User = {
 };
 
 /**
- * セッションゴールド同期更新レスポンス
+ * セッションゴールド取得レスポンス
  */
-export interface SessionGoldUpdateResponse extends Record<string, unknown> {
+export interface GetGoldResponse extends Record<string, unknown> {
   userInfo: {
     gold: number;
   };

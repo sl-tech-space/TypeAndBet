@@ -1,16 +1,20 @@
+import { SessionProvider } from "next-auth/react";
 import { type ReactElement } from "react";
-
-import { GAME_MODE_ID } from "@/constants";
-import { GoldBetCard } from "@/features/betting";
 
 import styles from "./page.module.scss";
 
-export default function PlayPage(): ReactElement {
-  const balance = 1000;
+import { PlayPageContent } from "@/app/play/PlayPageContent";
 
+/**
+ * PlayPage - SessionProviderでラップしてセッション管理を可能にする
+ * @returns プレイページ
+ */
+export default function PlayPage(): ReactElement {
   return (
-    <section className={styles.container}>
-      <GoldBetCard balance={balance} gameModeId={GAME_MODE_ID.PLAY} />
-    </section>
+    <SessionProvider>
+      <section className={styles.container}>
+        <PlayPageContent />
+      </section>
+    </SessionProvider>
   );
 }

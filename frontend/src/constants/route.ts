@@ -79,3 +79,19 @@ export const HOME_BACK_BUTTON: HomeBackButton = {
   TEXT: "ホームに戻る",
   ROUTE: "/",
 };
+
+export type RevalidateRouteKey = "HOME" | "SIMULATE" | "PLAY" | "RESULT";
+
+export type RevalidateRoute = {
+  [key in RevalidateRouteKey]: string;
+};
+
+/**
+ * ユーザのデータを更新した際に再検証するルート
+ */
+export const REVALIDATE_ROUTES: RevalidateRoute = {
+  HOME: ROUTE.HOME,
+  SIMULATE: ROUTE.SIMULATE,
+  PLAY: ROUTE.PLAY,
+  RESULT: ROUTE.RESULT,
+};

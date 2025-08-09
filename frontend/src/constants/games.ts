@@ -92,3 +92,8 @@ export const TYPE_JUDGE: TypeJudge = {
 export const COUNT_DOWN_TIME: number = 3;
 export const INITIAL_VALUE: number = 0;
 export const INITIAL_SENTENCE_COUNT: number = 5;
+
+/**
+ * リトライボタンのテキスト
+ */
+export const RETRY: string = "ReBet!";

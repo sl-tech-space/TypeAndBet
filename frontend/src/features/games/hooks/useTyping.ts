@@ -1,17 +1,17 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useParams } from "next/navigation";
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 
-import { completeSimulate } from "@/actions/games";
+import { completeSimulate, completePlay, setGameResult } from "@/actions";
 import {
   COUNT_DOWN_TIME,
   INITIAL_VALUE,
   INITIAL_SENTENCE_COUNT,
   ROUTE,
+  GAME_MODE_ID,
 } from "@/constants";
 import { RomajiTrie, buildRomajiTrie } from "@/features/games";
-import { useResultStore } from "@/features/result/stores/resultStore";
 import { useNavigator } from "@/hooks/routing/useNavigator";
 import { ErrorState } from "@/hooks/useError";
 import { removeSpaces, removeSpacesFromArray } from "@/utils";
@@ -27,6 +27,7 @@ import type {
   RomajiProgress,
   PromptDetail,
 } from "./";
+import type { GameResult } from "@/features/result/types";
 
 /**
  * タイピングゲームのロジックを管理するフック
@@ -600,7 +601,11 @@ export const useTyping = (): {
 
   // タイピング終了時の処理
   const pathName = usePathname();
-  const { toResult } = useNavigator();
+  const params = useParams();
+  const { toResult, toError } = useNavigator();
+
+  // URLパラメータからゲームIDを取得
+  const gameId = params.gameId as string | undefined;
 
   useEffect(() => {
     if (isFinished) {
@@ -608,20 +613,49 @@ export const useTyping = (): {
       const handleGameEnd = async (): Promise<void> => {
         try {
           if (pathName.includes(ROUTE.SIMULATE)) {
-            const { success, score, goldChange, error } =
-              await completeSimulate(accuracy, correctTypeCount);
+            const response = await completeSimulate(
+              accuracy / 100,
+              correctTypeCount
+            );
 
-            // 結果をストアに保存
-            useResultStore.getState().setResult({
-              success,
-              score,
-              goldChange,
-              error: error || "",
-            });
+            const result: GameResult = {
+              gameType: GAME_MODE_ID.SIMULATE,
+              success: response.success,
+              score: response.score,
+              goldChange: response.goldChange,
+              error: response.error || "",
+            };
 
-            // 結果ページへ遷移
+            // Server Actionを使用して結果を保存
+            await setGameResult(result);
             toResult();
+            return;
+          } else if (pathName.includes(ROUTE.PLAY) && gameId) {
+            const response = await completePlay(
+              gameId,
+              accuracy / 100,
+              correctTypeCount
+            );
+
+            const result: GameResult = {
+              gameType: GAME_MODE_ID.PLAY,
+              success: response.success,
+              score: response.score,
+              currentGold: response.currentGold,
+              goldChange: response.goldChange,
+              currentRank: response.currentRank,
+              rankChange: response.rankChange,
+              nextRankGold: response.nextRankGold,
+              error: response.error || "",
+            };
+
+            // Server Actionを使用して結果を保存
+            await setGameResult(result);
+            toResult();
+            return;
           }
+
+          toError.to500();
         } catch (error) {
           console.error("タイピング結果の送信に失敗:", error);
         }
@@ -635,7 +669,9 @@ export const useTyping = (): {
     totalTypeCount,
     accuracy,
     pathName,
+    gameId,
     toResult,
+    toError,
   ]);
 
   return {

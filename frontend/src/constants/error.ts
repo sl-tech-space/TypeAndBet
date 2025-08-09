@@ -8,7 +8,8 @@ export type ErrorMessageKey =
   | "GENERATE_TEXT_FAILED"
   | "CREATE_BET_FAILED"
   | "GRAPHQL_ERROR"
-  | "COMPLETE_SIMULATE_FAILED";
+  | "COMPLETE_SIMULATE_FAILED"
+  | "COMPLETE_PLAY_FAILED";
 
 export type ErrorMessages = {
   [key in ErrorMessageKey]: string;
@@ -22,4 +23,5 @@ export const ERROR_MESSAGE: ErrorMessages = {
   CREATE_BET_FAILED: "ベット作成に失敗しました",
   GRAPHQL_ERROR: "GraphQLエラーが発生しました",
   COMPLETE_SIMULATE_FAILED: "シミュレーション完了処理に失敗しました",
+  COMPLETE_PLAY_FAILED: "プレイ完了処理に失敗しました",
 };

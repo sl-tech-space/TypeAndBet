@@ -4,7 +4,7 @@ import { ApolloError } from "@apollo/client";
 import { cookies } from "next/headers";
 import { getToken, encode } from "next-auth/jwt";
 
-import { ERROR_MESSAGE } from "@/constants";
+import { ERROR_MESSAGE, NODE_ENV } from "@/constants";
 import { BettingService, GraphQLServerClient } from "@/graphql";
 import { getAuthorizedServerClient } from "@/lib/apollo-server";
 
@@ -33,7 +33,10 @@ export async function createBet(
     const rawClient = await getAuthorizedServerClient();
 
     const { data }: { data: CreateBetResponse } =
-      await BettingService.createBet(new GraphQLServerClient(rawClient), amount);
+      await BettingService.createBet(
+        new GraphQLServerClient(rawClient),
+        amount
+      );
 
     if (!data.createBet) {
       return {
@@ -63,7 +66,7 @@ export async function createBet(
     cookieStore.set(cookieName, encoded, {
       path: "/",
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === NODE_ENV.PRODUCTION,
       sameSite: "lax",
     });
 

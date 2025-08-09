@@ -48,6 +48,7 @@ export const GoldBetCard = ({
           isBorder={true}
           borderColor="gold"
           isRound={true}
+          isHoverable={false}
           hasShadow={true}
           shadowColor="gold"
           padding="large"
@@ -56,7 +57,6 @@ export const GoldBetCard = ({
           <Text variant="h2" className={styles["gold-bet-card__title"]}>
             ベット額を選択
           </Text>
-
           <GoldBetForm {...formProps} />
         </Card>
       </div>

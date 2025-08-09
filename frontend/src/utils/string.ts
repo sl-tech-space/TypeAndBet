@@ -35,3 +35,12 @@ export const maskEmail = (email: string): string => {
   if (atIndex <= EMAIL_VISIBLE_CHARS) return email;
   return email.slice(0, EMAIL_VISIBLE_CHARS) + "***" + email.slice(atIndex);
 };
+
+/**
+ * 文字列がマイナス値かどうかを判定する
+ * @param value 対象の文字列
+ * @returns マイナス値かどうか
+ */
+export const isValidMinusValue = (value: string): boolean => {
+  return value.startsWith("-") && !isNaN(Number(value));
+};

@@ -17,10 +17,20 @@ export type CreateGameSessionParams = {
 
 /**
  * ゲームセッションIDプロパティ
+ * ※シミュレートはゲームIDを使用しないためセッションIDを使用
  */
 export type GameSessionIdProps = {
   params: {
     sessionId: string;
+  };
+};
+
+/**
+ * ゲームIDプロパティ
+ */
+export type GameIdProps = {
+  params: {
+    gameId: string;
   };
 };
 
@@ -47,5 +57,33 @@ export interface CompleteSimulateResponse extends Record<string, unknown> {
     errors: string[];
     score: number;
     goldChange: number;
+  };
+}
+
+/**
+ * プレイの完了処理レスポンス
+ */
+export interface CompletePlayResponse extends Record<string, unknown> {
+  updateGameScore: {
+    game: {
+      id: string;
+      score: number;
+      goldChange: number;
+    };
+    success: boolean;
+    errors: string[];
+  };
+}
+
+/**
+ * ゲーム結果取得レスポンス
+ */
+export interface GetGameResultResponse extends Record<string, unknown> {
+  gameResult: {
+    currentGold: number;
+    goldChange: number;
+    currentRank: number;
+    rankChange: number;
+    nextRankGold: number;
   };
 }
