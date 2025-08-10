@@ -1,4 +1,4 @@
-import { SITE_NAME } from "@/constants";
+import { SITE_NAME } from "./meta";
 
 /**
  * ゲームモードの型定義
