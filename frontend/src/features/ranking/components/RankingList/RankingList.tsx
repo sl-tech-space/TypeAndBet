@@ -2,7 +2,7 @@
 
 import { type ReactElement } from "react";
 
-import { Loading, Text } from "@/components/ui";
+import { Icon, Loading, Text } from "@/components/ui";
 
 import { useRanking } from "@/features/ranking";
 import styles from "./RankingList.module.scss";
@@ -26,10 +26,14 @@ const RankingItem = ({ ranking }: { ranking: Ranking }): ReactElement => {
         </Text>
       </div>
       <div className={styles.item__user}>
-        <img
-          src={ranking.icon}
+        <Icon
+          icon={ranking.icon}
           alt={`${ranking.name}のアイコン`}
           className={styles.item__icon}
+          size="md"
+          isBorder={false}
+          isRound={true}
+          hasHoverEffect
         />
         <Text
           variant="p"

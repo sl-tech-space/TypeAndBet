@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { UserService, GraphQLServerClient } from "@/graphql";
+import { GraphQLServerClient, UserService } from "@/graphql";
 import { getAuthorizedServerClient } from "@/lib/apollo-server";
 
 /**
@@ -11,7 +11,7 @@ export async function getUserGold(): Promise<number> {
   const session = await auth();
 
   if (!session || !session.user?.id) {
-    throw new Error("認証されていません");
+    return 0;
   }
 
   const rawClient = await getAuthorizedServerClient();
@@ -22,8 +22,8 @@ export async function getUserGold(): Promise<number> {
 
   const gold: number = data.userInfo.gold;
   if (!gold && gold !== 0) {
-    throw new Error("ゴールドの取得に失敗しました");
+    return 0;
   }
 
-  return data.userInfo.gold;
+  return gold;
 }

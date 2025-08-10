@@ -3,6 +3,7 @@ export * from "./common";
 export * from "./env";
 export * from "./error";
 export * from "./games";
+export * from "./legal";
 export * from "./messages";
 export * from "./meta";
 export * from "./ranking";

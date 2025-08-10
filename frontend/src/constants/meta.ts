@@ -12,7 +12,9 @@ export type MetaKey =
   | "LOGIN"
   | "SIGNUP"
   | "PLAY"
-  | "RESULT";
+  | "RESULT"
+  | "TERMS"
+  | "PRIVACY";
 
 /**
  * メタ情報の型定義
@@ -31,6 +33,8 @@ export const META_TITLE: MetaInfo = {
   SIGNUP: "新規登録",
   PLAY: "プレイ",
   RESULT: "結果",
+  TERMS: "利用規約",
+  PRIVACY: "プライバシーポリシー",
 };
 
 /**
@@ -46,6 +50,9 @@ export const META_DESCRIPTION: MetaInfo = {
     "新規登録ページです。新規登録することで、Type&Betを楽しむことができます。",
   PLAY: "Type&Betの本番です。プレイすることで成績を競うことができます。",
   RESULT: "Type&Betの結果ページです。プレイした結果を確認することができます。",
+  TERMS: "Type&Betの利用規約ページです。利用規約を確認することができます。",
+  PRIVACY:
+    "Type&Betのプライバシーポリシーページです。プライバシーポリシーを確認することができます。",
 };
 
 /**
@@ -59,4 +66,6 @@ export const META_KEYWORDS: MetaInfo = {
   SIGNUP: "Type&Bet, 新規登録, シミュレーション, ランキング, 競争, 賭け",
   PLAY: "Type&Bet, プレイ, タイピング, ゲーム, 賭け, 競争, ランキング",
   RESULT: "Type&Bet, 結果, タイピング, ゲーム, 賭け, 競争, ランキング",
+  TERMS: "Type&Bet, 利用規約, プライバシーポリシー",
+  PRIVACY: "Type&Bet, プライバシーポリシー, 利用規約",
 };
