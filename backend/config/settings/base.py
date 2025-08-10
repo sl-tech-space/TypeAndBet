@@ -20,13 +20,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get(
-    "SECRET_KEY", "django-insecure-cjir2ou)5y4=703q5f$aekfnfgl3f!dc#gfshx0bz2-j+l)qyp"
-)
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", "True") == "True"
+"""
+SECRET_KEY と DEBUG は `config.settings.__init__` 側で管理する。
+ここでは定義しないことで、設定の単一化と誤用防止を図る。
+"""
 
 # フロントエンドのポート設定
 FRONTEND_PORT = os.environ.get("FRONTEND_PORT", "3000")

@@ -41,12 +41,28 @@ class Query(graphene.ObjectType):
     get_random_text_pair = graphene.Field(GetRandomTextPairType)
 
     def resolve_users(self, info):
-        return User.objects.all()
+        user = info.context.user
+        if not user.is_authenticated:
+            raise Exception("ログインが必要です")
+        # 管理者以外は自分自身のみ返す
+        if getattr(user, "is_staff", False):
+            return User.objects.all()
+        return User.objects.filter(id=user.id)
 
     def resolve_user(self, info, id):
+        user = info.context.user
+        if not user.is_authenticated:
+            raise Exception("ログインが必要です")
+        if str(user.id) != str(id) and not getattr(user, "is_staff", False):
+            raise Exception("権限がありません")
         return User.objects.get(id=id)
 
     def resolve_user_info(self, info, user_id):
+        user = info.context.user
+        if not user.is_authenticated:
+            raise Exception("ログインが必要です")
+        if str(user.id) != str(user_id) and not getattr(user, "is_staff", False):
+            raise Exception("権限がありません")
         return User.objects.get(id=user_id)
 
     def resolve_rankings(self, info, limit=10, offset=0):
@@ -56,11 +72,12 @@ class Query(graphene.ObjectType):
 
     def resolve_game_result(self, info, game_id):
         """ゲーム結果を解決"""
-        game = Game.objects.get(id=game_id)
         user = info.context.user
         if not user.is_authenticated:
             raise Exception("ログインが必要です")
-
+        game = Game.objects.get(id=game_id)
+        if game.user != user and not getattr(user, "is_staff", False):
+            raise Exception("権限がありません")
         result = GameResult(user, game)
         return result.get_result()
 

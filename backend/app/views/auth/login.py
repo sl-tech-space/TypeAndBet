@@ -1,6 +1,6 @@
 import logging
-import os
 import secrets
+from django.conf import settings
 from datetime import datetime, timedelta
 
 import graphene
@@ -16,8 +16,6 @@ from app.utils.sanitizer import sanitize_email, sanitize_password
 
 logger = logging.getLogger("app")
 
-# JWTの設定
-JWT_SECRET = os.getenv("JWT_SECRET", secrets.token_hex(32))
 ACCESS_TOKEN_EXPIRE_DAYS = 14  # フロントエンド側のセッション戦略に合わせて14日間に変更
 REFRESH_TOKEN_EXPIRE_DAYS = 30
 
@@ -64,7 +62,7 @@ def generate_tokens(user):
                 "exp": access_token_expires.timestamp(),
                 "type": "access",
             },
-            JWT_SECRET,
+            settings.JWT_SECRET,
             algorithm="HS256",
         )
         logger.info(f"アクセストークン生成完了: user_id={user.id}")
@@ -80,7 +78,7 @@ def generate_tokens(user):
                 "type": "refresh",
                 "jti": secrets.token_hex(16),
             },
-            JWT_SECRET,
+            settings.JWT_SECRET,
             algorithm="HS256",
         )
         logger.info(f"リフレッシュトークン生成完了: user_id={user.id}")

@@ -1,6 +1,5 @@
 import logging
-import os
-import secrets
+from django.conf import settings
 
 import jwt
 from django.contrib.auth import get_user_model
@@ -9,9 +8,6 @@ from django.contrib.auth.models import AnonymousUser
 logger = logging.getLogger("app")
 
 User = get_user_model()
-
-# JWTの設定（認証ファイルと同じ設定を使用）
-JWT_SECRET = os.getenv("JWT_SECRET", secrets.token_hex(32))
 
 
 class JWTAuthenticationMiddleware:
@@ -38,7 +34,9 @@ class JWTAuthenticationMiddleware:
 
                 # JWTトークンの検証
                 try:
-                    payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+                    payload = jwt.decode(
+                        token, settings.JWT_SECRET, algorithms=["HS256"]
+                    )
                     user_id = payload.get("user_id")
 
                     if user_id and payload.get("type") == "access":

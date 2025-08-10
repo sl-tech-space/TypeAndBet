@@ -144,34 +144,45 @@ class UpdateGameScore(graphene.Mutation):
             if past_scores:
                 z_score = GameCalculator.calculate_z_score(score, past_scores)
                 logger.info(f"Zスコア計算: z_score={z_score}")
+            else:
+                # データがない場合のデフォルトZスコアは0（倍率=1.0）
+                z_score = 0.0
+                logger.info("Zスコア計算: 過去データなしのため z_score=0.0")
 
-                # 倍率の計算
-                multiplier = GameCalculator.calculate_multiplier(z_score)
-                logger.info(f"倍率計算: multiplier={multiplier}")
+            # 倍率の計算
+            multiplier = GameCalculator.calculate_multiplier(z_score)
+            logger.info(f"倍率計算: multiplier={multiplier}")
 
-                # ゴールドの変化を計算
-                gold_change = GameCalculator.calculate_gold_change(
-                    multiplier, game.bet_amount, user.gold
-                )
-                logger.info(f"ゴールド変化計算: gold_change={gold_change}")
+            # ゴールドの変化を計算
+            gold_change = GameCalculator.calculate_gold_change(
+                multiplier, game.bet_amount, user.gold
+            )
+            logger.info(f"ゴールド変化計算: gold_change={gold_change}")
 
-                # ゲームの更新
-                game.score = score
-                game.gold_change = gold_change
-                game.save()
-                logger.info(f"ゲーム更新: game_id={game.id}")
+            # ゲームの更新
+            game.score = score
+            game.gold_change = gold_change
+            game.save()
+            logger.info(f"ゲーム更新: game_id={game.id}")
 
-                # ユーザーの所持金を更新
-                user.gold += gold_change
-                user.save()
-                logger.info(f"所持金更新: new_gold={user.gold}")
+            # ユーザーの所持金を更新
+            user.gold += gold_change
+            user.save()
+            logger.info(f"所持金更新: new_gold={user.gold}")
 
-                # ランキングの更新
-                ranking, created = Ranking.objects.get_or_create(user=user)
-                ranking.save()
-                logger.info(f"ランキング更新: user_id={user.id}")
+            # ランキングの更新（順位再計算をトリガ）
+            ranking, _ = Ranking.objects.get_or_create(user=user)
+            ranking.save()
+            try:
+                from app.models.user import User as UserModel
 
-                return UpdateGameScore(game=game, success=True, errors=[])
+                UserModel.update_rankings()
+                logger.info("ランキング一括更新完了")
+            except Exception:
+                # 失敗しても処理は継続
+                logger.warning("ランキング一括更新に失敗しました")
+
+            return UpdateGameScore(game=game, success=True, errors=[])
 
         except Game.DoesNotExist:
             logger.warning(f"ゲーム未検出: game_id={game_id}")

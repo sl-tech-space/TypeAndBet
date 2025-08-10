@@ -1,12 +1,43 @@
 import logging
+import random
 
 import graphene
 import MeCab
 from django.db import transaction
+from django.db.models import Min, Max
 
 from app.models.game import TextPair
 
 logger = logging.getLogger("app")
+
+
+def _get_random_converted_text_pair():
+    """IDレンジからランダムに1件取得（ORDER BY ? を回避）。
+    稀に欠番があるため複数回試行し、見つからない場合は先頭/最後尾にフォールバック。
+    """
+    agg = TextPair.objects.filter(is_converted=True).aggregate(
+        min_id=Min("id"), max_id=Max("id")
+    )
+    min_id = agg.get("min_id")
+    max_id = agg.get("max_id")
+    if min_id is None or max_id is None:
+        return None
+
+    for _ in range(5):
+        candidate = random.randint(min_id, max_id)
+        obj = (
+            TextPair.objects.filter(is_converted=True, id__gte=candidate)
+            .order_by("id")
+            .first()
+        )
+        if obj:
+            return obj
+
+    # フォールバック（先頭/最後尾）
+    obj = TextPair.objects.filter(is_converted=True).order_by("id").first()
+    if obj:
+        return obj
+    return TextPair.objects.filter(is_converted=True).order_by("-id").first()
 
 
 class TextPairType(graphene.ObjectType):
@@ -30,8 +61,8 @@ class GetRandomTextPair(graphene.Mutation):
     def mutate(cls, root, info):
         logger.info("ランダムTextPairペア取得開始")
         try:
-            # 変換済み（is_converted=True）のレコードからランダムに1つ選出
-            text_pair = TextPair.objects.filter(is_converted=True).order_by("?").first()
+            # 変換済み（is_converted=True）のレコードからランダムに1つ選出（高効率）
+            text_pair = _get_random_converted_text_pair()
 
             if not text_pair:
                 logger.warning("変換済みのTextPairが見つかりませんでした")
@@ -40,9 +71,7 @@ class GetRandomTextPair(graphene.Mutation):
                     success=False,
                 )
 
-            logger.info(
-                f"ランダムTextPairペア取得完了: ID={text_pair.id}, kanji={text_pair.kanji}, hiragana={text_pair.hiragana}"
-            )
+            logger.info(f"ランダムTextPairペア取得完了: id={text_pair.id}")
             return GetRandomTextPair(
                 text_pair=TextPairType(
                     id=text_pair.id,
@@ -158,7 +187,9 @@ class ConvertToHiragana(graphene.Mutation):
                         text_pair.save()
 
                         converted_count += 1
-                        logger.info(f"変換完了: {text_pair.kanji} -> {hiragana_text}")
+                        logger.info(
+                            f"変換完了: id={text_pair.id}, kanji_len={len(text_pair.kanji)}, hiragana_len={len(hiragana_text)}"
+                        )
 
                     except Exception as e:
                         logger.error(f"個別変換エラー (ID: {text_pair.id}): {str(e)}")
@@ -247,8 +278,19 @@ def resolve_get_converted_text_pairs(root, info, limit=10, offset=0, random=Fals
         total_count = queryset.count()
 
         if random:
-            # ランダム選出の場合
-            text_pairs = queryset.order_by("?")[offset : offset + limit]
+            # ランダム選出の場合（ORDER BY ? を避け、ランダム開始位置から連続取得）
+            if total_count == 0:
+                text_pairs = []
+            else:
+                start = random.randint(0, max(0, total_count - 1))
+                # ラップアラウンド取得
+                first_chunk = list(queryset.order_by("id")[start : start + limit])
+                if len(first_chunk) < limit and start > 0:
+                    remaining = limit - len(first_chunk)
+                    second_chunk = list(queryset.order_by("id")[:remaining])
+                    text_pairs = first_chunk + second_chunk
+                else:
+                    text_pairs = first_chunk
             logger.info(f"ランダム選出でTextPair取得完了: {len(text_pairs)}件取得")
         else:
             # 通常の日時順の場合
@@ -293,8 +335,8 @@ class GetRandomTextPairType(graphene.ObjectType):
 def resolve_get_random_text_pair(root, info):
     logger.info("ランダムTextPair選出開始")
     try:
-        # 変換済み（is_converted=True）のレコードからランダムに1つ選出
-        text_pair = TextPair.objects.filter(is_converted=True).order_by("?").first()
+        # 変換済み（is_converted=True）のレコードからランダムに1つ選出（高効率）
+        text_pair = _get_random_converted_text_pair()
 
         if not text_pair:
             logger.warning("変換済みのTextPairが見つかりませんでした")
