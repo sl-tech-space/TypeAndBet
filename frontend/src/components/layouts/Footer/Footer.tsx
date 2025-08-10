@@ -25,9 +25,6 @@ export const Footer = (): React.ReactNode => {
           <Link href={ROUTE.PRIVACY} className={styles.link}>
             {ROUTE_NAME.PRIVACY}
           </Link>
-          <Link href={ROUTE.CONTACT} className={styles.link}>
-            {ROUTE_NAME.CONTACT}
-          </Link>
         </nav>
       </div>
     </footer>

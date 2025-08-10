@@ -11,7 +11,6 @@ export type RouteKey =
   | "LOGOUT"
   | "TERMS"
   | "PRIVACY"
-  | "CONTACT"
   | "NOT_FOUND"
   | "SERVER_ERROR"
   | "RESULT";
@@ -33,7 +32,6 @@ export const ROUTE: Routes = {
   LOGOUT: "/auth/logout",
   TERMS: "/terms",
   PRIVACY: "/privacy",
-  CONTACT: "/contact",
   NOT_FOUND: "/404",
   SERVER_ERROR: "/500",
   RESULT: "/result",
@@ -60,7 +58,6 @@ export const ROUTE_NAME: RouteNames = {
   LOGOUT: "ログアウト",
   TERMS: "利用規約",
   PRIVACY: "プライバシーポリシー",
-  CONTACT: "お問い合わせ",
   NOT_FOUND: "ページが見つかりません",
   SERVER_ERROR: "サーバーエラー",
   RESULT: "結果",
