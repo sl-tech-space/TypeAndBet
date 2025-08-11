@@ -1,3 +1,5 @@
+import { ROUTE } from "./route";
+
 /**
  * 認証必須パスのインターフェース
  */
@@ -9,9 +11,7 @@ interface AuthPath {
 /**
  * 認証必須パス
  */
-export const AUTH_PATH: AuthPath[] = [
-  { href: "/type-and-bet", label: "Type&Bet" },
-];
+export const AUTH_PATH: AuthPath[] = [{ href: ROUTE.PLAY, label: "Type&Bet" }];
 
 /**
  * OAuthプロバイダーの型定義

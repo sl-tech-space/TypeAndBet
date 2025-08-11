@@ -60,5 +60,26 @@
   // Next.js用の設定
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.suggest.autoImports": true,
-  "typescript.updateImportsOnFileMove.enabled": "always"
+  "typescript.updateImportsOnFileMove.enabled": "always",
+
+  // Coverage Gutters設定
+  "coverage-gutters.lcovname": "frontend/coverage/lcov.info",
+  "coverage-gutters.coverageFileNames": [
+    "lcov.info",
+    "cov.xml",
+    "coverage.xml",
+    "jacoco.xml"
+  ],
+  "coverage-gutters.showGutterCoverage": true,
+  "coverage-gutters.showLineCoverage": true,
+  "coverage-gutters.showRulerCoverage": true,
+  // 🔴 カバーされていない行 (要テスト)
+  "coverage-gutters.noHighlightDark": "rgba(255, 99, 99, 0.4)",
+  "coverage-gutters.noHighlightLight": "rgba(255, 99, 99, 0.3)",
+  // ⚠️ 部分的にカバー (改善推奨)
+  "coverage-gutters.partialHighlightDark": "rgba(255, 165, 0, 0.3)",
+  "coverage-gutters.partialHighlightLight": "rgba(255, 165, 0, 0.2)",
+  // ✅ カバーされている行 (テスト済み)
+  "coverage-gutters.highlightdark": "rgba(76, 175, 80, 0.3)",
+  "coverage-gutters.highlightlight": "rgba(76, 175, 80, 0.2)"
 }

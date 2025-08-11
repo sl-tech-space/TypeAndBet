@@ -1,0 +1,28 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Test with Coverage",
+      "type": "shell",
+      "command": "yarn",
+      "args": ["test:coverage"],
+      "group": "test",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "runOptions": {
+        "runOn": "default"
+      },
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    }
+  ]
+}

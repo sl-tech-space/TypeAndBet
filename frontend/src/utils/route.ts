@@ -14,7 +14,10 @@ export const isAuthPage = (pathname: string): boolean => {
 
 // 再検証ルートかチェック
 export const isRevalidateRoute = (pathname: string): boolean => {
-  return Object.values(REVALIDATE_ROUTES).some((route) =>
-    pathname.startsWith(route)
-  );
+  return Object.values(REVALIDATE_ROUTES).some((route) => {
+    if (route === ROUTE.HOME) {
+      return pathname === ROUTE.HOME;
+    }
+    return pathname.startsWith(route);
+  });
 };

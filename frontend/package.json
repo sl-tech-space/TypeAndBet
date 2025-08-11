@@ -12,7 +12,13 @@
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "type-check": "tsc --noEmit",
-    "check:all": "yarn lint:all && yarn type-check && yarn format:check"
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:watch": "vitest --watch",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "test:ci": "vitest run --coverage --reporter=verbose",
+    "check:all": "yarn lint:all && yarn type-check && yarn format:check && yarn test:run"
   },
   "dependencies": {
     "@apollo/client": "^3.13.8",
@@ -35,19 +41,26 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@testing-library/jest-dom": "^6.6.4",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@typescript-eslint/eslint-plugin": "^8.38.0",
     "@typescript-eslint/parser": "^8.38.0",
+    "@vitest/coverage-v8": "1.6.0",
+    "@vitest/ui": "1.6.0",
     "eslint": "^9",
     "eslint-config-next": "15.2.4",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-ja": "^0.1.0",
     "eslint-plugin-prettier": "^5.5.4",
+    "happy-dom": "^18.0.1",
     "prettier": "^3.6.2",
     "sass": "^1.86.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "1.6.0"
   }
 }
