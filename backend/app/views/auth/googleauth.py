@@ -160,6 +160,8 @@ class RefreshToken(graphene.Mutation):
 
     success = graphene.Boolean()
     errors = graphene.List(graphene.String)
+    user = graphene.Field(UserType)
+    tokens = graphene.Field(TokenType)
 
     @classmethod
     def mutate(cls, root, info, **kwargs):
