@@ -32,8 +32,8 @@ export const ROUTE: Routes = {
   LOGOUT: "/auth/logout",
   TERMS: "/legal/terms-of-service",
   PRIVACY: "/legal/privacy-policy",
-  NOT_FOUND: "/404",
-  SERVER_ERROR: "/500",
+  NOT_FOUND: "/error/404",
+  SERVER_ERROR: "/error/500",
   RESULT: "/result",
 };
 

@@ -14,7 +14,9 @@ export type MetaKey =
   | "PLAY"
   | "RESULT"
   | "TERMS"
-  | "PRIVACY";
+  | "PRIVACY"
+  | "NOT_FOUND"
+  | "SERVER_ERROR";
 
 /**
  * メタ情報の型定義
@@ -35,6 +37,8 @@ export const META_TITLE: MetaInfo = {
   RESULT: "結果",
   TERMS: "利用規約",
   PRIVACY: "プライバシーポリシー",
+  NOT_FOUND: "ページが見つかりません",
+  SERVER_ERROR: "サーバーエラー",
 };
 
 /**
@@ -53,6 +57,8 @@ export const META_DESCRIPTION: MetaInfo = {
   TERMS: "Type&Betの利用規約ページです。利用規約を確認することができます。",
   PRIVACY:
     "Type&Betのプライバシーポリシーページです。プライバシーポリシーを確認することができます。",
+  NOT_FOUND: "ページが見つかりません",
+  SERVER_ERROR: "サーバーエラー",
 };
 
 /**
@@ -68,4 +74,6 @@ export const META_KEYWORDS: MetaInfo = {
   RESULT: "Type&Bet, 結果, タイピング, ゲーム, 賭け, 競争, ランキング",
   TERMS: "Type&Bet, 利用規約, プライバシーポリシー",
   PRIVACY: "Type&Bet, プライバシーポリシー, 利用規約",
+  NOT_FOUND: "Type&Bet, ページが見つかりません",
+  SERVER_ERROR: "Type&Bet, サーバーエラー",
 };
