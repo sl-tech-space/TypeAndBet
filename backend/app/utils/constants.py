@@ -55,12 +55,7 @@ class ResultErrorMessages:
     NEXT_RANK_CALCULATION_ERROR = "次のランク必要金額の計算中にエラーが発生しました"
 
 
-class SimulationErrorMessages:
-    """シミュレーションに関するエラーメッセージを定義するクラス"""
 
-    SIMULATION_ERROR = "シミュレーション中にエラーが発生しました"
-    INVALID_PARAMETERS = "無効なパラメータが指定されました"
-    CALCULATION_ERROR = "計算中にエラーが発生しました"
 
 
 class RankingErrorMessages:

@@ -11,35 +11,6 @@ from app.models.game import TextPair
 logger = logging.getLogger("app")
 
 
-def _get_random_converted_text_pair():
-    """IDレンジからランダムに1件取得（ORDER BY ? を回避）。
-    稀に欠番があるため複数回試行し、見つからない場合は先頭/最後尾にフォールバック。
-    """
-    agg = TextPair.objects.filter(is_converted=True).aggregate(
-        min_id=Min("id"), max_id=Max("id")
-    )
-    min_id = agg.get("min_id")
-    max_id = agg.get("max_id")
-    if min_id is None or max_id is None:
-        return None
-
-    for _ in range(5):
-        candidate = random.randint(min_id, max_id)
-        obj = (
-            TextPair.objects.filter(is_converted=True, id__gte=candidate)
-            .order_by("id")
-            .first()
-        )
-        if obj:
-            return obj
-
-    # フォールバック（先頭/最後尾）
-    obj = TextPair.objects.filter(is_converted=True).order_by("id").first()
-    if obj:
-        return obj
-    return TextPair.objects.filter(is_converted=True).order_by("-id").first()
-
-
 def _get_random_converted_text_pairs(count=30):
     """変換済みTextPairから指定された数の完全ランダムなペアを取得する。
     ORDER BY ? を避け、IDレンジベースのランダム選択で効率的に取得。
@@ -244,9 +215,6 @@ class ConvertToHiragana(graphene.Mutation):
                         text_pair.save()
 
                         converted_count += 1
-                        logger.info(
-                            f"変換完了: id={text_pair.id}, kanji_len={len(text_pair.kanji)}, hiragana_len={len(hiragana_text)}"
-                        )
 
                     except Exception as e:
                         logger.error(f"個別変換エラー (ID: {text_pair.id}): {str(e)}")
