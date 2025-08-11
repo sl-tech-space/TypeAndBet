@@ -1,16 +1,16 @@
 "use client";
 
 import { getCharacterPatterns } from "jp-transliterator";
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 
 import { generateText } from "@/actions/games";
 import { ErrorState, useAsyncState } from "@/hooks";
 
 import type {
-  TextPair,
-  Sentence,
-  PromptDetail,
   GeneratorResult,
+  PromptDetail,
+  Sentence,
+  TextPair,
 } from "./generator.types";
 
 /**

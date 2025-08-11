@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { useCallback, useEffect } from "react";
 
 import { KeydownEvent } from "./keydown.types";
 
@@ -20,9 +20,11 @@ export const useKeydown = (onKeydown: (event: KeydownEvent) => void): void => {
   );
 
   useEffect(() => {
-    window.addEventListener("keydown", handleKeydown);
-    return () => {
-      window.removeEventListener("keydown", handleKeydown);
-    };
+    if (typeof globalThis.window !== "undefined") {
+      globalThis.window.addEventListener("keydown", handleKeydown);
+      return () => {
+        globalThis.window.removeEventListener("keydown", handleKeydown);
+      };
+    }
   }, [handleKeydown]);
 };

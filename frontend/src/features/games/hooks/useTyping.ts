@@ -1,15 +1,15 @@
 "use client";
 
-import { usePathname, useParams } from "next/navigation";
-import { useState, useCallback, useEffect, useRef, useMemo } from "react";
+import { useParams, usePathname } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { completeSimulate, completePlay, setGameResult } from "@/actions";
+import { completePlay, completeSimulate, setGameResult } from "@/actions";
 import {
   COUNT_DOWN_TIME,
-  INITIAL_VALUE,
-  INITIAL_SENTENCE_COUNT,
-  ROUTE,
   GAME_MODE_ID,
+  INITIAL_SENTENCE_COUNT,
+  INITIAL_VALUE,
+  ROUTE,
 } from "@/constants";
 import { RomajiTrie, buildRomajiTrie } from "@/features/games";
 import { useNavigator } from "@/hooks/routing/useNavigator";
@@ -18,16 +18,16 @@ import { removeSpaces, removeSpacesFromArray } from "@/utils";
 
 import { useTypingContext } from "../contexts/TypingContext";
 
-import { useGenerator, useTimer, useKeydown } from "./";
+import { useGenerator, useKeydown, useTimer } from "./";
 
-import type {
-  KeydownEvent,
-  Sentence,
-  InputState,
-  RomajiProgress,
-  PromptDetail,
-} from "./";
 import type { GameResult } from "@/features/result/types";
+import type {
+  InputState,
+  KeydownEvent,
+  PromptDetail,
+  RomajiProgress,
+  Sentence,
+} from "./";
 
 /**
  * タイピングゲームのロジックを管理するフック
@@ -171,7 +171,7 @@ export const useTyping = (): {
 
   // 初回読み込み時に文章を生成
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof globalThis.window !== "undefined") {
       generate();
     }
     // クリーンアップ関数

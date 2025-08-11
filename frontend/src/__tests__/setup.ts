@@ -42,6 +42,70 @@ vi.mock("next/link", () => ({
   },
 }));
 
+// Create a more robust window mock that can be safely deleted and restored
+const createWindowMock = () => {
+  const windowMock = {
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+    matchMedia: vi.fn().mockImplementation((query) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+    location: {
+      href: `http://localhost:${port}`,
+      origin: `http://localhost:${port}`,
+      pathname: "/",
+      search: "",
+      hash: "",
+      reload: vi.fn(),
+      assign: vi.fn(),
+      replace: vi.fn(),
+    },
+    localStorage: {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+      clear: vi.fn(),
+      length: 0,
+      key: vi.fn(),
+    },
+    sessionStorage: {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+      clear: vi.fn(),
+      length: 0,
+      key: vi.fn(),
+    },
+  };
+
+  return windowMock;
+};
+
+// Store original window for restoration
+const originalWindow = globalThis.window;
+
+// Set up window mock with proper getter/setter for safe deletion
+Object.defineProperty(globalThis, "window", {
+  get() {
+    return (globalThis as any)._windowMock || createWindowMock();
+  },
+  set(value) {
+    (globalThis as any)._windowMock = value;
+  },
+  configurable: true,
+});
+
+// Initialize the window mock
+(globalThis as any)._windowMock = createWindowMock();
+
 // Mock IntersectionObserver
 const mockIntersectionObserver = vi.fn();
 mockIntersectionObserver.mockReturnValue({
@@ -145,3 +209,22 @@ afterAll(() => {
 afterEach(() => {
   vi.clearAllMocks();
 });
+
+// Global test utilities for window manipulation
+declare global {
+  namespace NodeJS {
+    interface Global {
+      restoreWindow: () => void;
+      deleteWindow: () => void;
+    }
+  }
+}
+
+// Add global test utilities
+(global as any).restoreWindow = () => {
+  (globalThis as any)._windowMock = createWindowMock();
+};
+
+(global as any).deleteWindow = () => {
+  delete (globalThis as any)._windowMock;
+};
