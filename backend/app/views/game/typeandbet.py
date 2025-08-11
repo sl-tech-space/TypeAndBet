@@ -17,28 +17,33 @@ logger = logging.getLogger("app")
 class GameType(DjangoObjectType):
     class Meta:
         model = Game
-        fields = ("id", "user", "bet_amount", "score", "gold_change", "created_at")
+        fields = ("id", "user", "bet_gold", "score", "score_gold_change", "created_at")
 
 
 class CreateBet(graphene.Mutation):
     """新しいベット（ゲーム）を作成するミューテーション"""
 
     class Arguments:
-        bet_amount = graphene.Int(required=True)
+        bet_gold = graphene.Int(required=True)
 
-    game = graphene.Field(GameType)
+    class CreateBetGameType(graphene.ObjectType):
+        id = graphene.UUID()
+        bet_gold = graphene.Int()
+        created_at = graphene.DateTime()
+
+    game = graphene.Field(CreateBetGameType)
     success = graphene.Boolean()
     errors = graphene.List(graphene.String)
 
     @classmethod
     @transaction.atomic
-    def mutate(cls, root, info, bet_amount):
+    def mutate(cls, root, info, bet_gold):
         try:
             # 数値は基本GraphQLで型制約されるが念のため文字列から来た場合を考慮
-            if isinstance(bet_amount, str):
-                bet_amount = sanitize_string(bet_amount)
-                bet_amount = int(bet_amount) if bet_amount.isdigit() else -1
-            logger.info(f"掛け金設定開始: bet_amount={bet_amount}")
+            if isinstance(bet_gold, str):
+                bet_gold = sanitize_string(bet_gold)
+                bet_gold = int(bet_gold) if bet_gold.isdigit() else -1
+            logger.info(f"掛け金設定開始: bet_gold={bet_gold}")
 
             # ユーザー情報の取得
             user = info.context.user
@@ -49,22 +54,32 @@ class CreateBet(graphene.Mutation):
             logger.info(f"現在の所持金: {user.gold}")
 
             # バリデーション
-            GameValidator.validate_bet_amount(bet_amount)
-            GameValidator.validate_user_gold(user.gold, bet_amount)
+            GameValidator.validate_bet_amount(bet_gold)
+            GameValidator.validate_user_gold(user.gold, bet_gold)
             logger.info("バリデーション成功")
 
-            # ゲームレコードの作成
+            # ゲームレコードの作成（ベット前残高をスナップショット）
             game = Game.objects.create(
-                user=user, bet_amount=bet_amount, score=0, gold_change=-bet_amount
+                user=user,
+                bet_gold=bet_gold,
+                score=0,
+                before_bet_gold=user.gold,
             )
             logger.info(f"ゲームレコード作成: game_id={game.id}")
 
             # ユーザーの所持金を更新
-            user.gold -= bet_amount
+            user.gold -= bet_gold
             user.save()
             logger.info(f"所持金更新: new_gold={user.gold}")
 
-            return CreateBet(game=game, success=True, errors=[])
+            # 出力は必要最小限のみ返却
+            return CreateBet(
+                game=CreateBet.CreateBetGameType(
+                    id=game.id, bet_gold=game.bet_gold, created_at=game.created_at
+                ),
+                success=True,
+                errors=[],
+            )
 
         except ValidationError as e:
             logger.warning(f"バリデーションエラー: {str(e)}")
@@ -139,7 +154,9 @@ class UpdateGameScore(graphene.Mutation):
 
             # 過去のスコアを取得してZスコアを計算
             past_scores = list(
-                Game.objects.exclude(id=game_id).values_list("score", flat=True)
+                Game.objects.exclude(id=game_id)
+                .filter(score__gt=0)
+                .values_list("score", flat=True)
             )
             if past_scores:
                 z_score = GameCalculator.calculate_z_score(score, past_scores)
@@ -155,13 +172,14 @@ class UpdateGameScore(graphene.Mutation):
 
             # ゴールドの変化を計算
             gold_change = GameCalculator.calculate_gold_change(
-                multiplier, game.bet_amount, user.gold
+                multiplier, game.bet_gold, user.gold
             )
             logger.info(f"ゴールド変化計算: gold_change={gold_change}")
 
-            # ゲームの更新
+            # ゲームの更新（スコア適用後の最終残高を保存）
             game.score = score
-            game.gold_change = gold_change
+            game.score_gold_change = gold_change
+            game.result_gold = game.before_bet_gold - game.bet_gold + gold_change
             game.save()
             logger.info(f"ゲーム更新: game_id={game.id}")
 

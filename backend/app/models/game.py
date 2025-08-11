@@ -10,9 +10,11 @@ class Game(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="games", null=False
     )
-    bet_amount = models.IntegerField(null=False)
+    bet_gold = models.IntegerField(null=False)
     score = models.IntegerField(null=False)
-    gold_change = models.IntegerField(null=False)
+    score_gold_change = models.IntegerField(null=True, blank=True)
+    before_bet_gold = models.IntegerField(null=True, blank=True)
+    result_gold = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
