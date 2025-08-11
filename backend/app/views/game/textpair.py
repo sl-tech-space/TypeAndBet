@@ -1,12 +1,97 @@
 import logging
+import random
 
 import graphene
 import MeCab
 from django.db import transaction
+from django.db.models import Min, Max
 
 from app.models.game import TextPair
 
 logger = logging.getLogger("app")
+
+
+def _get_random_converted_text_pair():
+    """IDレンジからランダムに1件取得（ORDER BY ? を回避）。
+    稀に欠番があるため複数回試行し、見つからない場合は先頭/最後尾にフォールバック。
+    """
+    agg = TextPair.objects.filter(is_converted=True).aggregate(
+        min_id=Min("id"), max_id=Max("id")
+    )
+    min_id = agg.get("min_id")
+    max_id = agg.get("max_id")
+    if min_id is None or max_id is None:
+        return None
+
+    for _ in range(5):
+        candidate = random.randint(min_id, max_id)
+        obj = (
+            TextPair.objects.filter(is_converted=True, id__gte=candidate)
+            .order_by("id")
+            .first()
+        )
+        if obj:
+            return obj
+
+    # フォールバック（先頭/最後尾）
+    obj = TextPair.objects.filter(is_converted=True).order_by("id").first()
+    if obj:
+        return obj
+    return TextPair.objects.filter(is_converted=True).order_by("-id").first()
+
+
+def _get_random_converted_text_pairs(count=30):
+    """変換済みTextPairから指定された数の完全ランダムなペアを取得する。
+    ORDER BY ? を避け、IDレンジベースのランダム選択で効率的に取得。
+    """
+    # 変換済みレコードの総数を取得
+    total_count = TextPair.objects.filter(is_converted=True).count()
+    if total_count == 0:
+        return []
+
+    if total_count <= count:
+        # 総数が要求数以下の場合は全件返す
+        return list(TextPair.objects.filter(is_converted=True))
+
+    # IDレンジを取得
+    agg = TextPair.objects.filter(is_converted=True).aggregate(
+        min_id=Min("id"), max_id=Max("id")
+    )
+    min_id = agg.get("min_id")
+    max_id = agg.get("max_id")
+
+    if min_id is None or max_id is None:
+        return []
+
+    # 重複を避けてランダムなIDを生成
+    selected_ids = set()
+    attempts = 0
+    max_attempts = count * 10  # 無限ループ防止
+
+    while len(selected_ids) < count and attempts < max_attempts:
+        candidate_id = random.randint(min_id, max_id)
+        # そのIDが実際に存在するかチェック
+        if TextPair.objects.filter(id=candidate_id, is_converted=True).exists():
+            selected_ids.add(candidate_id)
+        attempts += 1
+
+    # 選択されたIDのTextPairを取得
+    text_pairs = list(
+        TextPair.objects.filter(id__in=selected_ids, is_converted=True).order_by("id")
+    )
+
+    # 要求数に満たない場合は追加取得
+    if len(text_pairs) < count:
+        remaining = count - len(text_pairs)
+        # まだ選択されていないIDから追加取得
+        remaining_pairs = list(
+            TextPair.objects.filter(is_converted=True)
+            .exclude(id__in=selected_ids)
+            .order_by("?")[:remaining]
+        )
+        text_pairs.extend(remaining_pairs)
+
+    return text_pairs[:count]
 
 
 class TextPairType(graphene.ObjectType):
@@ -18,44 +103,45 @@ class TextPairType(graphene.ObjectType):
 
 
 class GetRandomTextPair(graphene.Mutation):
-    """変換フラグがtrueであるレコードをランダムに選出し、kanji、hiraganaのペアを取得するミューテーション"""
+    """変換フラグがtrueであるレコードをランダムに選出し、30個のkanji、hiraganaのペアを取得するミューテーション"""
 
     class Arguments:
         pass  # 引数なし
 
-    text_pair = graphene.Field(TextPairType)
+    text_pairs = graphene.List(TextPairType)
     success = graphene.Boolean()
 
     @classmethod
     def mutate(cls, root, info):
-        logger.info("ランダムTextPairペア取得開始")
+        logger.info("ランダムTextPairペア30件取得開始")
         try:
-            # 変換済み（is_converted=True）のレコードからランダムに1つ選出
-            text_pair = TextPair.objects.filter(is_converted=True).order_by("?").first()
+            # 変換済み（is_converted=True）のレコードからランダムに30件選出（高効率）
+            text_pairs = _get_random_converted_text_pairs(count=30)
 
-            if not text_pair:
+            if not text_pairs:
                 logger.warning("変換済みのTextPairが見つかりませんでした")
                 return GetRandomTextPair(
-                    text_pair=None,
+                    text_pairs=[],
                     success=False,
                 )
 
-            logger.info(
-                f"ランダムTextPairペア取得完了: ID={text_pair.id}, kanji={text_pair.kanji}, hiragana={text_pair.hiragana}"
-            )
+            logger.info(f"ランダムTextPairペア30件取得完了: count={len(text_pairs)}")
             return GetRandomTextPair(
-                text_pair=TextPairType(
-                    id=text_pair.id,
-                    kanji=text_pair.kanji,
-                    hiragana=text_pair.hiragana,
-                ),
+                text_pairs=[
+                    TextPairType(
+                        id=text_pair.id,
+                        kanji=text_pair.kanji,
+                        hiragana=text_pair.hiragana,
+                    )
+                    for text_pair in text_pairs
+                ],
                 success=True,
             )
 
         except Exception as e:
-            logger.error(f"ランダムTextPairペア取得エラー: {str(e)}", exc_info=True)
+            logger.error(f"ランダムTextPairペア30件取得エラー: {str(e)}", exc_info=True)
             return GetRandomTextPair(
-                text_pair=None,
+                text_pairs=[],
                 success=False,
             )
 
@@ -158,7 +244,9 @@ class ConvertToHiragana(graphene.Mutation):
                         text_pair.save()
 
                         converted_count += 1
-                        logger.info(f"変換完了: {text_pair.kanji} -> {hiragana_text}")
+                        logger.info(
+                            f"変換完了: id={text_pair.id}, kanji_len={len(text_pair.kanji)}, hiragana_len={len(hiragana_text)}"
+                        )
 
                     except Exception as e:
                         logger.error(f"個別変換エラー (ID: {text_pair.id}): {str(e)}")
@@ -247,8 +335,19 @@ def resolve_get_converted_text_pairs(root, info, limit=10, offset=0, random=Fals
         total_count = queryset.count()
 
         if random:
-            # ランダム選出の場合
-            text_pairs = queryset.order_by("?")[offset : offset + limit]
+            # ランダム選出の場合（ORDER BY ? を避け、ランダム開始位置から連続取得）
+            if total_count == 0:
+                text_pairs = []
+            else:
+                start = random.randint(0, max(0, total_count - 1))
+                # ラップアラウンド取得
+                first_chunk = list(queryset.order_by("id")[start : start + limit])
+                if len(first_chunk) < limit and start > 0:
+                    remaining = limit - len(first_chunk)
+                    second_chunk = list(queryset.order_by("id")[:remaining])
+                    text_pairs = first_chunk + second_chunk
+                else:
+                    text_pairs = first_chunk
             logger.info(f"ランダム選出でTextPair取得完了: {len(text_pairs)}件取得")
         else:
             # 通常の日時順の場合
@@ -290,13 +389,20 @@ class GetRandomTextPairType(graphene.ObjectType):
     message = graphene.String()
 
 
-def resolve_get_random_text_pair(root, info):
-    logger.info("ランダムTextPair選出開始")
-    try:
-        # 変換済み（is_converted=True）のレコードからランダムに1つ選出
-        text_pair = TextPair.objects.filter(is_converted=True).order_by("?").first()
+class GetRandomTextPairsMutationType(graphene.ObjectType):
+    """ランダムTextPair30件取得結果を表すGraphQL型定義（ミューテーション用）"""
 
-        if not text_pair:
+    text_pairs = graphene.List(TextPairType)
+    success = graphene.Boolean()
+
+
+def resolve_get_random_text_pair(root, info):
+    logger.info("ランダムTextPair30件選出開始")
+    try:
+        # 変換済み（is_converted=True）のレコードからランダムに30件選出（高効率）
+        text_pairs = _get_random_converted_text_pairs(count=30)
+
+        if not text_pairs:
             logger.warning("変換済みのTextPairが見つかりませんでした")
             return GetRandomTextPairType(
                 text_pair=None,
@@ -304,22 +410,19 @@ def resolve_get_random_text_pair(root, info):
                 message="変換済みの文章ペアが見つかりませんでした",
             )
 
-        logger.info(f"ランダムTextPair選出完了: ID={text_pair.id}")
+        logger.info(f"ランダムTextPair30件選出完了: count={len(text_pairs)}")
         return GetRandomTextPairType(
             text_pair=TextPairType(
-                id=text_pair.id,
-                kanji=text_pair.kanji,
-                hiragana=text_pair.hiragana,
-                is_converted=text_pair.is_converted,
-                created_at=text_pair.created_at,
-                updated_at=text_pair.updated_at,
+                id=text_pairs[0].id,  # 最初の1件を返す（既存のAPIとの互換性のため）
+                kanji=text_pairs[0].kanji,
+                hiragana=text_pairs[0].hiragana,
             ),
             success=True,
             message="正常に取得しました",
         )
 
     except Exception as e:
-        logger.error(f"ランダムTextPair選出エラー: {str(e)}", exc_info=True)
+        logger.error(f"ランダムTextPair30件選出エラー: {str(e)}", exc_info=True)
         return GetRandomTextPairType(
             text_pair=None,
             success=False,

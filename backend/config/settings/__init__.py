@@ -16,8 +16,17 @@ if environment == "production":
 else:
     from .local import *
 
-# 環境変数の型変換
+from django.core.exceptions import ImproperlyConfigured
+
+# 環境変数の型変換（必須値）
 SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise ImproperlyConfigured("SECRET_KEY is required but not set")
+
+JWT_SECRET = os.getenv("JWT_SECRET")
+if not JWT_SECRET:
+    raise ImproperlyConfigured("JWT_SECRET is required but not set")
+
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 DB_PORT = int(os.getenv("DB_PORT", "5432"))
 

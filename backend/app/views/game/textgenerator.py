@@ -77,7 +77,7 @@ class TextGenerator:
         try:
             # プロンプトを取得
             prompt = self.prompts["typing_prompt"]
-            logger.info(f"プロンプト取得完了: {len(prompt)}文字")
+            logger.info(f"プロンプト取得完了: prompt_len={len(prompt)}")
 
             # AIにリクエストを送る
             logger.info("AIリクエスト送信")
@@ -152,7 +152,10 @@ class GenerateText(graphene.Mutation):
             generator = TextGenerator()
             result = generator.generate_text()
 
-            logger.info(f"TextGenerator結果: {result}")
+            # 生成結果本体はログ出力しない（ログ肥大/機密性の観点）
+            logger.info(
+                f"TextGenerator結果メタ: sentences_count={len(result.get('sentences', []))}"
+            )
 
             if "error" in result:
                 logger.error(f"テキスト生成失敗: {result['error']}")

@@ -1,6 +1,6 @@
 import logging
-import os
 import secrets
+from django.conf import settings
 from datetime import datetime, timedelta
 
 import graphene
@@ -10,11 +10,10 @@ from graphene_django.types import DjangoObjectType
 from app.models.user import User
 from app.utils.constants import AuthErrorMessages
 from app.utils.errors import BaseError, ErrorHandler
+from app.utils.sanitizer import sanitize_email, sanitize_string
 
 logger = logging.getLogger("app")
 
-# JWTの設定
-JWT_SECRET = os.getenv("JWT_SECRET", secrets.token_hex(32))
 ACCESS_TOKEN_EXPIRE_DAYS = 14  # フロントエンド側のセッション戦略に合わせて14日間に変更
 REFRESH_TOKEN_EXPIRE_DAYS = 30
 
@@ -61,7 +60,7 @@ def generate_tokens(user):
                 "exp": access_token_expires.timestamp(),
                 "type": "access",
             },
-            JWT_SECRET,
+            settings.JWT_SECRET,
             algorithm="HS256",
         )
         logger.info(f"アクセストークン生成完了: user_id={user.id}")
@@ -77,7 +76,7 @@ def generate_tokens(user):
                 "type": "refresh",
                 "jti": secrets.token_hex(16),
             },
-            JWT_SECRET,
+            settings.JWT_SECRET,
             algorithm="HS256",
         )
         logger.info(f"リフレッシュトークン生成完了: user_id={user.id}")
@@ -114,9 +113,13 @@ class GoogleAuth(graphene.Mutation):
     @classmethod
     def mutate(cls, root, info, **kwargs):
         try:
-            email = kwargs.get("email")
-            name = kwargs.get("name")
-            icon = kwargs.get("icon")
+            email = sanitize_email(kwargs.get("email"))
+            name = sanitize_string(kwargs.get("name"), max_length=255)
+            icon = (
+                sanitize_string(kwargs.get("icon"), max_length=255)
+                if kwargs.get("icon")
+                else None
+            )
 
             logger.info(f"Google認証開始: email={email}, name={name}")
 
@@ -167,7 +170,9 @@ class RefreshToken(graphene.Mutation):
 
             # リフレッシュトークンの検証
             try:
-                payload = jwt.decode(refreshToken, JWT_SECRET, algorithms=["HS256"])
+                payload = jwt.decode(
+                    refreshToken, settings.JWT_SECRET, algorithms=["HS256"]
+                )
                 user_id = payload["user_id"]
                 logger.info(f"トークン検証成功: user_id={user_id}")
             except jwt.ExpiredSignatureError:

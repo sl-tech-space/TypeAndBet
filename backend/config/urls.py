@@ -19,8 +19,23 @@ from django.contrib import admin
 from django.urls import path
 from graphene_django.views import GraphQLView
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+from django.http import HttpResponseNotAllowed
+
+
+def graphql_view(request, *args, **kwargs):
+    """DEBUG=False では GET を拒否し、POST のみ許可する。
+    JWT ベースのため CSRF は免除する。
+    """
+    if request.method == "GET" and not settings.DEBUG:
+        return HttpResponseNotAllowed(["POST"])
+
+    view = GraphQLView.as_view(graphiql=settings.DEBUG)
+    return view(request, *args, **kwargs)
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("graphql/", csrf_exempt(GraphQLView.as_view(graphiql=True))),
+    # GraphiQL は DEBUG=True のとき GET 許可、それ以外は POST のみ
+    path("graphql/", csrf_exempt(graphql_view)),
 ]
