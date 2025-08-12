@@ -11,6 +11,7 @@ from app.utils.constants import AuthErrorMessages
 from app.utils.errors import BaseError, ErrorHandler
 from app.utils.validators import UserValidator, ValidationError
 from app.utils.sanitizer import sanitize_email, sanitize_password, sanitize_string
+from app.utils.logging_utils import mask_email
 
 logger = logging.getLogger("app")
 
@@ -61,7 +62,7 @@ class RegisterUser(graphene.Mutation):
             password = sanitize_password(password)
             password_confirm = sanitize_password(password_confirm)
 
-            logger.info(f"ユーザー登録開始: email={email}, name={name}")
+            logger.info(f"ユーザー登録開始: email={mask_email(email)}, name={name}")
 
             logger.info("バリデーション開始")
             try:
@@ -103,7 +104,7 @@ class RegisterUser(graphene.Mutation):
                 else:
                     # 非アクティブユーザーが存在する場合
                     logger.info(
-                        f"非アクティブユーザーが存在: email={email}, user_id={existing_user.id}"
+                        f"非アクティブユーザーが存在: email={mask_email(email)}, user_id={existing_user.id}"
                     )
 
                     # 既存のユーザー情報を更新
@@ -125,9 +126,8 @@ class RegisterUser(graphene.Mutation):
                     verify_path = getattr(
                         settings, "FRONTEND_VERIFY_EMAIL_PATH", "/verify-email"
                     )
-                    verification_url = (
-                        f"{frontend_url}{verify_path}?token={verification.token}"
-                    )
+                    raw_token = getattr(verification, "_raw_token", None)
+                    verification_url = f"{frontend_url}{verify_path}?token={raw_token}"
 
                     email_sent = EmailService.send_verification_email(
                         to_email=existing_user.email,
@@ -136,18 +136,20 @@ class RegisterUser(graphene.Mutation):
                     )
 
                     if not email_sent:
-                        logger.error(f"メール確認メール再送信失敗: email={email}")
+                        logger.error(
+                            f"メール確認メール再送信失敗: email={mask_email(email)}"
+                        )
                         logger.warning(
                             "メール送信に失敗しましたが、ユーザー情報は更新されました"
                         )
 
                     logger.info(
-                        f"既存ユーザーの情報更新とメール再送信完了: email={email}"
+                        f"既存ユーザーの情報更新とメール再送信完了: email={mask_email(email)}"
                     )
                     return RegisterUser(user=existing_user, success=True, errors=[])
 
             # ユーザーの作成（メール確認前は非アクティブ）
-            logger.info(f"ユーザー作成開始: email={email}")
+            logger.info(f"ユーザー作成開始: email={mask_email(email)}")
             user = User.objects.create(
                 id=uuid.uuid4(),
                 name=name,
@@ -157,7 +159,9 @@ class RegisterUser(graphene.Mutation):
             )
             user.set_password(password)
             user.save()
-            logger.info(f"ユーザー作成完了: user_id={user.id}, email={email}")
+            logger.info(
+                f"ユーザー作成完了: user_id={user.id}, email={mask_email(email)}"
+            )
 
             # メール確認トークンの作成
             from app.models import EmailVerification
@@ -171,7 +175,8 @@ class RegisterUser(graphene.Mutation):
             verify_path = getattr(
                 settings, "FRONTEND_VERIFY_EMAIL_PATH", "/verify-email"
             )
-            verification_url = f"{frontend_url}{verify_path}?token={verification.token}"
+            raw_token = getattr(verification, "_raw_token", None)
+            verification_url = f"{frontend_url}{verify_path}?token={raw_token}"
 
             email_sent = EmailService.send_verification_email(
                 to_email=user.email,
@@ -180,7 +185,7 @@ class RegisterUser(graphene.Mutation):
             )
 
             if not email_sent:
-                logger.error(f"メール確認メール送信失敗: email={email}")
+                logger.error(f"メール確認メール送信失敗: email={mask_email(email)}")
                 # メール送信に失敗した場合でもユーザーは作成するが、警告を記録
                 logger.warning("メール送信に失敗しましたが、ユーザーは作成されました")
 

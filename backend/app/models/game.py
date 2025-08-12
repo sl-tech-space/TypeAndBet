@@ -19,6 +19,26 @@ class Game(models.Model):
 
     class Meta:
         db_table = "games"
+        constraints = [
+            models.CheckConstraint(
+                check=models.Q(bet_gold__gte=100) & models.Q(bet_gold__lte=700),
+                name="bet_gold_between_100_700",
+            ),
+            models.CheckConstraint(
+                check=models.Q(score__gte=0), name="score_non_negative"
+            ),
+            models.CheckConstraint(
+                check=models.Q(before_bet_gold__gte=0),
+                name="before_bet_gold_non_negative",
+            ),
+            models.CheckConstraint(
+                check=models.Q(result_gold__gte=0), name="result_gold_non_negative"
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["user", "created_at"], name="idx_game_user_created"),
+            models.Index(fields=["created_at"], name="idx_game_created"),
+        ]
 
 
 class TextPair(models.Model):
@@ -34,6 +54,10 @@ class TextPair(models.Model):
         db_table = "text_pairs"
         verbose_name = "文章ペア"
         verbose_name_plural = "文章ペア"
+        indexes = [
+            models.Index(fields=["is_converted"], name="idx_textpair_converted"),
+            models.Index(fields=["created_at"], name="idx_textpair_created"),
+        ]
 
     def __str__(self):
         return f"TextPair {self.id}: {self.kanji[:20]}..."

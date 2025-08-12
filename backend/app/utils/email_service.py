@@ -4,6 +4,7 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from typing import Optional
+from app.utils.logging_utils import mask_email
 
 
 logger = logging.getLogger("app")
@@ -58,12 +59,13 @@ class EmailService:
                 fail_silently=False,
             )
 
-            logger.info(f"メール確認メール送信成功: {to_email}")
+            logger.info(f"メール確認メール送信成功: {mask_email(to_email)}")
             return True
 
         except Exception as e:
             logger.error(
-                f"メール確認メール送信失敗: {to_email}, エラー: {str(e)}", exc_info=True
+                f"メール確認メール送信失敗: {mask_email(to_email)}, エラー: {str(e)}",
+                exc_info=True,
             )
             return False
 
@@ -119,12 +121,13 @@ class EmailService:
                 fail_silently=False,
             )
 
-            logger.info(f"ウェルカムメール送信成功: {to_email}")
+            logger.info(f"ウェルカムメール送信成功: {mask_email(to_email)}")
             return True
 
         except Exception as e:
             logger.error(
-                f"ウェルカムメール送信失敗: {to_email}, エラー: {str(e)}", exc_info=True
+                f"ウェルカムメール送信失敗: {mask_email(to_email)}, エラー: {str(e)}",
+                exc_info=True,
             )
             return False
 
@@ -136,3 +139,51 @@ class EmailService:
         }
 
         return render_to_string("email/welcome.html", context)
+
+    @classmethod
+    def send_password_reset_email(
+        cls,
+        to_email: str,
+        username: str,
+        reset_url: str,
+        expiration_minutes: int = 60,
+        from_email: Optional[str] = None,
+    ) -> bool:
+        """パスワードリセットメールを送信"""
+        try:
+            if from_email is None:
+                from_email = (
+                    getattr(settings, "DEFAULT_FROM_EMAIL", "")
+                    or getattr(settings, "EMAIL_HOST_USER", "")
+                    or "noreply@example.com"
+                )
+
+            subject = "【TypeAndBet】パスワード再設定のご案内"
+
+            html_message = render_to_string(
+                "email/password_reset.html",
+                {
+                    "username": username,
+                    "reset_url": reset_url,
+                    "expiration_minutes": expiration_minutes,
+                },
+            )
+            plain_message = strip_tags(html_message)
+
+            send_mail(
+                subject=subject,
+                message=plain_message,
+                from_email=from_email,
+                recipient_list=[to_email],
+                html_message=html_message,
+                fail_silently=False,
+            )
+
+            logger.info(f"パスワードリセットメール送信成功: {mask_email(to_email)}")
+            return True
+        except Exception as e:
+            logger.error(
+                f"パスワードリセットメール送信失敗: {mask_email(to_email)}, エラー: {str(e)}",
+                exc_info=True,
+            )
+            return False

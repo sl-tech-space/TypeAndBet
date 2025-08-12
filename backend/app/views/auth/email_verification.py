@@ -1,13 +1,12 @@
 import logging
 import graphene
 from django.shortcuts import redirect
-from django.http import HttpResponse
 from django.conf import settings
-from django.utils import timezone
 
 from app.models import EmailVerification
 from app.utils.email_service import EmailService
 from app.utils.errors import BaseError, ErrorHandler
+from app.utils.logging_utils import mask_email, mask_token
 
 logger = logging.getLogger("app")
 
@@ -42,13 +41,13 @@ class VerifyEmail(graphene.Mutation):
     @classmethod
     def mutate(cls, root, info, token):
         try:
-            logger.info(f"メール確認開始: token={token[:8]}...")
+            logger.info(f"メール確認開始: token={mask_token(token)}")
 
             # トークンの有効性をチェック
             verification = EmailVerification.get_valid_token(token)
 
             if not verification:
-                logger.warning(f"無効なトークン: {token[:8]}...")
+                logger.warning(f"無効なトークン: {mask_token(token)}")
                 raise EmailVerificationError(
                     message="無効なトークンです。期限が切れているか、既に使用されています。",
                     code="INVALID_TOKEN",
@@ -59,7 +58,7 @@ class VerifyEmail(graphene.Mutation):
             verification.verify()
 
             logger.info(
-                f"メール確認完了: user_id={verification.user.id}, email={verification.user.email}"
+                f"メール確認完了: user_id={verification.user.id}, email={mask_email(verification.user.email)}"
             )
 
             # ウェルカムメールを送信
@@ -93,7 +92,7 @@ class ResendVerificationEmail(graphene.Mutation):
     @classmethod
     def mutate(cls, root, info, email):
         try:
-            logger.info(f"メール確認メール再送信開始: email={email}")
+            logger.info(f"メール確認メール再送信開始: email={mask_email(email)}")
 
             # ユーザーの存在確認
             from app.models import User
@@ -101,7 +100,7 @@ class ResendVerificationEmail(graphene.Mutation):
             try:
                 user = User.objects.get(email=email)
             except User.DoesNotExist:
-                logger.warning(f"ユーザーが存在しません: email={email}")
+                logger.warning(f"ユーザーが存在しません: email={mask_email(email)}")
                 raise EmailVerificationError(
                     message="このメールアドレスで登録されたユーザーが見つかりません。",
                     code="USER_NOT_FOUND",
@@ -110,7 +109,7 @@ class ResendVerificationEmail(graphene.Mutation):
 
             # 既に確認済みかチェック
             if user.is_active:
-                logger.info(f"既に確認済み: email={email}")
+                logger.info(f"既に確認済み: email={mask_email(email)}")
                 return ResendVerificationEmail(
                     success=True,
                     message="このメールアドレスは既に確認済みです。",
@@ -125,7 +124,13 @@ class ResendVerificationEmail(graphene.Mutation):
             verify_path = getattr(
                 settings, "FRONTEND_VERIFY_EMAIL_PATH", "/verify-email"
             )
-            verification_url = f"{frontend_url}{verify_path}?token={verification.token}"
+            # create_for_user で一時的に付与した平文トークンを使用
+            raw_token = getattr(verification, "_raw_token", None)
+            verification_url = (
+                f"{frontend_url}{verify_path}?token={raw_token}"
+                if raw_token
+                else f"{frontend_url}{verify_path}"
+            )
 
             email_sent = EmailService.send_verification_email(
                 to_email=user.email,
@@ -140,7 +145,7 @@ class ResendVerificationEmail(graphene.Mutation):
                     details=["メール送信に失敗しました"],
                 )
 
-            logger.info(f"メール確認メール再送信完了: email={email}")
+            logger.info(f"メール確認メール再送信完了: email={mask_email(email)}")
 
             return ResendVerificationEmail(
                 success=True, message="メール確認メールを再送信しました。", errors=[]
@@ -157,13 +162,13 @@ class ResendVerificationEmail(graphene.Mutation):
 def verify_email_view(request, token):
     """メール確認用のビュー（フロントエンドからのリダイレクト用）"""
     try:
-        logger.info(f"メール確認ビュー呼び出し: token={token[:8]}...")
+        logger.info(f"メール確認ビュー呼び出し: token={mask_token(token)}")
 
         # トークンの有効性をチェック
         verification = EmailVerification.get_valid_token(token)
 
         if not verification:
-            logger.warning(f"無効なトークン: {token[:8]}...")
+            logger.warning(f"無効なトークン: {mask_token(token)}")
             # フロントエンドのエラーページにリダイレクト
             frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost:3000")
             verify_path = getattr(
@@ -175,7 +180,7 @@ def verify_email_view(request, token):
         verification.verify()
 
         logger.info(
-            f"メール確認完了: user_id={verification.user.id}, email={verification.user.email}"
+            f"メール確認完了: user_id={verification.user.id}, email={mask_email(verification.user.email)}"
         )
 
         # ウェルカムメールを送信
