@@ -15,7 +15,7 @@ export type User = {
  * セッションゴールド取得レスポンス
  */
 export interface GetGoldResponse extends Record<string, unknown> {
-  userInfo: {
+  user: {
     gold: number;
   };
 }

@@ -1,2 +1,2 @@
 export * from "./ResultCard";
-export * from "./ResultContent";
+export * from "./SummaryResult";

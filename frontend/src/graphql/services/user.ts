@@ -17,11 +17,8 @@ export class UserService {
     client: GraphQLServerClient,
     id: string
   ): Promise<{ data: GetGoldResponse }> {
-    return client.executeQuery<GetGoldResponse, { userId: string }>(
-      GET_USER_GOLD,
-      {
-        userId: id,
-      }
-    );
+    return client.executeQuery<GetGoldResponse, { id: string }>(GET_USER_GOLD, {
+      id: id,
+    });
   }
 }

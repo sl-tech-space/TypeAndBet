@@ -20,7 +20,7 @@ export async function getUserGold(): Promise<number> {
     session.user.id
   );
 
-  const gold: number = data.userInfo.gold;
+  const gold: number = data.user.gold;
   if (!gold && gold !== 0) {
     return 0;
   }

@@ -16,7 +16,7 @@ export class BettingService {
     amount: number
   ): Promise<{ data: CreateBetResponse }> {
     const variables = {
-      betAmount: amount,
+      betGold: amount,
     };
 
     return client.executeMutation<CreateBetResponse, typeof variables>(

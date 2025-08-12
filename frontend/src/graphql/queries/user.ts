@@ -4,8 +4,8 @@ import { gql } from "@apollo/client";
  * ユーザー情報を取得
  */
 export const GET_USER = gql`
-  query GetUser($id: ID!) {
-    userInfo(id: $id) {
+  query User($id: UUID!) {
+    user(id: $id) {
       id
       name
       email
@@ -21,8 +21,8 @@ export const GET_USER = gql`
  * セッションの所持金を取得
  */
 export const GET_USER_GOLD = gql`
-  query GetUser($userId: UUID!) {
-    userInfo(userId: $userId) {
+  query User($id: UUID!) {
+    user(id: $id) {
       gold
     }
   }

@@ -4,11 +4,11 @@ import { gql } from "@apollo/client";
  * ベット
  */
 export const BET = gql`
-  mutation Bet($betAmount: Int!) {
-    createBet(betAmount: $betAmount) {
+  mutation CreateBet($betGold: Int!) {
+    createBet(betGold: $betGold) {
       game {
         id
-        betAmount
+        betGold
       }
       success
       errors

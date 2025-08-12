@@ -7,10 +7,10 @@ import { GamesService, GraphQLServerClient } from "@/graphql";
 import { getAuthorizedServerClient } from "@/lib/apollo-server";
 
 import type {
-  CompleteSimulateResponse,
   CompletePlayResponse,
-  GetGameResultResponse,
+  CompleteSimulateResponse,
   GenerateTextResponse,
+  GetGameResultResponse,
 } from "@/types";
 
 /**
@@ -19,7 +19,7 @@ import type {
  */
 export async function generateText(): Promise<{
   success: boolean;
-  result: GenerateTextResponse["generateText"] | null;
+  result: GenerateTextResponse["getRandomTextPair"]["textPairs"] | null;
   error: string | null;
 }> {
   try {
@@ -28,7 +28,7 @@ export async function generateText(): Promise<{
     const { data }: { data: GenerateTextResponse } =
       await GamesService.generateText(new GraphQLServerClient(rawClient));
 
-    if (!data.generateText) {
+    if (!data.getRandomTextPair.success) {
       return {
         success: false,
         result: null,
@@ -36,13 +36,11 @@ export async function generateText(): Promise<{
       };
     }
 
+    console.log("生成テキストを取得", data.getRandomTextPair.textPairs);
+
     return {
       success: true,
-      result: {
-        pairs: data.generateText.pairs,
-        theme: data.generateText.theme,
-        category: data.generateText.category,
-      },
+      result: data.getRandomTextPair.textPairs,
       error: null,
     };
   } catch (error: unknown) {
@@ -130,8 +128,10 @@ export async function completePlay(
 ): Promise<{
   success: boolean;
   score: number;
-  currentGold?: number;
-  goldChange: number;
+  beforeBetGold?: number;
+  resultGold?: number;
+  betGold?: number;
+  scoreGoldChange?: number;
   currentRank?: number;
   rankChange?: number;
   nextRankGold?: number;
@@ -149,7 +149,7 @@ export async function completePlay(
       return {
         success: false,
         score: 0,
-        goldChange: 0,
+        scoreGoldChange: 0,
         error: ERROR_MESSAGE.COMPLETE_PLAY_FAILED,
       };
     }
@@ -161,8 +161,10 @@ export async function completePlay(
     return {
       success: true,
       score: updateData.updateGameScore.game.score,
-      goldChange: updateData.updateGameScore.game.goldChange,
-      currentGold: resultData.gameResult.currentGold,
+      beforeBetGold: resultData.gameResult.beforeBetGold,
+      resultGold: resultData.gameResult.resultGold,
+      betGold: resultData.gameResult.betGold,
+      scoreGoldChange: resultData.gameResult.scoreGoldChange,
       currentRank: resultData.gameResult.currentRank,
       rankChange: resultData.gameResult.rankChange,
       nextRankGold: resultData.gameResult.nextRankGold,
@@ -181,7 +183,7 @@ export async function completePlay(
     return {
       success: false,
       score: 0,
-      goldChange: 0,
+      scoreGoldChange: 0,
       error: errorMessage,
     };
   }

@@ -15,9 +15,7 @@ export const useSyncGold = (): (() => Promise<void>) => {
 
   const syncGold = useCallback(async (): Promise<void> => {
     if (!session?.user?.id) {
-      console.warn(
-        "ユーザーがログインしていないため、ゴールド同期をスキップします"
-      );
+      // ユーザーがログインしていない場合はスキップ
       return;
     }
 
@@ -30,8 +28,7 @@ export const useSyncGold = (): (() => Promise<void>) => {
         },
       });
     } catch (error) {
-      console.error("ゴールド同期エラー:", error);
-      throw error; // 呼び出し元でエラーハンドリングできるように再スロー
+      // エラーは無視
     }
   }, [session, update]);
 

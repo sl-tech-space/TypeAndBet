@@ -3,49 +3,16 @@
 import Link from "next/link";
 import { type ReactElement } from "react";
 
-import { Card, Text, Loading, Button } from "@/components/ui";
-import {
-  HOME_BACK_BUTTON,
-  RESULT_CONTENTS,
-  RESULT_TITLE,
-  RETRY,
-  ROUTE,
-} from "@/constants";
+import { Button, Card, Loading, Text } from "@/components/ui";
+import { HOME_BACK_BUTTON, RESULT_TITLE, RETRY, ROUTE } from "@/constants";
 import { useResult } from "@/features/result/hooks";
 
-import { ResultContent, type ResultContentProps } from "../ResultContent";
+import { SummaryResult } from "../SummaryResult";
 
 import styles from "./ResultCard.module.scss";
 
 export const ResultCard = (): ReactElement => {
   const { result, isLoading, isSimulate, isPlay } = useResult();
-
-  const contents: ResultContentProps[] = [
-    {
-      content: RESULT_CONTENTS.SCORE,
-      value: result?.score || 0,
-      unit: "点",
-      change: "",
-    },
-    {
-      content: RESULT_CONTENTS.GOLD,
-      value: result?.currentGold || "-",
-      unit: "G",
-      change: result?.goldChange || "",
-    },
-    {
-      content: RESULT_CONTENTS.RANKING,
-      value: result?.currentRank || "-",
-      unit: "位",
-      change: result?.rankChange || "",
-    },
-    {
-      content: RESULT_CONTENTS.NEXT_RANKING,
-      value: result?.nextRankGold || "-",
-      unit: "G",
-      change: "",
-    },
-  ];
 
   return (
     <div className={styles.wrapper}>
@@ -94,9 +61,7 @@ export const ResultCard = (): ReactElement => {
                   シミュレートモードのため結果は反映されません
                 </Text>
               )}
-              {contents.map((content, index) => (
-                <ResultContent key={index} {...content} data-index={index} />
-              ))}
+              <SummaryResult result={result} />
             </div>
           )}
           <div className={styles.card__result_form}>

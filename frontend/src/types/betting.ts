@@ -5,7 +5,7 @@ export interface CreateBetResponse extends Record<string, unknown> {
   createBet: {
     game: {
       id: string;
-      betAmount: number;
+      betGold: number;
     };
     success: boolean;
     errors?: string[];

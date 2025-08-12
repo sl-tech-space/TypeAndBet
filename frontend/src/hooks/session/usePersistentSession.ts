@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { User } from "@/types";
 
@@ -75,9 +75,22 @@ export const usePersistentSession = (): {
     setIsSyncing(true);
 
     try {
-      // サーバーから最新ゴールドを取得
+      // サーバーから最新ゴールドを取得（10秒でタイムアウトし中断）
+      const TIMEOUT_MS = 10_000;
+      const withTimeout = async <T>(p: Promise<T>, ms: number): Promise<T> =>
+        await new Promise<T>((resolve, reject) => {
+          const t = setTimeout(() => reject(new Error("sync timeout")), ms);
+          p.then((v) => {
+            clearTimeout(t);
+            resolve(v);
+          }).catch((e) => {
+            clearTimeout(t);
+            reject(e);
+          });
+        });
+
       const { getUserGold } = await import("@/actions/userSession");
-      const freshGold = await getUserGold();
+      const freshGold = await withTimeout(getUserGold(), TIMEOUT_MS);
 
       // セッションを更新
       await update({
@@ -87,14 +100,13 @@ export const usePersistentSession = (): {
         },
       });
     } catch (error) {
-      console.error("ゴールド同期エラー:", error);
-      throw error;
+      // タイムアウト/その他エラーはいったん無視して同期を中断
     } finally {
       setIsSyncing(false);
     }
   }, [session?.user, update]);
 
-  // 定期的なゴールド同期（30秒間隔）
+  // 定期的なゴールド同期（10秒間隔）
   useEffect(() => {
     // ユーザーがログインしていない場合はスキップ
     if (!session?.user?.id) {
@@ -110,7 +122,7 @@ export const usePersistentSession = (): {
           try {
             await syncGold();
           } catch (error) {
-            console.error("定期ゴールド同期エラー:", error);
+            // エラーは無視
           }
         }
       }, 10000); // 10秒間隔

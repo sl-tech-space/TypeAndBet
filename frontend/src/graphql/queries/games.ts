@@ -6,8 +6,10 @@ import { gql } from "@apollo/client";
 export const GET_GAME_RESULT = gql`
   query GetGameResult($gameId: UUID!) {
     gameResult(gameId: $gameId) {
-      currentGold
-      goldChange
+      beforeBetGold
+      resultGold
+      betGold
+      scoreGoldChange
       currentRank
       rankChange
       nextRankGold

@@ -38,10 +38,9 @@ export type GameIdProps = {
  * テキスト生成レスポンス
  */
 export interface GenerateTextResponse extends Record<string, unknown> {
-  generateText: {
-    theme: string;
-    category: string;
-    pairs: {
+  getRandomTextPair: {
+    success: boolean;
+    textPairs: {
       kanji: string;
       hiragana: string;
     }[];
@@ -67,8 +66,9 @@ export interface CompletePlayResponse extends Record<string, unknown> {
   updateGameScore: {
     game: {
       id: string;
+      betGold: number;
       score: number;
-      goldChange: number;
+      scoreGoldChange: number;
     };
     success: boolean;
     errors: string[];
@@ -80,8 +80,10 @@ export interface CompletePlayResponse extends Record<string, unknown> {
  */
 export interface GetGameResultResponse extends Record<string, unknown> {
   gameResult: {
-    currentGold: number;
-    goldChange: number;
+    beforeBetGold: number;
+    resultGold: number;
+    betGold: number;
+    scoreGoldChange: number;
     currentRank: number;
     rankChange: number;
     nextRankGold: number;

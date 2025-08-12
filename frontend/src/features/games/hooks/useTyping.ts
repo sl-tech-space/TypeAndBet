@@ -21,13 +21,7 @@ import { useTypingContext } from "../contexts/TypingContext";
 import { useGenerator, useKeydown, useTimer } from "./";
 
 import type { GameResult } from "@/features/result/types";
-import type {
-  InputState,
-  KeydownEvent,
-  PromptDetail,
-  RomajiProgress,
-  Sentence,
-} from "./";
+import type { InputState, KeydownEvent, RomajiProgress, Sentence } from "./";
 
 /**
  * タイピングゲームのロジックを管理するフック
@@ -35,7 +29,6 @@ import type {
  */
 export const useTyping = (): {
   targetSentence: React.RefObject<Sentence | null>;
-  promptDetail: PromptDetail | null;
   isLoading: boolean;
   isReady: boolean;
   isCountingDown: boolean;
@@ -64,7 +57,6 @@ export const useTyping = (): {
   // 状態と関数の取得
   const {
     sentences: generatedSentences,
-    promptDetail,
     isLoading,
     error,
     generate,
@@ -375,22 +367,14 @@ export const useTyping = (): {
         !isCountingDown &&
         !isLoading &&
         !isFinished &&
-        sentences.length > INITIAL_VALUE &&
-        promptDetail
+        sentences.length > INITIAL_VALUE
       ) {
         setIsCountingDown(true);
         countdownRef.current = COUNT_DOWN_TIME;
         setDisplayCountdown(COUNT_DOWN_TIME);
       }
     },
-    [
-      isReady,
-      isCountingDown,
-      isLoading,
-      isFinished,
-      sentences.length,
-      promptDetail,
-    ]
+    [isReady, isCountingDown, isLoading, isFinished, sentences.length]
   );
 
   // ゲーム開始後のタイピング処理
@@ -622,7 +606,6 @@ export const useTyping = (): {
               gameType: GAME_MODE_ID.SIMULATE,
               success: response.success,
               score: response.score,
-              goldChange: response.goldChange,
               error: response.error || "",
             };
 
@@ -641,8 +624,10 @@ export const useTyping = (): {
               gameType: GAME_MODE_ID.PLAY,
               success: response.success,
               score: response.score,
-              currentGold: response.currentGold,
-              goldChange: response.goldChange,
+              beforeBetGold: response.beforeBetGold,
+              betGold: response.betGold,
+              scoreGoldChange: response.scoreGoldChange,
+              resultGold: response.resultGold,
               currentRank: response.currentRank,
               rankChange: response.rankChange,
               nextRankGold: response.nextRankGold,
@@ -676,7 +661,6 @@ export const useTyping = (): {
 
   return {
     targetSentence,
-    promptDetail,
     isLoading,
     isReady,
     isCountingDown,

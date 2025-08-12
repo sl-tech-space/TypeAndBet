@@ -4,11 +4,10 @@ import { gql } from "@apollo/client";
  * テキスト生成
  */
 export const GENERATE_TEXT = gql`
-  mutation GenerateText {
-    generateText {
-      theme
-      category
-      pairs {
+  mutation GetRandomTextPair {
+    getRandomTextPair {
+      success
+      textPairs {
         kanji
         hiragana
       }
@@ -46,8 +45,9 @@ export const COMPLETE_PLAY = gql`
     ) {
       game {
         id
+        betGold
         score
-        goldChange
+        scoreGoldChange
       }
       success
       errors

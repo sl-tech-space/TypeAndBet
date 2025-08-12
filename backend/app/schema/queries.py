@@ -18,19 +18,6 @@ class Query(graphene.ObjectType):
     user = graphene.Field(UserType, id=graphene.UUID(required=True))
     rankings = graphene.List(RankingType, limit=graphene.Int(), offset=graphene.Int())
     game_result = graphene.Field(GameResultType, game_id=graphene.UUID(required=True))
-    get_text_pairs = graphene.Field(
-        GetTextPairsType,
-        limit=graphene.Int(default_value=10),
-        offset=graphene.Int(default_value=0),
-        converted_only=graphene.Boolean(default_value=False),
-    )
-    get_converted_text_pairs = graphene.Field(
-        GetConvertedTextPairsType,
-        limit=graphene.Int(default_value=10),
-        offset=graphene.Int(default_value=0),
-        random=graphene.Boolean(default_value=False),
-    )
-    get_random_text_pair = graphene.Field(GetRandomTextPairType)
 
     def resolve_users(self, info):
         user = info.context.user

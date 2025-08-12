@@ -70,6 +70,9 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
+    flex: 1 1 auto; // 中央領域として余白を占有
+    min-height: 0; // はみ出し抑止
     gap: 1rem;
   }
 
@@ -82,6 +85,8 @@
     align-items: center;
     text-align: center;
     gap: clamp(1rem, 3vh, 3rem);
+    flex: 1 1 auto; // 中央領域として余白を占有
+    min-height: 0;
   }
 
   &__warning_text {
