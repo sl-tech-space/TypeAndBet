@@ -183,3 +183,18 @@ SOCIALACCOUNT_PROVIDERS = {
 # Gemini API設定
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-pro")
+
+# メール設定
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.gmail.com")
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 587))
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "True").lower() == "true"
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "saltype.slt@gmail.com")
+
+# フロントエンドURL設定
+FRONTEND_URL = os.environ.get("FRONTEND_URL", f"http://localhost:{FRONTEND_PORT}")
+FRONTEND_VERIFY_EMAIL_PATH = os.environ.get(
+    "FRONTEND_VERIFY_EMAIL_PATH", "/verify-email"
+)

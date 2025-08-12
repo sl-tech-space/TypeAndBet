@@ -71,13 +71,13 @@ class UserValidator:
                 details=[AuthErrorMessages.PASSWORD_TOO_LONG],
             )
 
-        if len(re.findall(r"[A-Z]", password)) < 2:
+        if len(re.findall(r"[A-Z]", password)) < 1:
             raise ValidationError(
                 message=AuthErrorMessages.INVALID_INPUT,
                 details=[AuthErrorMessages.PASSWORD_UPPERCASE_REQUIRED],
             )
 
-        if len(re.findall(r"[0-9]", password)) < 2:
+        if len(re.findall(r"[0-9]", password)) < 1:
             raise ValidationError(
                 message=AuthErrorMessages.INVALID_INPUT,
                 details=[AuthErrorMessages.PASSWORD_NUMBER_REQUIRED],

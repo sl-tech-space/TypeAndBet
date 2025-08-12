@@ -21,6 +21,7 @@ from graphene_django.views import GraphQLView
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from django.http import HttpResponseNotAllowed
+from app.views.auth.email_verification import verify_email_view
 
 
 def graphql_view(request, *args, **kwargs):
@@ -38,4 +39,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     # GraphiQL は DEBUG=True のとき GET 許可、それ以外は POST のみ
     path("graphql/", csrf_exempt(graphql_view)),
+    # メール確認用エンドポイント
+    path("verify-email/<str:token>/", verify_email_view, name="verify_email"),
 ]

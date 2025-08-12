@@ -3,6 +3,7 @@ import uuid
 
 import graphene
 from django.db import transaction
+from django.conf import settings
 from graphene_django.types import DjangoObjectType
 
 from app.models import User
@@ -86,24 +87,102 @@ class RegisterUser(graphene.Mutation):
 
             logger.info("すべてのバリデーション成功")
 
-            # メールアドレスの重複チェック
-            if User.objects.filter(email=email).exists():
-                logger.warning(f"メールアドレス重複: email={email}")
-                raise RegistrationError(
-                    message=AuthErrorMessages.INVALID_INPUT,
-                    code="DUPLICATE_EMAIL",
-                    status=400,
-                    details=[AuthErrorMessages.DUPLICATE_EMAIL],
-                )
+            # メールアドレスの重複チェック（アクティブ・非アクティブ両方）
+            existing_user = User.objects.filter(email=email).first()
 
-            # ユーザーの作成
+            if existing_user:
+                if existing_user.is_active:
+                    # 既にアクティブなユーザーが存在
+                    logger.warning(f"アクティブユーザーが既に存在: email={email}")
+                    raise RegistrationError(
+                        message=AuthErrorMessages.INVALID_INPUT,
+                        code="DUPLICATE_EMAIL",
+                        status=400,
+                        details=[AuthErrorMessages.DUPLICATE_EMAIL],
+                    )
+                else:
+                    # 非アクティブユーザーが存在する場合
+                    logger.info(
+                        f"非アクティブユーザーが存在: email={email}, user_id={existing_user.id}"
+                    )
+
+                    # 既存のユーザー情報を更新
+                    existing_user.name = name
+                    existing_user.set_password(password)
+                    existing_user.save()
+
+                    # 既存のメール確認トークンを無効化し、新しいトークンを作成
+                    from app.models import EmailVerification
+
+                    verification = EmailVerification.create_for_user(existing_user)
+
+                    # メール確認メールを再送信
+                    from app.utils.email_service import EmailService
+
+                    frontend_url = getattr(
+                        settings, "FRONTEND_URL", "http://localhost:3000"
+                    )
+                    verify_path = getattr(
+                        settings, "FRONTEND_VERIFY_EMAIL_PATH", "/verify-email"
+                    )
+                    verification_url = (
+                        f"{frontend_url}{verify_path}?token={verification.token}"
+                    )
+
+                    email_sent = EmailService.send_verification_email(
+                        to_email=existing_user.email,
+                        username=existing_user.name,
+                        verification_url=verification_url,
+                    )
+
+                    if not email_sent:
+                        logger.error(f"メール確認メール再送信失敗: email={email}")
+                        logger.warning(
+                            "メール送信に失敗しましたが、ユーザー情報は更新されました"
+                        )
+
+                    logger.info(
+                        f"既存ユーザーの情報更新とメール再送信完了: email={email}"
+                    )
+                    return RegisterUser(user=existing_user, success=True, errors=[])
+
+            # ユーザーの作成（メール確認前は非アクティブ）
             logger.info(f"ユーザー作成開始: email={email}")
             user = User.objects.create(
-                id=uuid.uuid4(), name=name, email=email, icon="default.png"
+                id=uuid.uuid4(),
+                name=name,
+                email=email,
+                icon="default.png",
+                is_active=False,
             )
             user.set_password(password)
             user.save()
             logger.info(f"ユーザー作成完了: user_id={user.id}, email={email}")
+
+            # メール確認トークンの作成
+            from app.models import EmailVerification
+
+            verification = EmailVerification.create_for_user(user)
+
+            # メール確認メールの送信
+            from app.utils.email_service import EmailService
+
+            frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost:3000")
+            verify_path = getattr(
+                settings, "FRONTEND_VERIFY_EMAIL_PATH", "/verify-email"
+            )
+            verification_url = f"{frontend_url}{verify_path}?token={verification.token}"
+
+            email_sent = EmailService.send_verification_email(
+                to_email=user.email,
+                username=user.name,
+                verification_url=verification_url,
+            )
+
+            if not email_sent:
+                logger.error(f"メール確認メール送信失敗: email={email}")
+                # メール送信に失敗した場合でもユーザーは作成するが、警告を記録
+                logger.warning("メール送信に失敗しましたが、ユーザーは作成されました")
 
             return RegisterUser(user=user, success=True, errors=[])
 
