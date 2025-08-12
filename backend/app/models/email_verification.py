@@ -3,6 +3,7 @@ from datetime import timedelta
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
+from app.utils.tokens import generate_token, hash_token
 
 
 class EmailVerification(models.Model):
@@ -14,7 +15,8 @@ class EmailVerification(models.Model):
         on_delete=models.CASCADE,
         related_name="email_verifications",
     )
-    token = models.CharField(max_length=255, unique=True, null=False)
+    # DBにはハッシュ化したトークンを保存する
+    token_hash = models.CharField(max_length=64, unique=True, null=False)
     is_verified = models.BooleanField(default=False)
     expires_at = models.DateTimeField(null=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -24,8 +26,9 @@ class EmailVerification(models.Model):
         db_table = "email_verifications"
         ordering = ["-created_at"]
         indexes = [
-            models.Index(fields=["token"]),
+            models.Index(fields=["token_hash"], name="idx_emailverif_tokenhash"),
             models.Index(fields=["user", "is_verified"]),
+            models.Index(fields=["expires_at"], name="idx_emailverif_expires"),
         ]
 
     def __str__(self):
@@ -58,16 +61,26 @@ class EmailVerification(models.Model):
         )
 
         # 新しいトークンを作成
-        token = str(uuid.uuid4())
+        raw_token = generate_token()
+        token_hash = hash_token(raw_token)
         expires_at = timezone.now() + timedelta(hours=expiration_hours)
 
-        return cls.objects.create(user=user, token=token, expires_at=expires_at)
+        instance = cls.objects.create(
+            user=user,
+            token_hash=token_hash,
+            expires_at=expires_at,
+        )
+        # 平文トークンは呼び出し側でURL生成に使うため返す
+        instance._raw_token = raw_token  # transient attribute
+        return instance
 
     @classmethod
     def get_valid_token(cls, token):
         """有効なトークンを取得"""
         try:
-            verification = cls.objects.get(token=token, is_verified=False)
+            verification = cls.objects.get(
+                token_hash=hash_token(token), is_verified=False
+            )
 
             if verification.is_expired:
                 return None

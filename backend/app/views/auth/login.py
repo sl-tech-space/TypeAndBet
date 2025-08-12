@@ -12,6 +12,7 @@ from app.models.user import User
 from app.utils.constants import AuthErrorMessages
 from app.utils.errors import BaseError, ErrorHandler
 from app.utils.validators import ValidationError
+from app.utils.logging_utils import mask_email
 from app.utils.sanitizer import sanitize_email, sanitize_password
 
 logger = logging.getLogger("app")
@@ -118,7 +119,7 @@ class LoginUser(graphene.Mutation):
             email = sanitize_email(email)
             password = sanitize_password(password)
 
-            logger.info(f"ログイン試行開始: email={email}")
+            logger.info(f"ログイン試行開始: email={mask_email(email)}")
 
             # 入力値のバリデーション
             if not email or not password:
@@ -137,10 +138,10 @@ class LoginUser(graphene.Mutation):
                 )
 
             # ユーザーの認証
-            logger.info(f"ユーザー認証開始: email={email}")
-            user = authenticate(email=email, password=password)
+            logger.info(f"ユーザー認証開始: email={mask_email(email)}")
+            user = authenticate(username=email, password=password)
             if user is None:
-                logger.warning(f"認証失敗: email={email}")
+                logger.warning(f"認証失敗: email={mask_email(email)}")
                 raise AuthenticationError(
                     message=AuthErrorMessages.AUTHENTICATION_FAILED,
                     code="INVALID_CREDENTIALS",
@@ -148,8 +149,10 @@ class LoginUser(graphene.Mutation):
                 )
 
             # JWT認証ではDjangoのセッションログインは不要
-            logger.info(f"JWT認証処理開始: user_id={user.id}, email={email}")
-            logger.info(f"JWT認証成功: user_id={user.id}, email={email}")
+            logger.info(
+                f"JWT認証処理開始: user_id={user.id}, email={mask_email(email)}"
+            )
+            logger.info(f"JWT認証成功: user_id={user.id}, email={mask_email(email)}")
 
             # トークン生成
             tokens = generate_tokens(user)

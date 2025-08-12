@@ -4,6 +4,7 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from typing import Optional
+from app.utils.logging_utils import mask_email
 
 
 logger = logging.getLogger("app")
@@ -58,12 +59,13 @@ class EmailService:
                 fail_silently=False,
             )
 
-            logger.info(f"メール確認メール送信成功: {to_email}")
+            logger.info(f"メール確認メール送信成功: {mask_email(to_email)}")
             return True
 
         except Exception as e:
             logger.error(
-                f"メール確認メール送信失敗: {to_email}, エラー: {str(e)}", exc_info=True
+                f"メール確認メール送信失敗: {mask_email(to_email)}, エラー: {str(e)}",
+                exc_info=True,
             )
             return False
 
@@ -119,12 +121,13 @@ class EmailService:
                 fail_silently=False,
             )
 
-            logger.info(f"ウェルカムメール送信成功: {to_email}")
+            logger.info(f"ウェルカムメール送信成功: {mask_email(to_email)}")
             return True
 
         except Exception as e:
             logger.error(
-                f"ウェルカムメール送信失敗: {to_email}, エラー: {str(e)}", exc_info=True
+                f"ウェルカムメール送信失敗: {mask_email(to_email)}, エラー: {str(e)}",
+                exc_info=True,
             )
             return False
 
@@ -176,11 +179,11 @@ class EmailService:
                 fail_silently=False,
             )
 
-            logger.info(f"パスワードリセットメール送信成功: {to_email}")
+            logger.info(f"パスワードリセットメール送信成功: {mask_email(to_email)}")
             return True
         except Exception as e:
             logger.error(
-                f"パスワードリセットメール送信失敗: {to_email}, エラー: {str(e)}",
+                f"パスワードリセットメール送信失敗: {mask_email(to_email)}, エラー: {str(e)}",
                 exc_info=True,
             )
             return False

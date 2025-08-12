@@ -5,6 +5,7 @@ from django.conf import settings
 from app.models import User, PasswordReset
 from app.utils.email_service import EmailService
 from app.utils.validators import UserValidator, ValidationError
+from app.utils.logging_utils import mask_email
 from app.utils.errors import BaseError, ErrorHandler
 from app.utils.constants import AuthErrorMessages
 
@@ -13,7 +14,12 @@ logger = logging.getLogger("app")
 
 
 class PasswordResetError(BaseError):
-    def __init__(self, message: str, code: str = "PASSWORD_RESET_ERROR", details: list[str] | None = None):
+    def __init__(
+        self,
+        message: str,
+        code: str = "PASSWORD_RESET_ERROR",
+        details: list[str] | None = None,
+    ):
         super().__init__(message=message, code=code, status=400, details=details)
 
 
@@ -36,7 +42,9 @@ class RequestPasswordReset(graphene.Mutation):
             except ValidationError:
                 # 既存の validate_email は重複チェックも行うため、フォーマットのみ再検証
                 from django.core.validators import EmailValidator
-                from django.core.exceptions import ValidationError as DjangoValidationError
+                from django.core.exceptions import (
+                    ValidationError as DjangoValidationError,
+                )
 
                 validator = EmailValidator()
                 try:
@@ -53,9 +61,14 @@ class RequestPasswordReset(graphene.Mutation):
                 user = User.objects.get(email=email)
                 pr = PasswordReset.create_for_user(user, expiration_hours=1)
 
-                frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost:3000")
-                reset_path = getattr(settings, "FRONTEND_RESET_PASSWORD_PATH", "/reset-password")
-                reset_url = f"{frontend_url}{reset_path}?token={pr.token}"
+                frontend_url = getattr(
+                    settings, "FRONTEND_URL", "http://localhost:3000"
+                )
+                reset_path = getattr(
+                    settings, "FRONTEND_RESET_PASSWORD_PATH", "/reset-password"
+                )
+                raw_token = getattr(pr, "_raw_token", None)
+                reset_url = f"{frontend_url}{reset_path}?token={raw_token}"
 
                 EmailService.send_password_reset_email(
                     to_email=user.email,
@@ -67,8 +80,12 @@ class RequestPasswordReset(graphene.Mutation):
                 # 存在しない場合でも成功レスポンス（同じメッセージ）
                 pass
 
-            logger.info(f"パスワードリセット要求受付: email={email}")
-            return RequestPasswordReset(success=True, message="パスワードリセット手順を送信しました。", errors=[])
+            logger.info(f"パスワードリセット要求受付: email={mask_email(email)}")
+            return RequestPasswordReset(
+                success=True,
+                message="パスワードリセット手順を送信しました。",
+                errors=[],
+            )
 
         except PasswordResetError as e:
             logger.warning(f"パスワードリセット要求エラー: {str(e)}")
@@ -115,7 +132,9 @@ class ResetPassword(graphene.Mutation):
             pr.use()
 
             logger.info(f"パスワードリセット完了: user_id={user.id}")
-            return ResetPassword(success=True, message="パスワードを再設定しました。", errors=[])
+            return ResetPassword(
+                success=True, message="パスワードを再設定しました。", errors=[]
+            )
 
         except PasswordResetError as e:
             logger.warning(f"パスワード再設定エラー: {str(e)}")
@@ -123,5 +142,3 @@ class ResetPassword(graphene.Mutation):
         except Exception as e:
             logger.error(f"予期せぬエラー発生: {str(e)}", exc_info=True)
             raise ErrorHandler.handle_unexpected_error(e, "ResetPassword")
-
-

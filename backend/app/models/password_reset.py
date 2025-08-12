@@ -4,6 +4,7 @@ from datetime import timedelta
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
+from app.utils.tokens import generate_token, hash_token
 
 
 class PasswordReset(models.Model):
@@ -15,7 +16,8 @@ class PasswordReset(models.Model):
         on_delete=models.CASCADE,
         related_name="password_resets",
     )
-    token = models.CharField(max_length=255, unique=True, null=False)
+    # DBにはハッシュ化したトークンを保存する
+    token_hash = models.CharField(max_length=64, unique=True, null=False)
     is_used = models.BooleanField(default=False)
     expires_at = models.DateTimeField(null=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -25,8 +27,9 @@ class PasswordReset(models.Model):
         db_table = "password_resets"
         ordering = ["-created_at"]
         indexes = [
-            models.Index(fields=["token"]),
+            models.Index(fields=["token_hash"], name="idx_passwordreset_tokenhash"),
             models.Index(fields=["user", "is_used"]),
+            models.Index(fields=["expires_at"], name="idx_passwordreset_expires"),
         ]
 
     def __str__(self) -> str:
@@ -53,15 +56,20 @@ class PasswordReset(models.Model):
             is_used=True, used_at=timezone.now()
         )
 
-        token = str(uuid.uuid4())
+        raw_token = generate_token()
+        token_hash = hash_token(raw_token)
         expires_at = timezone.now() + timedelta(hours=expiration_hours)
-        return cls.objects.create(user=user, token=token, expires_at=expires_at)
+        instance = cls.objects.create(
+            user=user, token_hash=token_hash, expires_at=expires_at
+        )
+        instance._raw_token = raw_token  # transient attribute for caller
+        return instance
 
     @classmethod
     def get_valid_token(cls, token: str):
         """有効な（未使用かつ未期限切れ）トークンを取得"""
         try:
-            pr = cls.objects.get(token=token, is_used=False)
+            pr = cls.objects.get(token_hash=hash_token(token), is_used=False)
             if pr.is_expired:
                 return None
             return pr

@@ -11,6 +11,7 @@ from app.models.user import User
 from app.utils.constants import AuthErrorMessages
 from app.utils.errors import BaseError, ErrorHandler
 from app.utils.sanitizer import sanitize_email, sanitize_string
+from app.utils.logging_utils import mask_email
 
 logger = logging.getLogger("app")
 
@@ -121,17 +122,21 @@ class GoogleAuth(graphene.Mutation):
                 else None
             )
 
-            logger.info(f"Google認証開始: email={email}, name={name}")
+            logger.info(f"Google認証開始: email={mask_email(email)}, name={name}")
 
             # ユーザー検索
             user = User.objects.filter(email=email).first()
 
             if not user:
-                logger.info(f"新規ユーザー作成: email={email}")
+                logger.info(f"新規ユーザー作成: email={mask_email(email)}")
                 user = User.objects.create(name=name, email=email, icon=icon)
-                logger.info(f"新規ユーザー作成完了: user_id={user.id}, email={email}")
+                logger.info(
+                    f"新規ユーザー作成完了: user_id={user.id}, email={mask_email(email)}"
+                )
             else:
-                logger.info(f"既存ユーザーログイン: user_id={user.id}, email={email}")
+                logger.info(
+                    f"既存ユーザーログイン: user_id={user.id}, email={mask_email(email)}"
+                )
 
             # トークン生成
             tokens = generate_tokens(user)
