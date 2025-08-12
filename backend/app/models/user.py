@@ -57,3 +57,10 @@ class User(AbstractUser):
     class Meta:
         db_table = "users"
         ordering = ["id"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["email"],
+                condition=models.Q(is_active=True),
+                name="unique_active_email",
+            ),
+        ]
