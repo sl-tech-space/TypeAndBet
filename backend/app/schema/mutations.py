@@ -8,6 +8,7 @@ from app.views.game.simulation import CompletePractice
 from app.views.game.textgenerator import GenerateText
 from app.views.game.textpair import ConvertToHiragana, GetRandomTextPair
 from app.views.game.typeandbet import CreateBet, UpdateGameScore
+from app.views.auth.password_reset import RequestPasswordReset, ResetPassword
 
 
 class Mutation(graphene.ObjectType):
@@ -23,3 +24,5 @@ class Mutation(graphene.ObjectType):
     get_random_text_pair = GetRandomTextPair.Field()
     convert_to_hiragana = ConvertToHiragana.Field()
     complete_practice = CompletePractice.Field()
+    request_password_reset = RequestPasswordReset.Field()
+    reset_password = ResetPassword.Field()

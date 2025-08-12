@@ -136,3 +136,51 @@ class EmailService:
         }
 
         return render_to_string("email/welcome.html", context)
+
+    @classmethod
+    def send_password_reset_email(
+        cls,
+        to_email: str,
+        username: str,
+        reset_url: str,
+        expiration_minutes: int = 60,
+        from_email: Optional[str] = None,
+    ) -> bool:
+        """パスワードリセットメールを送信"""
+        try:
+            if from_email is None:
+                from_email = (
+                    getattr(settings, "DEFAULT_FROM_EMAIL", "")
+                    or getattr(settings, "EMAIL_HOST_USER", "")
+                    or "noreply@example.com"
+                )
+
+            subject = "【TypeAndBet】パスワード再設定のご案内"
+
+            html_message = render_to_string(
+                "email/password_reset.html",
+                {
+                    "username": username,
+                    "reset_url": reset_url,
+                    "expiration_minutes": expiration_minutes,
+                },
+            )
+            plain_message = strip_tags(html_message)
+
+            send_mail(
+                subject=subject,
+                message=plain_message,
+                from_email=from_email,
+                recipient_list=[to_email],
+                html_message=html_message,
+                fail_silently=False,
+            )
+
+            logger.info(f"パスワードリセットメール送信成功: {to_email}")
+            return True
+        except Exception as e:
+            logger.error(
+                f"パスワードリセットメール送信失敗: {to_email}, エラー: {str(e)}",
+                exc_info=True,
+            )
+            return False

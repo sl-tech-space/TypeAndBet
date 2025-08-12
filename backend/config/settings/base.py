@@ -198,3 +198,6 @@ FRONTEND_URL = os.environ.get("FRONTEND_URL", f"http://localhost:{FRONTEND_PORT}
 FRONTEND_VERIFY_EMAIL_PATH = os.environ.get(
     "FRONTEND_VERIFY_EMAIL_PATH", "/verify-email"
 )
+FRONTEND_RESET_PASSWORD_PATH = os.environ.get(
+    "FRONTEND_RESET_PASSWORD_PATH", "/reset-password"
+)
