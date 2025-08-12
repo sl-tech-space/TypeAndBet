@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+yarn.lock
+package-lock.json
+
+# Production builds
+.next/
+out/
+dist/
+build/
+
+# Environment files
+.env*
+
+# Cache and temp files
+.turbo/
+.cache/
+.temp/
+
+# Logs
+*.log
+
+# Generated files
+*.generated.*
+coverage/
+
+# Documentation
+README.md
+CHANGELOG.md
+
+# Config files that should not be formatted
+.prettierrc
+.prettierignore
+.gitignore
+
+# Lock files
+pnpm-lock.yaml

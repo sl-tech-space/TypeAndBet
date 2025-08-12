@@ -11,9 +11,9 @@ export type RouteKey =
   | "LOGOUT"
   | "TERMS"
   | "PRIVACY"
-  | "CONTACT"
   | "NOT_FOUND"
-  | "SERVER_ERROR";
+  | "SERVER_ERROR"
+  | "RESULT";
 
 export type Routes = {
   [key in RouteKey]: string;
@@ -30,11 +30,11 @@ export const ROUTE: Routes = {
   SIGNUP: "/auth/signup",
   PASSWORD_FORGET: "/auth/password-forget",
   LOGOUT: "/auth/logout",
-  TERMS: "/terms",
-  PRIVACY: "/privacy",
-  CONTACT: "/contact",
-  NOT_FOUND: "/404",
-  SERVER_ERROR: "/500",
+  TERMS: "/legal/terms-of-service",
+  PRIVACY: "/legal/privacy-policy",
+  NOT_FOUND: "/error/404",
+  SERVER_ERROR: "/error/500",
+  RESULT: "/result",
 };
 
 /**
@@ -58,9 +58,9 @@ export const ROUTE_NAME: RouteNames = {
   LOGOUT: "ログアウト",
   TERMS: "利用規約",
   PRIVACY: "プライバシーポリシー",
-  CONTACT: "お問い合わせ",
   NOT_FOUND: "ページが見つかりません",
   SERVER_ERROR: "サーバーエラー",
+  RESULT: "結果",
 };
 
 /**
@@ -75,4 +75,20 @@ export type HomeBackButton = {
 export const HOME_BACK_BUTTON: HomeBackButton = {
   TEXT: "ホームに戻る",
   ROUTE: "/",
+};
+
+export type RevalidateRouteKey = "HOME" | "SIMULATE" | "PLAY" | "RESULT";
+
+export type RevalidateRoute = {
+  [key in RevalidateRouteKey]: string;
+};
+
+/**
+ * ユーザのデータを更新した際に再検証するルート
+ */
+export const REVALIDATE_ROUTES: RevalidateRoute = {
+  HOME: ROUTE.HOME,
+  SIMULATE: ROUTE.SIMULATE,
+  PLAY: ROUTE.PLAY,
+  RESULT: ROUTE.RESULT,
 };

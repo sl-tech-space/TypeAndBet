@@ -1,0 +1,135 @@
+.summary-result {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: clamp(0.75rem, 2vh, 1.5rem);
+  max-width: 100%;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  &__grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(0.75rem, 2vw, 2rem);
+    align-items: start;
+  }
+
+  &__left,
+  &__right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.5rem, 1.5vh, 1rem);
+    min-width: 0;
+  }
+
+  &__right {
+    align-items: center;
+  }
+
+  @media (max-width: 768px) {
+    &__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__title {
+    letter-spacing: 2px;
+    padding: 0.2rem 0.6rem;
+    border-radius: 8px;
+    /* 文字オーラ: 背景を使わず多重テキストシャドウで発光 */
+    text-shadow:
+      0 0 6px rgba($color-gold, 0.65),
+      0 0 14px rgba($color-gold, 0.55),
+      0 0 22px rgba($color-gold, 0.45),
+      0 0 36px rgba($color-gold, 0.35);
+  }
+
+  &__formula {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+
+    &_line {
+      display: flex;
+      flex-wrap: wrap;
+      column-gap: 0.35rem;
+      row-gap: 0.35rem;
+      justify-content: center;
+      max-width: 100%;
+    }
+  }
+
+  &__total {
+    font-weight: 900 !important;
+    padding: 0.15rem 0.6rem;
+    border-radius: 10px;
+    /* 合計にも強い発光 */
+    text-shadow:
+      0 0 10px rgba($color-gold, 0.7),
+      0 0 22px rgba($color-gold, 0.6),
+      0 0 36px rgba($color-gold, 0.5),
+      0 0 48px rgba($color-gold, 0.35);
+    word-break: keep-all;
+    max-width: 100%;
+    text-align: center;
+  }
+
+  &__op {
+    opacity: 0.9;
+    font-weight: 700;
+  }
+
+  &__gold {
+    display: inline-flex;
+    align-items: baseline;
+    padding: 0.05rem 0.35rem;
+    border-radius: 6px;
+    /* 文字から直接にじむオーラ */
+    background: transparent;
+    text-shadow:
+      0 0 6px rgba($color-gold, 0.55),
+      0 0 14px rgba($color-gold, 0.45),
+      0 0 22px rgba($color-gold, 0.35);
+    max-width: 100%;
+  }
+
+  &__unit {
+    margin-left: 0.15rem;
+    opacity: 0.95;
+  }
+
+  &__rank {
+    margin-top: clamp(0.5rem, 1vh, 1rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+
+    &_label {
+      opacity: 0.9;
+    }
+
+    &_value {
+      font-weight: 700 !important;
+    }
+  }
+
+  &__next,
+  &__score {
+    opacity: 0.95;
+    text-align: center;
+    max-width: 100%;
+  }
+
+  &__next_text,
+  &__score_text {
+    display: inline-block; // 背景ハイライトは削除
+    max-width: 100%;
+    word-break: keep-all;
+    white-space: nowrap;
+  }
+}

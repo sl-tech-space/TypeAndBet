@@ -205,7 +205,6 @@ class RefreshToken(graphene.Mutation):
             logger.info(f"新しいトークン生成完了: user_id={user.id}")
 
             return RefreshToken(
-                user=user,
                 tokens=TokenType(**tokens),
                 success=True,
                 errors=[],

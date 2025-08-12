@@ -7,7 +7,7 @@
   align-items: center;
   z-index: 999;
   transition: bottom 0.3s ease;
-  
+
   &.aboveFooter {
     bottom: calc(1.5rem + 3rem);
   }
@@ -23,7 +23,9 @@
   border-radius: 0.75rem;
   padding: 0.75rem 1rem;
   box-shadow: 0 0.3rem 0.9rem rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
 
   &:after {
     content: "";
@@ -161,4 +163,3 @@
     }
   }
 }
-

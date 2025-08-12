@@ -1,3 +1,4 @@
 export * from "./meta";
-export * from "./string";
 export * from "./object";
+export * from "./string";
+export * from "./route";

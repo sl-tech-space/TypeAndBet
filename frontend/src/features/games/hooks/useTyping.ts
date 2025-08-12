@@ -1,27 +1,27 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef, useMemo } from "react";
+import { useParams, usePathname } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { completePlay, completeSimulate, setGameResult } from "@/actions";
 import {
   COUNT_DOWN_TIME,
-  INITIAL_VALUE,
+  GAME_MODE_ID,
   INITIAL_SENTENCE_COUNT,
+  INITIAL_VALUE,
+  ROUTE,
 } from "@/constants";
 import { RomajiTrie, buildRomajiTrie } from "@/features/games";
+import { useNavigator } from "@/hooks/routing/useNavigator";
 import { ErrorState } from "@/hooks/useError";
 import { removeSpaces, removeSpacesFromArray } from "@/utils";
 
 import { useTypingContext } from "../contexts/TypingContext";
 
-import { useGenerator, useTimer, useKeydown } from "./";
+import { useGenerator, useKeydown, useTimer } from "./";
 
-import type {
-  KeydownEvent,
-  Sentence,
-  InputState,
-  RomajiProgress,
-  PromptDetail,
-} from "./";
+import type { GameResult } from "@/features/result/types";
+import type { InputState, KeydownEvent, RomajiProgress, Sentence } from "./";
 
 /**
  * タイピングゲームのロジックを管理するフック
@@ -29,7 +29,6 @@ import type {
  */
 export const useTyping = (): {
   targetSentence: React.RefObject<Sentence | null>;
-  promptDetail: PromptDetail | null;
   isLoading: boolean;
   isReady: boolean;
   isCountingDown: boolean;
@@ -58,7 +57,6 @@ export const useTyping = (): {
   // 状態と関数の取得
   const {
     sentences: generatedSentences,
-    promptDetail,
     isLoading,
     error,
     generate,
@@ -165,7 +163,7 @@ export const useTyping = (): {
 
   // 初回読み込み時に文章を生成
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof globalThis.window !== "undefined") {
       generate();
     }
     // クリーンアップ関数
@@ -369,22 +367,14 @@ export const useTyping = (): {
         !isCountingDown &&
         !isLoading &&
         !isFinished &&
-        sentences.length > INITIAL_VALUE &&
-        promptDetail
+        sentences.length > INITIAL_VALUE
       ) {
         setIsCountingDown(true);
         countdownRef.current = COUNT_DOWN_TIME;
         setDisplayCountdown(COUNT_DOWN_TIME);
       }
     },
-    [
-      isReady,
-      isCountingDown,
-      isLoading,
-      isFinished,
-      sentences.length,
-      promptDetail,
-    ]
+    [isReady, isCountingDown, isLoading, isFinished, sentences.length]
   );
 
   // ゲーム開始後のタイピング処理
@@ -593,9 +583,84 @@ export const useTyping = (): {
     }
   }, [currentSentenceIndex]);
 
+  // タイピング終了時の処理
+  const pathName = usePathname();
+  const params = useParams();
+  const { toResult, toError } = useNavigator();
+
+  // URLパラメータからゲームIDを取得
+  const gameId = params.gameId as string | undefined;
+
+  useEffect(() => {
+    if (isFinished) {
+      // ここでスコアの送信などの処理を行う
+      const handleGameEnd = async (): Promise<void> => {
+        try {
+          if (pathName.includes(ROUTE.SIMULATE)) {
+            const response = await completeSimulate(
+              accuracy / 100,
+              correctTypeCount
+            );
+
+            const result: GameResult = {
+              gameType: GAME_MODE_ID.SIMULATE,
+              success: response.success,
+              score: response.score,
+              error: response.error || "",
+            };
+
+            // Server Actionを使用して結果を保存
+            await setGameResult(result);
+            toResult();
+            return;
+          } else if (pathName.includes(ROUTE.PLAY) && gameId) {
+            const response = await completePlay(
+              gameId,
+              accuracy / 100,
+              correctTypeCount
+            );
+
+            const result: GameResult = {
+              gameType: GAME_MODE_ID.PLAY,
+              success: response.success,
+              score: response.score,
+              beforeBetGold: response.beforeBetGold,
+              betGold: response.betGold,
+              scoreGoldChange: response.scoreGoldChange,
+              resultGold: response.resultGold,
+              currentRank: response.currentRank,
+              rankChange: response.rankChange,
+              nextRankGold: response.nextRankGold,
+              error: response.error || "",
+            };
+
+            // Server Actionを使用して結果を保存
+            await setGameResult(result);
+            toResult();
+            return;
+          }
+
+          toError.to500();
+        } catch (error) {
+          console.error("タイピング結果の送信に失敗:", error);
+        }
+      };
+
+      handleGameEnd();
+    }
+  }, [
+    isFinished,
+    correctTypeCount,
+    totalTypeCount,
+    accuracy,
+    pathName,
+    gameId,
+    toResult,
+    toError,
+  ]);
+
   return {
     targetSentence,
-    promptDetail,
     isLoading,
     isReady,
     isCountingDown,

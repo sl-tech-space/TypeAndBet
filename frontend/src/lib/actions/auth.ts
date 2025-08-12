@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 
 import { auth, signIn } from "@/auth";
 import { OAUTH_PROVIDER, ROUTE } from "@/constants";
-import { AuthService } from "@/graphql";
+import { AuthService, GraphQLServerClient } from "@/graphql";
+import { getAuthorizedServerClient } from "@/lib/apollo-server";
 
 /**
  * Google認証を行う
@@ -23,13 +24,17 @@ export const signInWithGoogle = async (): Promise<void> => {
 export async function refreshToken(): Promise<boolean> {
   try {
     const session = await auth();
+
     if (!session?.refreshToken) return false;
 
+    const rawClient = await getAuthorizedServerClient();
+
     const { data } = await AuthService.refreshToken(
+      new GraphQLServerClient(rawClient),
       session.refreshToken as string
     );
 
-    if (data?.refreshToken) {
+    if (data?.refreshToken?.success) {
       revalidatePath(ROUTE.HOME);
       return true;
     }

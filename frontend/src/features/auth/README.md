@@ -1,54 +1,51 @@
-# 認証機能
+# 🔐 認証機能 (Auth)
 
-このディレクトリには、アプリケーションの認証に関する機能をまとめています。
+ユーザー認証に関する機能を提供するモジュールです。
 
-## 概要
-
-- ユーザー認証機能の実装
-- Google 認証を含む各種認証方式の実装
-- 認証状態の管理
-- 認証に関連するユーティリティ
-
-## 特徴
-
-- Google 認証はアプリケーション内の重要な認証機能として、このディレクトリで実装
-- セキュアな認証フローの提供
-- 他の認証方式との統合的な管理
-
-## ディレクトリ構成
+## 📁 ディレクトリ構造
 
 ```
 auth/
-├── components/          # 認証関連のUIコンポーネント
-│   ├── AuthActions/    # 認証アクション（ログイン/サインアップ切り替えなど）
-│   ├── AuthCard/       # 認証フォームのカードコンポーネント
-│   ├── login/         # ログイン関連のコンポーネント
-│   ├── oauth/         # OAuth認証（Google認証など）のコンポーネント
-│   └── signup/        # サインアップ関連のコンポーネント
-│
-├── hooks/              # 認証関連のカスタムフック
-│   ├── useAuthPath.ts        # 認証パスの管理
-│   ├── useLogin.ts          # ログイン機能
-│   ├── useLogin.types.ts    # ログイン関連の型定義
+├── components/               # UIコンポーネント
+│   ├── AuthActions/         # 認証アクション切り替え
+│   ├── AuthCard/            # 認証フォームカード
+│   ├── login/
+│   │   └── LoginForm/       # ログインフォーム
+│   ├── oauth/
+│   │   └── GoogleAuth/      # Google認証ボタン
+│   ├── signup/
+│   │   └── SignupForm/      # サインアップフォーム
+│   └── index.ts
+├── hooks/                   # カスタムフック
+│   ├── useAuthPath.ts       # 認証パス管理
+│   ├── useLogin.ts          # ログイン処理
+│   ├── useLogin.types.ts    # ログイン型定義
 │   ├── usePasswordVisibility.ts  # パスワード表示制御
-│   ├── useSignup.ts         # サインアップ機能
-│   ├── useSignup.types.ts   # サインアップ関連の型定義
-│   └── useValidation.ts     # フォームバリデーション
-│
-└── index.ts           # 機能のエクスポート
+│   ├── useSignup.ts         # サインアップ処理
+│   ├── useSignup.types.ts   # サインアップ型定義
+│   ├── useValidation.ts     # フォームバリデーション
+│   └── index.ts
+├── index.ts
+└── README.md
 ```
 
-## 主要コンポーネント
+## 🌟 機能概要
 
-### コンポーネント
+- **メール認証**: メールアドレスとパスワードによる認証
+- **Google OAuth**: Googleアカウントでのソーシャル認証
+- **セッション管理**: NextAuth.jsによる安全なセッション管理
+- **フォームバリデーション**: リアルタイムバリデーション機能
+- **認証状態管理**: アプリケーション全体での認証状態の一元管理
 
-- **AuthCard**: 認証フォームを表示するカードコンポーネント
-- **AuthActions**: ログイン/サインアップの切り替えなどのアクション
-- **Login**: ログインフォームコンポーネント
-- **Signup**: サインアップフォームコンポーネント
-- **OAuth**: Google 認証などの OAuth 関連コンポーネント
+## 🧩 主要コンポーネント
 
-### カスタムフック
+- **AuthCard**: 認証フォームの共通カードレイアウト
+- **LoginForm**: ログイン用フォームコンポーネント
+- **SignupForm**: サインアップ用フォームコンポーネント
+- **GoogleAuth**: Google OAuth認証ボタン
+- **AuthActions**: ログイン/サインアップの切り替えアクション
+
+## 🎣 主要フック
 
 - **useLogin**: ログイン機能を提供
 - **useSignup**: サインアップ機能を提供
@@ -56,19 +53,27 @@ auth/
 - **usePasswordVisibility**: パスワードの表示/非表示制御
 - **useAuthPath**: 認証関連のパス管理
 
-## 使用方法
+## 🔧 バリデーションルール
 
-各コンポーネントやフックは、アプリケーション内で以下のように使用できます：
+### パスワード要件
 
-```tsx
-import { useLogin, useSignup, AuthCard } from "@/features/auth";
+- 8文字以上50文字以下
+- 大文字2文字以上含む
+- 小文字必須
+- 数字2文字以上含む
+- 特殊文字1文字以上含む
 
-// ログインフック
-const { login, isLoading } = useLogin();
+### メールアドレス要件
 
-// サインアップフック
-const { signup, isLoading } = useSignup();
+- RFC5322準拠
+- 最大254文字
 
-// 認証カード
-<AuthCard title="ログイン">{/* フォームコンポーネント */}</AuthCard>;
-```
+### ユーザー名要件
+
+- 2文字以上20文字以下
+
+## 🔗 関連機能
+
+- セッション管理: `@/hooks/session`
+- ナビゲーション: `@/hooks/routing`
+- API通信: `@/actions/auth`

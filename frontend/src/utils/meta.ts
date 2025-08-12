@@ -10,9 +10,9 @@ import type { Metadata } from "next";
  * @returns メタデータ
  */
 export async function createMetadata(
-    title: string,
-    description: string,
-    keywords: string,
+  title: string,
+  description: string,
+  keywords: string
 ): Promise<Metadata> {
   return {
     title: `${SITE_NAME} | ${title}`,

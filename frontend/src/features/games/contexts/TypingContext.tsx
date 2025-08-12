@@ -77,7 +77,7 @@ export const TypingProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-  // 正タイプ率の計算
+  // 正タイプ率の計算 0~100
   const accuracy = useMemo(() => {
     if (totalTypeCount === 0) return 0;
     return Math.round((correctTypeCount / totalTypeCount) * 100);

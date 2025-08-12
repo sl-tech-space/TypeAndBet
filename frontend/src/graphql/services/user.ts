@@ -1,21 +1,24 @@
-import { SESSION_GOLD_UPDATE } from "../queries/user";
+import { GET_USER_GOLD } from "../queries/user";
 import { GraphQLServerClient } from "../utils";
 
-import type { SessionGoldUpdateResponse } from "@/types/user";
+import type { GetGoldResponse } from "@/types/user";
 
+/**
+ * ユーザーサービスクラス
+ */
 export class UserService {
-  private static get graphqlClient(): GraphQLServerClient {
-    return GraphQLServerClient.getInstance();
-  }
-
-  public static async sessionGoldUpdate(
+  /**
+   * ユーザーの所持ゴールドを取得
+   * @param client グラフQLサーバークライアント
+   * @param id ユーザーID
+   * @returns ユーザーの所持ゴールド
+   */
+  public static async getGold(
+    client: GraphQLServerClient,
     id: string
-  ): Promise<{ data: SessionGoldUpdateResponse }> {
-    return this.graphqlClient.executeQuery<
-      SessionGoldUpdateResponse,
-      { userId: string }
-    >(SESSION_GOLD_UPDATE, {
-      userId: id,
+  ): Promise<{ data: GetGoldResponse }> {
+    return client.executeQuery<GetGoldResponse, { id: string }>(GET_USER_GOLD, {
+      id: id,
     });
   }
 }

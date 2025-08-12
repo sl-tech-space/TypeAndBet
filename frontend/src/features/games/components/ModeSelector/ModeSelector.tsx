@@ -5,7 +5,7 @@ import { type ReactElement } from "react";
 
 import { useMessage } from "@/components/common";
 import { Button, Text } from "@/components/ui";
-import { GAME_MODE_MESSAGES, GAME_MODE } from "@/constants";
+import { GAME_MODE, GAME_MODE_MESSAGES } from "@/constants";
 import { useNavigator, useSession } from "@/hooks";
 
 import styles from "./ModeSelector.module.scss";
@@ -30,7 +30,13 @@ export const ModeSelector = (): ReactElement => {
       <div className={styles["select-mode__buttons"]}>
         <div
           className={styles["select-mode__button-container"]}
-          onMouseEnter={() => setMessage(GAME_MODE_MESSAGES.GUEST.SIMULATE)}
+          onMouseEnter={() =>
+            setMessage(
+              isLoggedIn
+                ? GAME_MODE_MESSAGES.USER.SIMULATE
+                : GAME_MODE_MESSAGES.GUEST.SIMULATE
+            )
+          }
           onMouseLeave={() => setMessage(null)}
         >
           <Button
@@ -53,7 +59,13 @@ export const ModeSelector = (): ReactElement => {
 
         <div
           className={styles["select-mode__button-container"]}
-          onMouseEnter={() => setMessage(GAME_MODE_MESSAGES.GUEST.PLAY)}
+          onMouseEnter={() =>
+            setMessage(
+              isLoggedIn
+                ? GAME_MODE_MESSAGES.USER.PLAY
+                : GAME_MODE_MESSAGES.GUEST.PLAY
+            )
+          }
           onMouseLeave={() => setMessage(null)}
         >
           <Button

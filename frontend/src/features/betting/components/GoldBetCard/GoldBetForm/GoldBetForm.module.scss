@@ -1,7 +1,9 @@
 // フォームコンテンツ
 .form-content {
   transform: translateY(10px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
 
   // 情報ボックス
   &__info-box {

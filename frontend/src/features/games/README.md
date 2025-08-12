@@ -1,165 +1,129 @@
-# ゲーム機能
+# 🎮 ゲーム機能 (Games)
 
-このディレクトリには、ゲーム画面とその操作に関する機能をまとめています。
+タイピングゲームの中核となる機能を提供するモジュールです。
 
-## 機能概要
-
-このディレクトリは、タイピングゲームの中核となる機能を提供します。主な機能は以下の通りです：
-
-- ゲームモードの選択と管理
-- タイピングゲームのロジック
-- 文章生成と管理
-- キー入力の処理
-- タイマー機能
-- ゲーム状態の管理
-
-## ディレクトリ構造
+## 📁 ディレクトリ構造
 
 ```
 games/
-├── README.md
 ├── components/
-│   ├── ModeSelector/
-│   ├── TimerCard/
-│   ├── DetailCard/
-│   └── index.ts
-├── hooks/
-│   ├── useGenerator.ts
-│   ├── useTyping.ts
-│   ├── useKeydown.ts
-│   ├── useTimer.ts
-│   ├── useGameMode.ts
-│   ├── generator.types.ts
-│   ├── typing.types.ts
-│   ├── keydown.types.ts
+│   ├── DetailCard/          # ゲーム詳細表示
+│   ├── ModeSelector/        # モード選択
+│   ├── TimerCard/           # タイマー表示
+│   │   └── Timer/           # タイマー本体
+│   ├── TypingCard/          # タイピング画面
+│   │   ├── InputKeyboard/   # キーボード表示
+│   │   └── SentenceDisplay/ # 文章表示
 │   └── index.ts
 ├── contexts/
-│   └── TypingContext/
+│   └── TypingContext.tsx    # タイピング状態管理
+├── hooks/
+│   ├── useGenerator.ts      # 文章生成
+│   ├── useKeydown.ts        # キー入力処理
+│   ├── useTimer.ts          # タイマー管理
+│   ├── useTyping.ts         # タイピング統合
+│   ├── generator.types.ts   # 生成関連型
+│   ├── keydown.types.ts     # キー入力型
+│   ├── typing.types.ts      # タイピング型
+│   └── index.ts
 ├── stores/
-├── utils/
+│   └── timerStore.ts        # タイマー状態
 ├── types/
-└── index.ts
+│   └── games.ts             # ゲーム型定義
+├── utils/
+│   └── trieUtils.ts         # Trie構造実装
+├── index.ts
+└── README.md
 ```
 
-## コンポーネント
+## 🌟 機能概要
 
-### ModeSelector
+- **AI文章生成**: OpenAI APIを使用した動的な文章生成
+- **リアルタイム入力判定**: Trie構造による高速な入力処理
+- **タイピング統計**: 正確率・速度・ミス数の詳細計測
+- **ゲームモード**: シミュレート・プレイモードの切り替え
+- **タイマー管理**: 制限時間とカウントダウン機能
+- **キーボード処理**: 複数のローマ字パターン対応
 
-ゲームモード（シミュレーション/プレイ）を選択するためのコンポーネント
+## 🧩 主要コンポーネント
 
-### TimerCard
+- **TypingCard**: タイピングゲームのメイン画面
+- **TimerCard**: 制限時間表示とカウントダウン
+- **DetailCard**: ゲーム詳細情報表示
+- **ModeSelector**: ゲームモード選択
 
-ゲーム内の制限時間を表示・管理するコンポーネント
+## 🎣 主要フック
 
-### DetailCard
+- **useTyping**: タイピングゲームの統合管理フック
+- **useGenerator**: AI文章生成管理フック
+- **useTimer**: タイマー管理フック
+- **useKeydown**: キーボード入力処理フック
 
-ゲームの詳細情報（テーマ、カテゴリなど）を表示するコンポーネント
+## 🗂️ 主要型定義
 
-## カスタムフック
-
-### useTyping
-
-タイピングゲームの中核となるロジックを管理するフック
-
-- 入力処理
-- 進捗管理
-- 正誤判定
-- スコア計算
-
-### useGenerator
-
-ゲーム用の文章を生成・管理するフック
-
-- AI による文章生成
-- ローマ字変換
-- 文章の状態管理
-
-### useKeydown
-
-キーボード入力を処理するフック
-
-- キー入力イベントの処理
-- 入力の正誤判定
-
-### useTimer
-
-ゲーム内のタイマーを管理するフック
-
-- 制限時間の管理
-- カウントダウン処理
-
-### useGameMode
-
-ゲームモードを管理するフック
-
-- モード選択
-- ルーティング制御
-
-## 型定義
-
-### Sentence
+### Sentence（文章）
 
 ```typescript
 interface Sentence {
-  kanji: string;
-  hiragana: string;
-  romaji: string[][];
+  kanji: string; // 漢字表記
+  hiragana: string; // ひらがな表記
+  romaji: string[][]; // ローマ字パターン配列
 }
 ```
 
-### RomajiProgress
+### RomajiProgress（入力進捗）
 
 ```typescript
 type RomajiProgress = {
-  typed: string[];
-  current: string;
-  remaining: string[];
-  inputString: string;
-  isValid: boolean;
-  nextChars: string[];
-  shortRomaji: string[];
-  missedChar: string;
-  expectedChar: string;
+  typed: string[]; // 入力済み文字
+  current: string; // 現在入力中文字
+  remaining: string[]; // 残り文字
+  inputString: string; // 入力文字列
+  isValid: boolean; // 入力妥当性
+  nextChars: string[]; // 次の入力候補
+  shortRomaji: string[]; // ショートカットローマ字
+  missedChar: string; // ミス文字
+  expectedChar: string; // 期待文字
 };
 ```
 
-## 使用例
+## ⚙️ Trie構造による高速処理
 
-```tsx
-import { useTyping, useGenerator } from "@/features/games";
+### RomajiTrie
 
-const GameComponent = () => {
-  const {
-    sentences,
-    currentSentenceIndex,
-    input,
-    isComplete,
-    handleKeydown,
-    startTyping,
-  } = useTyping();
+複数のローマ字パターンを効率的に処理するデータ構造
 
-  const { generate, promptDetail, isLoading } = useGenerator();
+## 🎮 ゲームモード
 
-  // ゲーム開始時に文章を生成
-  useEffect(() => {
-    generate();
-  }, []);
+### シミュレートモード
 
-  return <div>{/* ゲーム画面のUI実装 */}</div>;
-};
+- 練習用、ベット不要
+- 固定制限時間（60秒）
+- 経験値のみ獲得
+
+### プレイモード
+
+- 本格的、ベット必要
+- ベット額により可変制限時間
+- ゴールド獲得・ランキング反映
+
+## 📊 統計計算
+
+### 正確率計算
+
+```typescript
+const accuracy = Math.round((correctTypeCount / totalTypeCount) * 100);
 ```
 
-## 特徴
+### 速度計算
 
-- シミュレーションモードとプレイモードの 2 つのゲームモードを提供
-- AI を活用した文章生成システム
-- リアルタイムの入力判定とフィードバック
-- 詳細なタイピング統計（正確性、速度など）
-- カスタムフックを活用した効率的な状態管理
-- TypeScript による型安全な実装
+```typescript
+const wpm = Math.round(correctTypeCount / 5 / (time / 60)); // Words Per Minute
+```
 
-## 制限事項
+## 🔗 関連機能
 
-- 文章生成には API キーが必要です
-- シミュレーションモードでは実際のベット処理は行われません
-- 一度に生成できる文章の数に制限があります
+- ベッティング: `@/features/betting`
+- 結果表示: `@/features/result`
+- 認証: `@/features/auth`
+- API通信: `@/actions/games`

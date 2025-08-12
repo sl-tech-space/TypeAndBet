@@ -1,0 +1,218 @@
+@import "@/styles/variables";
+
+.legal {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  min-height: 100vh;
+  color: #f0f6fc;
+
+  &__container {
+    background: #161b22;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    border: 1px solid #30363d;
+    overflow: hidden;
+  }
+
+  &__header {
+    background: linear-gradient(
+      135deg,
+      lighten($color-primary, 15%),
+      $color-primary
+    );
+    color: #f0f6fc;
+    padding: 2rem;
+    text-align: center;
+    border-bottom: 1px solid #30363d;
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  &__content {
+    padding: 2rem;
+    line-height: 1.7;
+
+    h1 {
+      color: lighten($color-primary, 25%);
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 0 0 1.5rem 0;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid lighten($color-primary, 15%);
+    }
+
+    h2 {
+      color: lighten($color-primary, 20%);
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 2rem 0 1rem 0;
+      position: relative;
+
+      &::before {
+        content: "";
+        position: absolute;
+        left: -1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 1.5rem;
+        background: lighten($color-primary, 15%);
+        border-radius: 2px;
+      }
+    }
+
+    h3 {
+      color: #e6edf3;
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 1.5rem 0 0.75rem 0;
+    }
+
+    p {
+      margin: 0 0 1rem 0;
+      color: #c9d1d9;
+    }
+
+    ul,
+    ol {
+      margin: 1rem 0;
+      padding-left: 1.5rem;
+
+      li {
+        margin: 0.5rem 0;
+        color: #c9d1d9;
+
+        &::marker {
+          color: lighten($color-primary, 15%);
+        }
+      }
+    }
+
+    strong {
+      color: #f0f6fc;
+      font-weight: 600;
+    }
+
+    code {
+      background: #21262d;
+      color: lighten($color-primary, 20%);
+      padding: 0.125rem 0.25rem;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      font-family: "Consolas", "Monaco", "Courier New", monospace;
+      border: 1px solid #30363d;
+    }
+
+    blockquote {
+      border-left: 4px solid lighten($color-primary, 15%);
+      background: #0d1117;
+      margin: 1.5rem 0;
+      padding: 1rem 1.5rem;
+      border-radius: 0 8px 8px 0;
+      border: 1px solid #21262d;
+
+      p {
+        margin: 0;
+        font-style: italic;
+        color: #8b949e;
+      }
+    }
+
+    hr {
+      border: none;
+      height: 1px;
+      background: #30363d;
+      margin: 2rem 0;
+    }
+
+    a {
+      color: lighten($color-primary, 25%);
+      text-decoration: underline;
+      transition: all 0.2s ease;
+
+      &:hover {
+        color: lighten($color-primary, 35%);
+        text-shadow: 0 0 8px rgba(lighten($color-primary, 25%), 0.3);
+      }
+    }
+  }
+
+  &__footer {
+    background: #0d1117;
+    padding: 1.5rem 2rem;
+    border-top: 1px solid #30363d;
+    text-align: center;
+    color: #8b949e;
+    font-size: 0.875rem;
+
+    a {
+      color: lighten($color-primary, 25%);
+
+      &:hover {
+        color: lighten($color-primary, 35%);
+      }
+    }
+  }
+
+  // レスポンシブ対応
+  @media (max-width: 768px) {
+    padding: 1rem 0.5rem;
+
+    &__header {
+      padding: 1.5rem 1rem;
+
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+
+    &__content {
+      padding: 1.5rem 1rem;
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      h2 {
+        font-size: 1.125rem;
+
+        &::before {
+          left: -0.75rem;
+        }
+      }
+    }
+
+    &__footer {
+      padding: 1rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.5rem 0.25rem;
+
+    &__header {
+      padding: 1rem 0.75rem;
+
+      h1 {
+        font-size: 1.25rem;
+      }
+    }
+
+    &__content {
+      padding: 1rem 0.75rem;
+
+      h2::before {
+        left: -0.5rem;
+        width: 3px;
+        height: 1.25rem;
+      }
+    }
+  }
+}

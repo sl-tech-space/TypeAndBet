@@ -40,7 +40,7 @@
     font-weight: bold !important;
     position: relative;
     padding-bottom: 0.5rem;
-    
+
     &::after {
       content: "";
       position: absolute;
@@ -69,10 +69,10 @@
     &__card {
       padding: 1.5rem;
     }
-    
+
     &__title {
       font-size: 1.5rem !important;
       margin-bottom: 1.25rem;
     }
   }
-} 
+}
