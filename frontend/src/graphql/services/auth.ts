@@ -17,10 +17,6 @@ import type {
  * 認証サービスクラス
  */
 export class AuthService {
-  private static get graphqlClient(): GraphQLServerClient {
-    return GraphQLServerClient.getInstance();
-  }
-
   /**
    * ログインを行う
    * @param email メールアドレス
@@ -28,6 +24,7 @@ export class AuthService {
    * @returns
    */
   public static async login(
+    client: GraphQLServerClient,
     email: string,
     password: string
   ): Promise<{ data: LoginUserResponse }> {
@@ -36,10 +33,10 @@ export class AuthService {
       password,
     };
 
-    return this.graphqlClient.executeMutation<
-      LoginUserResponse,
-      typeof variables
-    >(LOGIN, variables);
+    return client.executeMutation<LoginUserResponse, typeof variables>(
+      LOGIN,
+      variables
+    );
   }
 
   /**
@@ -51,6 +48,7 @@ export class AuthService {
    * @returns
    */
   public static async signup(
+    client: GraphQLServerClient,
     name: string,
     email: string,
     password: string,
@@ -63,10 +61,10 @@ export class AuthService {
       passwordConfirm: passwordConfirmation,
     };
 
-    return this.graphqlClient.executeMutation<
-      SignupUserResponse,
-      typeof variables
-    >(SIGNUP, variables);
+    return client.executeMutation<SignupUserResponse, typeof variables>(
+      SIGNUP,
+      variables
+    );
   }
 
   /**
@@ -77,6 +75,7 @@ export class AuthService {
    * @returns
    */
   public static async googleAuth(
+    client: GraphQLServerClient,
     email: string,
     name: string,
     icon?: string
@@ -87,7 +86,7 @@ export class AuthService {
       ...(icon && { icon }),
     };
 
-    return this.graphqlClient.executeMutation<OAuthResponse, typeof variables>(
+    return client.executeMutation<OAuthResponse, typeof variables>(
       GOOGLE_AUTH,
       variables
     );
@@ -99,8 +98,9 @@ export class AuthService {
    * @returns
    */
   public static async refreshToken(
+    client: GraphQLServerClient,
     refreshToken: string
   ): Promise<{ data: RefreshTokenResponse }> {
-    return this.graphqlClient.executeMutation(REFRESH_TOKEN, { refreshToken });
+    return client.executeMutation(REFRESH_TOKEN, { refreshToken });
   }
 }

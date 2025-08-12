@@ -1,2 +1,2 @@
 export { GoldBetCard } from "./GoldBetCard";
-export * from "./GoldBetCard.types"; 
+export * from "./GoldBetCard.types";

@@ -6,4 +6,3 @@ export interface ScrollHelperProps {
   onClick?: () => void;
   targetSection?: number;
 }
-

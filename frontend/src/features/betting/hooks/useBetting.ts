@@ -2,20 +2,65 @@
 
 import { useState, useCallback } from "react";
 
-import { createGameSession } from "@/actions";
-import { GAME_TIME_LIMIT, GAME_BET_LIMIT, GAME_MODE_ID } from "@/constants";
+import { createGameSession, createBet } from "@/actions";
+import {
+  GAME_TIME_LIMIT,
+  GAME_BET_LIMIT,
+  GAME_MODE_ID,
+  ERROR_MESSAGE,
+} from "@/constants";
 import { useTimer } from "@/features/games";
 import { useAsyncState, useBaseRouter, useNavigator } from "@/hooks";
 
-import type { UseBettingReturn, UseBettingProps } from "./betting.types";
+import type {
+  UseBettingReturn,
+  UseBettingProps,
+  OnBetReturn,
+} from "./betting.types";
+import type { CreateBetResponse } from "@/types";
 
 /**
  * ベッティング機能用のカスタムフック
  * ベット額の管理と制限時間の計算、残高チェックなどを行う
+ * ※本番用ベット計算処理は、createBetアクションで行う
  */
+const calculateBet = async (
+  balance: number,
+  amount: number
+): Promise<CreateBetResponse["createBet"]["game"]> => {
+  const { success, result, error } = await createBet(balance, amount);
+
+  if (!success || !result) {
+    throw new Error(error ?? ERROR_MESSAGE.CREATE_BET_FAILED);
+  }
+
+  return result.game;
+};
+
 export const useBetting = ({
   balance,
-  onBet = () => Promise.resolve({ success: true }),
+  onBet = async (amount: number): Promise<OnBetReturn> => {
+    try {
+      // ベット処理の実行
+      const result = await calculateBet(balance, amount);
+
+      return {
+        success: true,
+        result,
+        error: null,
+      };
+    } catch (error) {
+      // エラーオブジェクトの適切な処理
+      const errorMessage =
+        error instanceof Error ? error.message : "ベット処理に失敗しました";
+
+      return {
+        success: false,
+        result: null,
+        error: errorMessage,
+      };
+    }
+  },
   minBet = GAME_BET_LIMIT.MIN_BET,
   maxBet = GAME_BET_LIMIT.MAX_BET,
   gameModeId,
@@ -28,7 +73,7 @@ export const useBetting = ({
     withAsyncSubmit,
   } = useAsyncState();
   const { back } = useBaseRouter();
-  const { toSimulateById } = useNavigator();
+  const { toSimulateById, toPlayById } = useNavigator();
   const { startTimer, stopTimer } = useTimer();
 
   // アニメーション付きで残高を更新する関数
@@ -113,12 +158,17 @@ export const useBetting = ({
       return;
     }
 
-    const result = await onBet(betAmount);
+    const { success, result, error } = await onBet(betAmount);
 
-    if (!result.success) {
+    if (!success || !result) {
       stopTimer();
-      throw new Error("ベットに失敗しました");
+      throw new Error(error ?? "ベットに失敗しました");
     }
+
+    // 残高を更新
+    animateBalance(balance - betAmount);
+
+    toPlayById(result.id);
   };
 
   // 前のページに戻る

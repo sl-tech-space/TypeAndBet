@@ -1,21 +1,32 @@
-import { GraphQLClient as ApolloGraphQLClient } from "graphql-request";
+import { GraphQLClient } from "graphql-request";
+import { cookies } from "next/headers";
+import { getToken } from "next-auth/jwt";
 
-import { GraphQLServerClient } from "@/graphql";
-
-// Docker環境では、サービス名とポート8000を使用して接続
 const GRAPHQL_ENDPOINT =
   process.env.GRAPHQL_ENDPOINT || "http://backend:8000/graphql/";
 
-// サーバーサイド専用のGraphQLClientインスタンスを作成
-const serverClient = new ApolloGraphQLClient(GRAPHQL_ENDPOINT, {
-  headers: {
+export async function getAuthorizedServerClient(): Promise<GraphQLClient> {
+  const cookieStore = await cookies();
+  const token = await getToken({
+    req: { headers: { cookie: cookieStore.toString() } },
+    secret: process.env.NEXTAUTH_SECRET,
+  });
+
+  const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    "Accept": "application/json",
+    Accept: "application/json",
     "X-Requested-With": "XMLHttpRequest",
-  },
-  credentials: "include",
-});
+    Cookie: cookieStore.toString(),
+  };
 
-GraphQLServerClient.initialize(serverClient);
-export { serverClient };
+  // トークンがセッションのルートレベルに設定されているため、直接アクセス
+  const accessToken = token?.accessToken;
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
+  }
 
+  return new GraphQLClient(GRAPHQL_ENDPOINT, {
+    headers,
+    credentials: "include",
+  });
+}

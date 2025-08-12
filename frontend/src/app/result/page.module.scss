@@ -1,0 +1,49 @@
+.container {
+  height: calc(
+    100vh - 80px
+  ); /* ヘッダーの高さ(80px)を引いた残りのビューポート高さ */
+  width: 100%;
+  display: flex;
+  flex-direction: column; /* 縦方向のレイアウト */
+  box-sizing: border-box;
+  padding: 1rem;
+
+  /* 上部80%のコンテナ */
+  &__upper {
+    flex: 0 0 80%; /* 高さ80%を固定 */
+    width: 100%;
+    display: flex;
+    flex-direction: row; /* 横並び */
+    gap: 1rem;
+  }
+
+  &__left {
+    flex: 0 0 25%; /* 幅25%を固定 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__center {
+    flex: 0 0 50%; /* 幅50%を固定 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__right {
+    flex: 0 0 25%; /* 幅25%を固定 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 下部20%のコンテナ */
+  &__bottom {
+    flex: 0 0 20%; /* 高さ20%を固定 */
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

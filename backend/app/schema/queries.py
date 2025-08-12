@@ -17,7 +17,7 @@ class Query(graphene.ObjectType):
     users = graphene.List(UserType)
     user = graphene.Field(UserType, id=graphene.UUID(required=True))
     rankings = graphene.List(RankingType, limit=graphene.Int(), offset=graphene.Int())
-    game_result = graphene.Field(GameResultType, game_id=graphene.ID(required=True))
+    game_result = graphene.Field(GameResultType, game_id=graphene.UUID(required=True))
 
     def resolve_users(self, info):
         user = info.context.user

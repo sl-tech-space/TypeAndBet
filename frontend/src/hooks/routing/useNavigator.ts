@@ -13,9 +13,10 @@ export const useNavigator = (): {
   toLogin: () => void;
   toSignup: () => void;
   toPlay: () => void;
-  toPlayById: (sessionId: string) => void;
+  toPlayById: (gameId: string) => void;
   toSimulate: () => void;
   toSimulateById: (sessionId: string) => void;
+  toResult: () => void;
   toError: {
     to404: () => void;
     to500: () => void;
@@ -34,6 +35,9 @@ export const useNavigator = (): {
     toSimulate: () => push(ROUTE.SIMULATE),
     toSimulateById: (sessionId: string) =>
       push(`${ROUTE.SIMULATE}/${sessionId}`),
+
+    toResult: () => push(ROUTE.RESULT),
+
     toError: {
       to404: () => push(ROUTE.NOT_FOUND),
       to500: () => push(ROUTE.SERVER_ERROR),

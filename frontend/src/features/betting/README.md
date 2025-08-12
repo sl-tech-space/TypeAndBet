@@ -1,120 +1,71 @@
-# Betting 機能
+# 💰 ベッティング機能 (Betting)
 
-TypeAndBet アプリケーションのベッティング機能を管理するディレクトリです。
+ゲームにベットを行うための機能を提供するモジュールです。
 
-## 機能概要
-
-このディレクトリは、ユーザーがゲームにベットを行うための機能を提供します。主な機能は以下の通りです：
-
-- ベット額の入力と管理
-- 残高チェック
-- 制限時間の計算
-- ベット処理の実行
-- アニメーション付きの残高表示
-
-## ディレクトリ構造
+## 📁 ディレクトリ構造
 
 ```
 betting/
-├── README.md
 ├── components/
 │   ├── GoldBetCard/
-│   │   ├── GoldBetForm/
+│   │   ├── GoldBetForm/     # ベット入力フォーム
 │   │   │   ├── GoldBetForm.tsx
 │   │   │   ├── GoldBetForm.types.ts
 │   │   │   └── index.ts
-│   │   ├── GoldBetCard.tsx
+│   │   ├── GoldBetCard.tsx  # メインベットカード
 │   │   ├── GoldBetCard.types.ts
 │   │   └── index.ts
 │   └── index.ts
 ├── hooks/
-│   ├── betting.types.ts
-│   ├── useBetting.ts
+│   ├── betting.types.ts     # ベット関連型定義
+│   ├── useBetting.ts        # ベット処理フック
 │   └── index.ts
-└── index.ts
+├── index.ts
+└── README.md
 ```
 
-## コンポーネント
+## 🌟 機能概要
 
-### GoldBetCard
+- **ベット額管理**: ユーザーのベット額入力と設定
+- **残高チェック**: リアルタイムな残高確認と制限
+- **制限時間計算**: ベット額に応じた動的な制限時間設定
+- **アニメーション**: 滑らかな残高表示更新
+- **バリデーション**: ベット額の適切性チェック
+- **ゲームモード対応**: シミュレート・プレイモード切り替え
 
-ベッティング機能のメインコンポーネントです。以下の機能を提供します：
+## 🧩 主要コンポーネント
 
-- ベット額の入力フォーム
-- 残高表示
-- ベット実行ボタン
-- エラー表示
+- **GoldBetCard**: ベッティング機能のメインコンポーネント
+- **GoldBetForm**: ベット額入力専用フォーム
 
-#### Props
+## 🎣 主要フック
 
-```typescript
-{
-  onBet?: (amount: number) => Promise<{ success: boolean; error?: string }>;
-  balance: number;
-  isLoading?: boolean;
-  minBet?: number;
-  maxBet?: number;
-  gameModeId: string;
-}
-```
+- **useBetting**: ベッティング機能の中核フック
 
-## カスタムフック
+## 🎮 ゲームモード
 
-### useBetting
+### シミュレートモード (SIMULATE)
 
-ベッティング機能の中核となるカスタムフックです。以下の機能を提供します：
+- 実際のベット処理なし
+- 練習・デモ用
+- 固定制限時間
 
-- ベット額の状態管理
-- 制限時間の計算
-- 残高チェック
-- エラー処理
-- アニメーション付きの残高更新
+### プレイモード (PLAY)
 
-#### Props
+- 実際のゴールド消費
+- 本格的なゲーム
+- ベット額による可変制限時間
 
-```typescript
-{
-  onBet?: (amount: number) => Promise<{ success: boolean; error?: string }>;
-  balance: number;
-  minBet?: number;
-  maxBet?: number;
-  gameModeId: string;
-}
-```
+## 🔧 制限値設定
 
-#### 戻り値
+- 最小ベット額: 100G
+- 最大ベット額: 10,000G
+- 最小制限時間: 30秒
+- 時間係数: 0.003
 
-```typescript
-{
-  betAmount: number;
-  setBetAmount: (amount: number) => void;
-  timeLimit: number;
-  isSubmitting: boolean;
-  isExceedingBalance: boolean;
-  error: string | null;
-  handleBet: () => Promise<void>;
-  handleCancel: () => void;
-  displayBalance: number;
-}
-```
+## 🔗 関連機能
 
-## 使用例
-
-```tsx
-import { GoldBetCard } from "@/features/betting";
-
-const GamePage = () => {
-  const handleBet = async (amount: number) => {
-    // ベット処理の実装
-    return { success: true };
-  };
-
-  return <GoldBetCard balance={1000} onBet={handleBet} gameModeId="REAL" />;
-};
-```
-
-## 制限事項
-
-- ベット額は最小ベット額（デフォルト値あり）以上、最大ベット額（デフォルト値あり）以下である必要があります
-- ベット額は現在の残高を超えることはできません
-- シミュレートモード（gameModeId: "SIMULATE"）の場合、実際のベット処理は行われず、タイピング画面に遷移します
+- ゲーム処理: `@/features/games`
+- タイマー管理: `@/features/games/stores/timerStore`
+- ナビゲーション: `@/hooks/routing`
+- API通信: `@/actions/betting`

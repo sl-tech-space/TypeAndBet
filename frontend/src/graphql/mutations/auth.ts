@@ -88,9 +88,13 @@ export const GOOGLE_AUTH = gql`
 export const REFRESH_TOKEN = gql`
   mutation RefreshToken($refreshToken: String!) {
     refreshToken(refreshToken: $refreshToken) {
-      accessToken
-      refreshToken
-      expiresAt
+      success
+      errors
+      tokens {
+        accessToken
+        refreshToken
+        expiresAt
+      }
     }
   }
 `;

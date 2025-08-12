@@ -1,3 +1,5 @@
+import { ROUTE } from "./route";
+
 /**
  * 認証必須パスのインターフェース
  */
@@ -9,9 +11,7 @@ interface AuthPath {
 /**
  * 認証必須パス
  */
-export const AUTH_PATH: AuthPath[] = [
-  { href: "/type-and-bet", label: "Type&Bet" },
-];
+export const AUTH_PATH: AuthPath[] = [{ href: ROUTE.PLAY, label: "Type&Bet" }];
 
 /**
  * OAuthプロバイダーの型定義
@@ -142,7 +142,7 @@ export const PASSWORD_VALIDATION: PasswordValidation = {
   MIN_UPPERCASE: 2,
   MIN_LOWERCASE: 2,
   MIN_NUMBER: 2,
-  MIN_SPECIAL_CHAR: 2,
+  MIN_SPECIAL_CHAR: 1,
   PATTERN: {
     UPPERCASE: /[A-Z]/g,
     LOWERCASE: /[a-z]/g,
@@ -155,7 +155,7 @@ export const PASSWORD_VALIDATION: PasswordValidation = {
     MAX_LENGTH: "パスワードは128文字以内で入力してください",
     MIN_UPPERCASE: "大文字を2文字以上含める必要があります",
     MIN_NUMBER: "数字を2文字以上含める必要があります",
-    MIN_SPECIAL_CHAR: "特殊文字を2文字以上含める必要があります",
+    MIN_SPECIAL_CHAR: "特殊文字を1文字以上含める必要があります",
     REQUIRED_CHARS: "英字（大文字・小文字）と数字を含める必要があります",
   },
 };

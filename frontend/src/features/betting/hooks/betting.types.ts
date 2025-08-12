@@ -1,9 +1,15 @@
+import type { CreateBetResponse } from "@/types";
+
 /**
  * ベッティング機能用のカスタムフックのプロパティ
  */
 export interface UseBettingProps {
   /** ベット実行関数 */
-  onBet?: (amount: number) => Promise<{ success: boolean; error?: string }>;
+  onBet?: (amount: number) => Promise<{
+    success: boolean;
+    result: CreateBetResponse["createBet"]["game"] | null;
+    error: string | null;
+  }>;
   /** ユーザーの残高 */
   balance: number;
   /** 最小ベット額 */
@@ -36,4 +42,16 @@ export interface UseBettingReturn {
   handleCancel: () => void;
   /** アニメーション付きの表示用残高 */
   displayBalance: number;
+}
+
+/**
+ * ベット実行関数の戻り値
+ */
+export interface OnBetReturn {
+  /** 成功かどうか */
+  success: boolean;
+  /** ベット結果 */
+  result: CreateBetResponse["createBet"]["game"] | null;
+  /** エラー情報 */
+  error: string | null;
 }

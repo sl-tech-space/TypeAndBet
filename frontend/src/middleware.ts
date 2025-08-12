@@ -2,24 +2,11 @@ import { NextResponse } from "next/server";
 import { Session } from "next-auth";
 
 import { auth } from "@/auth";
-import { ROUTE, AUTH_PATH, ONE_SECOND_MS } from "@/constants";
+import { ROUTE, ONE_SECOND_MS } from "@/constants";
 import { refreshToken } from "@/lib";
+import { isProtectedRoute, isAuthPage } from "@/utils";
 
 import type { NextRequest } from "next/server";
-
-
-
-// 認証が必要なパスかチェック
-const isProtectedRoute = (pathname: string): boolean => {
-  return AUTH_PATH.some(
-    ({ href }) => pathname === href || pathname.startsWith(href)
-  );
-};
-
-// 認証ページかチェック
-const isAuthPage = (pathname: string): boolean => {
-  return pathname.startsWith(ROUTE.LOGIN) || pathname.startsWith(ROUTE.SIGNUP);
-};
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   const pathname: string = request.nextUrl.pathname;

@@ -25,7 +25,5 @@ export interface PromptDetail {
  * 生成結果の型
  */
 export interface GeneratorResult {
-  pairs: TextPair[];
-  theme: string;
-  category: string;
+  textPairs: TextPair[];
 }

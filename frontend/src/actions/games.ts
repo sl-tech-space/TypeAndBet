@@ -3,10 +3,15 @@
 import { ApolloError } from "@apollo/client";
 
 import { ERROR_MESSAGE } from "@/constants";
-import { GamesService } from "@/graphql";
+import { GamesService, GraphQLServerClient } from "@/graphql";
+import { getAuthorizedServerClient } from "@/lib/apollo-server";
 
-import "@/lib/apollo-server";
-import type { GenerateTextResponse } from "@/types";
+import type {
+  CompletePlayResponse,
+  CompleteSimulateResponse,
+  GenerateTextResponse,
+  GetGameResultResponse,
+} from "@/types";
 
 /**
  * テキスト生成
@@ -14,14 +19,16 @@ import type { GenerateTextResponse } from "@/types";
  */
 export async function generateText(): Promise<{
   success: boolean;
-  result: GenerateTextResponse["generateText"] | null;
+  result: GenerateTextResponse["getRandomTextPair"]["textPairs"] | null;
   error: string | null;
 }> {
   try {
-    const { data }: { data: GenerateTextResponse } =
-      await GamesService.generateText();
+    const rawClient = await getAuthorizedServerClient();
 
-    if (!data.generateText) {
+    const { data }: { data: GenerateTextResponse } =
+      await GamesService.generateText(new GraphQLServerClient(rawClient));
+
+    if (!data.getRandomTextPair.success) {
       return {
         success: false,
         result: null,
@@ -29,13 +36,11 @@ export async function generateText(): Promise<{
       };
     }
 
+    console.log("生成テキストを取得", data.getRandomTextPair.textPairs);
+
     return {
       success: true,
-      result: {
-        pairs: data.generateText.pairs,
-        theme: data.generateText.theme,
-        category: data.generateText.category,
-      },
+      result: data.getRandomTextPair.textPairs,
       error: null,
     };
   } catch (error: unknown) {
@@ -51,6 +56,134 @@ export async function generateText(): Promise<{
     return {
       success: false,
       result: null,
+      error: errorMessage,
+    };
+  }
+}
+
+export async function completeSimulate(
+  accuracy: number,
+  correctTyped: number
+): Promise<{
+  success: boolean;
+  score: number;
+  goldChange: number;
+  error: string | null;
+}> {
+  try {
+    const rawClient = await getAuthorizedServerClient();
+
+    const { data }: { data: CompleteSimulateResponse } =
+      await GamesService.completeSimulate(
+        new GraphQLServerClient(rawClient),
+        accuracy,
+        correctTyped
+      );
+
+    if (!data.completePractice.success) {
+      return {
+        success: false,
+        score: 0,
+        goldChange: 0,
+        error: ERROR_MESSAGE.COMPLETE_SIMULATE_FAILED,
+      };
+    }
+
+    return {
+      success: true,
+      score: data.completePractice.score,
+      goldChange: data.completePractice.goldChange,
+      error: null,
+    };
+  } catch (error: unknown) {
+    console.error(ERROR_MESSAGE.COMPLETE_SIMULATE_FAILED, error);
+
+    let errorMessage = ERROR_MESSAGE.UNEXPECTED;
+    if (error instanceof ApolloError) {
+      errorMessage = `${ERROR_MESSAGE.GRAPHQL_ERROR}: ${error.message}`;
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    return {
+      success: false,
+      score: 0,
+      goldChange: 0,
+      error: errorMessage,
+    };
+  }
+}
+
+/**
+ * プレイゲームの完了
+ * @param gameId ゲームID
+ * @param accuracy 正確率
+ * @param correctTyped 正タイプ数
+ * @returns ゲーム結果
+ */
+export async function completePlay(
+  gameId: string,
+  accuracy: number,
+  correctTyped: number
+): Promise<{
+  success: boolean;
+  score: number;
+  beforeBetGold?: number;
+  resultGold?: number;
+  betGold?: number;
+  scoreGoldChange?: number;
+  currentRank?: number;
+  rankChange?: number;
+  nextRankGold?: number;
+  error: string | null;
+}> {
+  try {
+    const rawClient = await getAuthorizedServerClient();
+    const client = new GraphQLServerClient(rawClient);
+
+    // 1. ゲームスコア更新（Mutation）
+    const { data: updateData }: { data: CompletePlayResponse } =
+      await GamesService.completePlay(client, gameId, accuracy, correctTyped);
+
+    if (!updateData.updateGameScore.success) {
+      return {
+        success: false,
+        score: 0,
+        scoreGoldChange: 0,
+        error: ERROR_MESSAGE.COMPLETE_PLAY_FAILED,
+      };
+    }
+
+    // 2. ゲーム結果取得（Query）
+    const { data: resultData }: { data: GetGameResultResponse } =
+      await GamesService.getGameResult(client, gameId);
+
+    return {
+      success: true,
+      score: updateData.updateGameScore.game.score,
+      beforeBetGold: resultData.gameResult.beforeBetGold,
+      resultGold: resultData.gameResult.resultGold,
+      betGold: resultData.gameResult.betGold,
+      scoreGoldChange: resultData.gameResult.scoreGoldChange,
+      currentRank: resultData.gameResult.currentRank,
+      rankChange: resultData.gameResult.rankChange,
+      nextRankGold: resultData.gameResult.nextRankGold,
+      error: null,
+    };
+  } catch (error: unknown) {
+    console.error(ERROR_MESSAGE.COMPLETE_PLAY_FAILED, error);
+
+    let errorMessage = ERROR_MESSAGE.UNEXPECTED;
+    if (error instanceof ApolloError) {
+      errorMessage = `${ERROR_MESSAGE.GRAPHQL_ERROR}: ${error.message}`;
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    return {
+      success: false,
+      score: 0,
+      scoreGoldChange: 0,
       error: errorMessage,
     };
   }
