@@ -55,6 +55,35 @@ export const SIGNUP = gql`
 `;
 
 /**
+ * メールアドレスの確認
+ * @param token トークン
+ * @returns 成功フラグとエラー
+ */
+export const VERIFY_EMAIL = gql`
+  mutation VerifyEmail($token: String!) {
+    verifyEmail(token: $token) {
+      success
+      message
+      errors
+    }
+  }
+`;
+
+/**
+ * メール確認メールを再送信
+ * @param email メールアドレス
+ * @returns 成功フラグとエラー
+ */
+export const RESEND_VERIFICATION_EMAIL = gql`
+  mutation ResendVerificationEmail($email: String!) {
+    resendVerificationEmail(email: $email) {
+      success
+      errors
+    }
+  }
+`;
+
+/**
  * Google認証
  * @param email メールアドレス
  * @param name 名前

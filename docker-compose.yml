@@ -17,6 +17,19 @@ services:
       - NEXTAUTH_SALT=${NEXTAUTH_SALT}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      # Node.jsメモリ設定
+      - NODE_OPTIONS=--max-old-space-size=2048 --max-semi-space-size=128
+      # Next.js最適化設定
+      - NEXT_TELEMETRY_DISABLED=1
+      - WATCHPACK_POLLING=true
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+          cpus: "2.0"
+        reservations:
+          memory: 1G
+          cpus: "0.5"
     depends_on:
       - backend
     healthcheck:

@@ -75,11 +75,8 @@ export const RankingList = (): ReactElement => {
   if (error) {
     return (
       <div className={styles.error}>
-        <Text variant="p" size="medium" color="primary">
+        <Text variant="p" size="medium" color="secondary">
           ランキングの取得に失敗しました
-        </Text>
-        <Text variant="p" size="small" color="secondary">
-          {error.message}
         </Text>
       </div>
     );

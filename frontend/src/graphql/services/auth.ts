@@ -1,15 +1,19 @@
 import {
-  GraphQLServerClient,
   GOOGLE_AUTH,
-  REFRESH_TOKEN,
+  GraphQLServerClient,
   LOGIN,
+  REFRESH_TOKEN,
+  RESEND_VERIFICATION_EMAIL,
   SIGNUP,
+  VERIFY_EMAIL,
 } from "@/graphql";
 import type {
   LoginUserResponse,
   OAuthResponse,
   RefreshTokenResponse,
+  ResendVerificationEmailResponse,
   SignupUserResponse,
+  VerifyEmailResponse,
 } from "@/types";
 
 /**
@@ -64,6 +68,30 @@ export class AuthService {
       SIGNUP,
       variables
     );
+  }
+
+  /**
+   * メールアドレスの確認
+   * @param token トークン
+   * @returns
+   */
+  public static async verifyEmail(
+    client: GraphQLServerClient,
+    token: string
+  ): Promise<{ data: VerifyEmailResponse }> {
+    return client.executeMutation(VERIFY_EMAIL, { token });
+  }
+
+  /**
+   * メール確認メールを再送信
+   * @param email メールアドレス
+   * @returns
+   */
+  public static async resendVerificationEmail(
+    client: GraphQLServerClient,
+    email: string
+  ): Promise<{ data: ResendVerificationEmailResponse }> {
+    return client.executeMutation(RESEND_VERIFICATION_EMAIL, { email });
   }
 
   /**

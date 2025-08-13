@@ -68,6 +68,28 @@ export interface SignupUserResponse extends Record<string, unknown> {
 }
 
 /**
+ * メールアドレス確認レスポンス
+ */
+export interface VerifyEmailResponse extends Record<string, unknown> {
+  verifyEmail: {
+    success: boolean;
+    message?: string;
+    errors?: string[];
+  };
+}
+
+/**
+ * メール確認メール再送信レスポンス
+ */
+export interface ResendVerificationEmailResponse
+  extends Record<string, unknown> {
+  resendVerificationEmail: {
+    success: boolean;
+    errors?: string[];
+  };
+}
+
+/**
  * トークン更新レスポンス
  */
 export interface RefreshTokenResponse extends Record<string, unknown> {

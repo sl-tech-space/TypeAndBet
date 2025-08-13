@@ -22,6 +22,13 @@ ENV CHOKIDAR_USEPOLLING=true
 ENV NEXT_WEBPACK_POLLING=1000
 ENV NEXT_TURBO_POLL=1000
 
+# メモリ最適化設定
+ENV NODE_OPTIONS="--max-old-space-size=2048 --max-semi-space-size=128"
+
+# ガベージコレクション最適化
+ENV UV_THREADPOOL_SIZE=4
+ENV NODE_MAX_OLD_SPACE_SIZE=2048
+
 # 開発サーバーのポート
 EXPOSE 3000
 

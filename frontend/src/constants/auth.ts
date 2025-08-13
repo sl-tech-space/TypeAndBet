@@ -66,15 +66,34 @@ export const AUTH_ACTIONS: AuthActions = {
 };
 
 /**
- * サインアップ成功メッセージの型定義
+ * メール送信完了ページの文言
  */
-export type SignupSuccessMessage = {
-  SUCCESS: string;
+export type EmailSentMessage = {
+  TITLE: string;
+  MAIN_MESSAGE: string;
+  INSTRUCTION: string;
+  NOTE: string;
+  LOGIN_BUTTON: string;
+  HOME_BUTTON: string;
+  RESEND_BUTTON: string;
+  RESEND_SUCCESS: string;
+  RESEND_ERROR: string;
+  RESEND_COOLDOWN: string;
 };
 
-export const SIGNUP_SUCCESS_MESSAGE: SignupSuccessMessage = {
-  SUCCESS:
-    "様、ありがとうございます。登録はまだ完了していません。\nご登録いただいたメールアドレスに確認メールを送信しましたので、ご確認ください。",
+export const EMAIL_SENT_MESSAGE: EmailSentMessage = {
+  TITLE: "メールを確認してください",
+  MAIN_MESSAGE:
+    "ご登録いただいたメールアドレス宛に、認証メールを送信いたしました。",
+  INSTRUCTION:
+    "メールに記載されたリンクをクリックして、アカウントの認証を完了してください。",
+  NOTE: "※ メールが届かない場合は、迷惑メールフォルダもご確認ください",
+  LOGIN_BUTTON: "ログインページへ",
+  HOME_BUTTON: "ホームへ戻る",
+  RESEND_BUTTON: "認証メールを再送信",
+  RESEND_SUCCESS: "認証メールを再送信いたしました",
+  RESEND_ERROR: "メールの再送信に失敗しました",
+  RESEND_COOLDOWN: "秒後に再送信できます",
 };
 
 ////////////////////////////

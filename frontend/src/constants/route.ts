@@ -7,6 +7,7 @@ export type RouteKey =
   | "PLAY"
   | "LOGIN"
   | "SIGNUP"
+  | "SIGNUP_EMAIL_SENT"
   | "PASSWORD_FORGET"
   | "LOGOUT"
   | "TERMS"
@@ -28,6 +29,7 @@ export const ROUTE: Routes = {
   PLAY: "/play",
   LOGIN: "/auth/login",
   SIGNUP: "/auth/signup",
+  SIGNUP_EMAIL_SENT: "/auth/signup/email-sent",
   PASSWORD_FORGET: "/auth/password-forget",
   LOGOUT: "/auth/logout",
   TERMS: "/legal/terms-of-service",
@@ -40,7 +42,10 @@ export const ROUTE: Routes = {
 /**
  * ルート名の型定義
  */
-export type RouteNameKey = Exclude<RouteKey, "PASSWORD_FORGET">;
+export type RouteNameKey = Exclude<
+  RouteKey,
+  "PASSWORD_FORGET" | "SIGNUP_EMAIL_SENT"
+>;
 
 export type RouteNames = {
   [key in RouteNameKey]: string;

@@ -53,13 +53,33 @@ export const Icon = ({
   const finalWidth = width || DEFAULT_SIZES[size].width;
   const finalHeight = height || DEFAULT_SIZES[size].height;
 
+  // アイコンURLのバリデーション
+  const isValidUrl = (url: string): boolean => {
+    try {
+      // 相対パス（/で始まる）または絶対URLをチェック
+      if (url.startsWith("/")) return true;
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const isValidIcon =
+    icon &&
+    typeof icon === "string" &&
+    icon.trim() !== "" &&
+    isValidUrl(icon.trim());
+  const defaultIcon = "/assets/images/default-icon.png"; // デフォルトアイコンのパス
+  const iconSrc = isValidIcon ? icon : defaultIcon;
+
   return (
     <div
       className={`
         ${styles.icon}
-        ${isBorder ? styles.border : ""} 
-        ${isBorder ? styles[borderColor] : ""} 
-        ${isRound ? styles.round : ""} 
+        ${isBorder ? styles.border : ""}
+        ${isBorder ? styles[borderColor] : ""}
+        ${isRound ? styles.round : ""}
         ${effect !== "none" ? styles[effect] : ""}
         ${hasHoverEffect ? styles.hoverEffect : ""}
         ${styles[size]}
@@ -67,7 +87,7 @@ export const Icon = ({
       `}
     >
       <Image
-        src={icon}
+        src={iconSrc}
         alt={alt}
         width={finalWidth}
         height={finalHeight}
