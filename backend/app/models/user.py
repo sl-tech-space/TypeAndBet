@@ -30,13 +30,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     def save(self, *args, **kwargs):
         is_new = self._state.adding
         super().save(*args, **kwargs)
-        if is_new:
+        if is_new and self.is_active:
             Ranking.objects.create(user=self, ranking=1)
 
     @classmethod
     def update_rankings(cls):
-        """全ユーザーのランキングを更新"""
-        users = cls.objects.all().order_by("-gold")
+        """アクティブユーザーのランキングを更新"""
+        users = cls.objects.filter(is_active=True).order_by("-gold")
         for index, user in enumerate(users):
             Ranking.objects.filter(user=user).update(ranking=index + 1)
 

@@ -1,11 +1,10 @@
 import logging
 
 import graphene
-from graphene_django.types import DjangoObjectType
-
 from app.models.ranking import Ranking
 from app.utils.constants import RankingErrorMessages
 from app.utils.errors import BaseError
+from graphene_django.types import DjangoObjectType
 
 logger = logging.getLogger("app")
 
@@ -65,11 +64,11 @@ class Query(graphene.ObjectType):
                     details=["limitは1以上、offsetは0以上である必要があります"],
                 )
 
-            # ランキングの取得
+            # ランキングの取得（アクティブユーザーのみ）
             try:
-                rankings = Ranking.objects.all()
+                rankings = Ranking.objects.filter(user__is_active=True)
                 total_count = rankings.count()
-                logger.info(f"総ランキング数: {total_count}")
+                logger.info(f"総ランキング数（アクティブユーザー）: {total_count}")
 
                 # ページネーション
                 result = rankings[offset : offset + limit]

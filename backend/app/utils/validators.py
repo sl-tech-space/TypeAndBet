@@ -51,7 +51,8 @@ class UserValidator:
                 details=[AuthErrorMessages.INVALID_EMAIL_FORMAT],
             )
 
-        if User.objects.filter(email=email).exists():
+        # アクティブなユーザーのみを重複として扱う
+        if User.objects.filter(email=email, is_active=True).exists():
             raise ValidationError(
                 message=AuthErrorMessages.INVALID_INPUT,
                 details=[AuthErrorMessages.DUPLICATE_EMAIL],
