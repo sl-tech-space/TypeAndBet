@@ -14,8 +14,8 @@ class AuthErrorMessages:
     PASSWORD_TOO_LONG = "パスワードは255文字以内で入力してください"
     USERNAME_TOO_LONG = "ユーザー名は15文字以内で入力してください"
     LOGIN_REQUIRED = "ログインが必要です"
-    PASSWORD_UPPERCASE_REQUIRED = "パスワードには大文字を1文字以上含める必要があります"
-    PASSWORD_NUMBER_REQUIRED = "パスワードには数字を1文字以上含める必要があります"
+    PASSWORD_UPPERCASE_REQUIRED = "パスワードには大文字を2文字以上含める必要があります"
+    PASSWORD_NUMBER_REQUIRED = "パスワードには数字を2文字以上含める必要があります"
     PASSWORD_SYMBOL_REQUIRED = "パスワードには記号を1文字以上含める必要があります"
     REQUIRED_FIELDS_MISSING = "メールアドレスとパスワードは必須です"
 
@@ -30,6 +30,7 @@ class GameErrorMessages:
     INSUFFICIENT_GOLD = "所持金が不足しています"
     CORRECT_TYPED_INVALID = "正タイプ数は0以上である必要があります"
     ACCURACY_INVALID = "正タイプ率は0より大きく1以下である必要があります"
+    GAME_ALREADY_COMPLETED = "このゲームは既に完了しています"
     BET_SETTING_ERROR = "掛け金の設定中にエラーが発生しました"
     SCORE_UPDATE_ERROR = "スコアの更新中にエラーが発生しました"
 

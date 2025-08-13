@@ -3,6 +3,9 @@ import statistics
 
 logger = logging.getLogger("app")
 
+# ゲーム設定定数
+MAX_GAIN_MULTIPLIER = 3  # 取得金額の上限倍率
+
 
 class GameCalculator:
     @staticmethod
@@ -10,6 +13,9 @@ class GameCalculator:
         """
         スコアを計算する
         """
+        # accuracy が 0 の場合はゼロ除算を避け、スコア 0 を返す
+        if accuracy == 0:
+            return 0
         return int(correct_typed * 10 / accuracy)
 
     @staticmethod
@@ -63,7 +69,10 @@ class GameCalculator:
         ゴールドの変化を計算する
         """
         if multiplier >= 0:
-            return int(bet_amount * multiplier)
+            # 取得金額の上限をベット額のMAX_GAIN_MULTIPLIER倍に制限
+            gain = int(bet_amount * multiplier)
+            max_gain = bet_amount * MAX_GAIN_MULTIPLIER
+            return min(gain, max_gain)
         base_loss = int(bet_amount * abs(multiplier))
         additional_loss = int(bet_amount * 0.1)
         total_loss = base_loss + additional_loss

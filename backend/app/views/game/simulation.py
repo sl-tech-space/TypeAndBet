@@ -7,8 +7,8 @@ from graphene import Boolean, Int, List, Mutation, String
 
 from app.models import Game
 from app.utils.game_calculator import GameCalculator
-from app.utils.validators import GameValidator
 from app.utils.sanitizer import sanitize_string
+from app.utils.validators import GameValidator
 
 logger = logging.getLogger("app")
 
@@ -75,7 +75,7 @@ class CompletePractice(Mutation):
                     # 所持金が0の場合
                     if user.gold == 0:
                         logger.info(f"所持金0のため100ゴールド付与: user_id={user.id}")
-                        user.gold += 100
+                        user.gold = 100
                         user.save()
                         logger.info(
                             f"ゴールド付与完了: user_id={user.id}, new_gold={user.gold}"
