@@ -1,114 +1,119 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>アカウント登録完了</title>
     <style>
-        body {
-            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #059669;
-            margin-bottom: 10px;
-        }
-        .title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: #1f2937;
-        }
-        .content {
-            margin-bottom: 30px;
-        }
-        .greeting {
-            margin-bottom: 20px;
-        }
-        .description {
-            margin-bottom: 20px;
-            color: #6b7280;
-        }
-        .button {
-            display: inline-block;
-            background-color: #059669;
-            color: #ffffff;
-            padding: 12px 24px;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: bold;
-            margin: 20px 0;
-        }
-        .button:hover {
-            background-color: #047857;
-        }
-        .footer {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e5e7eb;
-            font-size: 14px;
-            color: #9ca3af;
-        }
-        .success {
-            background-color: #d1fae5;
-            border: 1px solid #10b981;
-            border-radius: 6px;
-            padding: 15px;
-            margin: 20px 0;
-            color: #065f46;
-        }
+      body {
+        font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN",
+          "Hiragino Sans", Meiryo, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .logo {
+        font-size: 24px;
+        font-weight: bold;
+        color: #059669;
+        margin-bottom: 10px;
+      }
+      .title {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #1f2937;
+      }
+      .content {
+        margin-bottom: 30px;
+      }
+      .greeting {
+        margin-bottom: 20px;
+      }
+      .description {
+        margin-bottom: 20px;
+        color: #6b7280;
+      }
+      .button {
+        display: inline-block;
+        background-color: #059669;
+        color: #ffffff !important;
+        padding: 12px 24px;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: bold;
+        margin: 20px 0;
+      }
+      .button:hover {
+        background-color: #047857;
+      }
+      .footer {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #e5e7eb;
+        font-size: 14px;
+        color: #9ca3af;
+      }
+      .success {
+        background-color: #d1fae5;
+        border: 1px solid #10b981;
+        border-radius: 6px;
+        padding: 15px;
+        margin: 20px 0;
+        color: #065f46;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="header">
-            <div class="logo">TypeAndBet</div>
-            <div class="title">アカウント登録完了</div>
+      <div class="header">
+        <div class="logo">TypeAndBet</div>
+        <div class="title">アカウント登録完了</div>
+      </div>
+
+      <div class="content">
+        <div class="greeting">{{ username }} 様</div>
+
+        <div class="success">
+          <strong>おめでとうございます！</strong><br />
+          メールアドレスの確認が完了し、アカウントが有効化されました。
         </div>
-        
-        <div class="content">
-            <div class="greeting">
-                {{ username }} 様
-            </div>
-            
-            <div class="success">
-                <strong>おめでとうございます！</strong><br>
-                メールアドレスの確認が完了し、アカウントが有効化されました。
-            </div>
-            
-            <div class="description">
-                これでTypeAndBetのすべての機能をご利用いただけます。<br>
-                早速ゲームを始めて、タイピングスキルを向上させましょう！
-            </div>
-            
-            <div style="text-align: center;">
-                <a href="{{ frontend_url }}/play" class="button">
-                    ゲームを始める
-                </a>
-            </div>
+
+        <div class="description">
+          これでTypeAndBetのすべての機能をご利用いただけます。<br />
+          早速ゲームを始めて、タイピングスキルを向上させましょう！
         </div>
-        
-        <div class="footer">
-            <p>このメールは自動送信されています。返信はできません。</p>
-            <p>TypeAndBetに関するお問い合わせは、アプリ内のサポート機能をご利用ください。</p>
+
+        <div style="text-align: center">
+          <a
+            href="{{ frontend_url }}/play"
+            class="button"
+            style="color: #ffffff !important"
+          >
+            ゲームを始める
+          </a>
         </div>
+      </div>
+
+      <div class="footer">
+        <p>このメールは自動送信されています。返信はできません。</p>
+        <p>
+          TypeAndBetに関するお問い合わせは、アプリ内のサポート機能をご利用ください。
+        </p>
+      </div>
     </div>
-</body>
+  </body>
 </html>
