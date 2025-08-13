@@ -70,19 +70,12 @@ export const AUTH_ACTIONS: AuthActions = {
  */
 export type SignupSuccessMessage = {
   SUCCESS: string;
-  LOGIN_NAVIGATION: string;
-  LOGIN_NAVIGATION_COUNT: string;
 };
 
 export const SIGNUP_SUCCESS_MESSAGE: SignupSuccessMessage = {
-  SUCCESS: "様、登録ありがとうございます。",
-  LOGIN_NAVIGATION: "ログイン画面からログインしてください。",
-  LOGIN_NAVIGATION_COUNT: "秒後にログイン画面に遷移します...",
+  SUCCESS:
+    "様、ありがとうございます。登録はまだ完了していません。\nご登録いただいたメールアドレスに確認メールを送信しましたので、ご確認ください。",
 };
-
-export const SIGNUP_SUCCESS_COUNTDOWN: number = 5; //5s
-export const SIGNUP_SUCCESS_DECREMENT: number = 1; //1s
-export const SIGNUP_SUCCESS_COUNTDOWN_MIN: number = 0; //0s
 
 ////////////////////////////
 // バリデーション

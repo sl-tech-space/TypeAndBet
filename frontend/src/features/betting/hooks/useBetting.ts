@@ -11,13 +11,13 @@ import {
 } from "@/constants";
 import { useTimer } from "@/features/games";
 import { useAsyncState, useBaseRouter, useNavigator } from "@/hooks";
+import type { CreateBetResponse } from "@/types";
 
 import type {
   UseBettingReturn,
   UseBettingProps,
   OnBetReturn,
 } from "./betting.types";
-import type { CreateBetResponse } from "@/types";
 
 /**
  * ベッティング機能用のカスタムフック

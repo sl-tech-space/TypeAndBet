@@ -1,5 +1,4 @@
 import { BET, GraphQLServerClient } from "@/graphql";
-
 import type { CreateBetResponse } from "@/types";
 
 /**

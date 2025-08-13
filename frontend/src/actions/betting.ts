@@ -7,7 +7,6 @@ import { getToken, encode } from "next-auth/jwt";
 import { ERROR_MESSAGE, NODE_ENV } from "@/constants";
 import { BettingService, GraphQLServerClient } from "@/graphql";
 import { getAuthorizedServerClient } from "@/lib/apollo-server";
-
 import type { CreateBetResponse } from "@/types";
 
 export async function createBet(

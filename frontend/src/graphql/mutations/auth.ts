@@ -36,7 +36,7 @@ export const LOGIN = gql`
  * @returns 成功フラグとエラーとユーザー情報
  */
 export const SIGNUP = gql`
-  mutation Signup(
+  mutation RegisterUser(
     $name: String!
     $email: String!
     $password: String!

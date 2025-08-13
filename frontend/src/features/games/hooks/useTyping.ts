@@ -12,6 +12,7 @@ import {
   ROUTE,
 } from "@/constants";
 import { RomajiTrie, buildRomajiTrie } from "@/features/games";
+import type { GameResult } from "@/features/result/types";
 import { useNavigator } from "@/hooks/routing/useNavigator";
 import { ErrorState } from "@/hooks/useError";
 import { removeSpaces, removeSpacesFromArray } from "@/utils";
@@ -20,7 +21,6 @@ import { useTypingContext } from "../contexts/TypingContext";
 
 import { useGenerator, useKeydown, useTimer } from "./";
 
-import type { GameResult } from "@/features/result/types";
 import type { InputState, KeydownEvent, RomajiProgress, Sentence } from "./";
 
 /**

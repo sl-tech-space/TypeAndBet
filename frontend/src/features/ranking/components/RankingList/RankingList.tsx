@@ -3,11 +3,10 @@
 import { type ReactElement } from "react";
 
 import { Icon, Loading, Text } from "@/components/ui";
-
 import { useRanking } from "@/features/ranking";
-import styles from "./RankingList.module.scss";
-
 import type { Ranking } from "@/types";
+
+import styles from "./RankingList.module.scss";
 
 /**
  * ランキングリストアイテム

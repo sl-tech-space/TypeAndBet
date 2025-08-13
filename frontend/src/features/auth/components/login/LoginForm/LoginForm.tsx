@@ -21,10 +21,9 @@ import {
   usePasswordValidation,
   useEmailValidation,
 } from "@/features/auth";
+import type { LoginResult } from "@/features/auth";
 
 import styles from "./LoginForm.module.scss";
-
-import type { LoginResult } from "@/features/auth";
 
 /**
  * クライアントコンポーネント

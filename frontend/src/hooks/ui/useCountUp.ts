@@ -30,14 +30,14 @@ export function useCountUp(
 
   const onCompleteRef = useRef<(() => void) | undefined>(undefined);
 
-  const cancel = () => {
-    if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
+  const cancel = (): void => {
+    if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
     rafRef.current = null;
     startRef.current = null;
   };
 
-  const tick = (now: number) => {
-    if (startRef.current == null) startRef.current = now;
+  const tick = (now: number): void => {
+    if (startRef.current === null) startRef.current = now;
     const elapsed = now - startRef.current;
     const progress = Math.min(1, elapsed / duration);
     const eased = easing(progress);
@@ -63,7 +63,7 @@ export function useCountUp(
     }
   };
 
-  const start = (nextTarget?: number, onComplete?: () => void) => {
+  const start = (nextTarget?: number, onComplete?: () => void): void => {
     if (typeof nextTarget === "number") targetRef.current = nextTarget;
     onCompleteRef.current = onComplete;
     cancel();
@@ -72,9 +72,9 @@ export function useCountUp(
     rafRef.current = requestAnimationFrame(tick);
   };
 
-  const stop = () => cancel();
+  const stop = (): void => cancel();
 
-  const set = (nextValue: number) => {
+  const set = (nextValue: number): void => {
     cancel();
     startValueRef.current = nextValue;
     targetRef.current = nextValue;

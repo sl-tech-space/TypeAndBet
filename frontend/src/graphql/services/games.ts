@@ -5,7 +5,6 @@ import {
   COMPLETE_PLAY,
   GET_GAME_RESULT,
 } from "@/graphql";
-
 import type {
   GenerateTextResponse,
   CompleteSimulateResponse,

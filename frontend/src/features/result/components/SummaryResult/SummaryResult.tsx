@@ -9,6 +9,11 @@ import { isValidMinusValue } from "@/utils";
 
 import styles from "./SummaryResult.module.scss";
 
+/**
+ * サマリー結果コンポーネント
+ * @param result - ゲーム結果
+ * @returns サマリー結果コンポーネント
+ */
 export const SummaryResult = ({
   result,
 }: {
@@ -18,7 +23,11 @@ export const SummaryResult = ({
   const minusBet = result.betGold ?? 0;
   const plusScore = result.scoreGoldChange ?? 0;
   const total = result.resultGold ?? before - minusBet + plusScore;
-  const Gold = ({ value }: { value: number | null | undefined }) => {
+  const Gold = ({
+    value,
+  }: {
+    value: number | null | undefined;
+  }): ReactElement => {
     const num = value ?? 0;
     const str = num.toLocaleString();
     const signPrefix = isValidMinusValue(num.toString()) ? "" : "";

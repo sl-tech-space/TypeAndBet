@@ -2,15 +2,20 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { type ReactElement } from "react";
 
 import { HOME_BACK_BUTTON, ROUTE } from "@/constants";
 
 import styles from "../error.module.scss";
 
-export default function NotFoundPage() {
+/**
+ * 404ページコンポーネント
+ * @returns 404ページコンポーネント
+ */
+export default function NotFoundPage(): ReactElement {
   const router = useRouter();
 
-  const handleGoBack = () => {
+  const handleGoBack = (): void => {
     if (window.history.length > 1) {
       router.back();
     } else {

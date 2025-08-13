@@ -61,7 +61,7 @@ export interface LoginUserResponse extends Record<string, unknown> {
  * サインアップレスポンス
  */
 export interface SignupUserResponse extends Record<string, unknown> {
-  signupUser: {
+  registerUser: {
     success: boolean;
     errors?: string[];
   };

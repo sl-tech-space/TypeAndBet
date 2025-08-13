@@ -1,9 +1,9 @@
 import { SessionProvider } from "next-auth/react";
 import { type ReactElement } from "react";
 
-import styles from "./page.module.scss";
-
 import { PlayPageContent } from "@/app/play/PlayPageContent";
+
+import styles from "./page.module.scss";
 
 /**
  * PlayPage - SessionProviderでラップしてセッション管理を可能にする

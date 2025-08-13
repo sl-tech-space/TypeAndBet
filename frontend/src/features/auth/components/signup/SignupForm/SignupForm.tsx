@@ -1,28 +1,27 @@
 "use client";
 
 import Image from "next/image";
-import { type FormEvent, type ReactElement, useState } from "react";
+import { useState, type FormEvent, type ReactElement } from "react";
 
-import { Text, Button, Input, Label } from "@/components/ui";
+import { Button, Input, Label, Text } from "@/components/ui";
 import {
+  ERROR_MESSAGE,
   FORM_LABEL,
   FORM_PLACEHOLDER,
-  SIGNUP_SUCCESS_MESSAGE,
-  ERROR_MESSAGE,
   ROUTE_NAME,
+  SIGNUP_SUCCESS_MESSAGE,
 } from "@/constants";
 import {
-  usePasswordVisibility,
-  useSignup,
-  usePasswordValidation,
   useEmailValidation,
   useNameValidation,
+  usePasswordValidation,
+  usePasswordVisibility,
+  useSignup,
   type SignupSuccessInfo,
 } from "@/features/auth";
+import type { SignupResult } from "@/features/auth";
 
 import styles from "./SignupForm.module.scss";
-
-import type { SignupResult } from "@/features/auth";
 
 /**
  * クライアントコンポーネント
@@ -31,7 +30,7 @@ import type { SignupResult } from "@/features/auth";
  */
 export const SignupForm = (): ReactElement => {
   const { isVisible, toggleVisibility, inputType } = usePasswordVisibility();
-  const { signup, isLoading, countdown } = useSignup();
+  const { signup, isLoading } = useSignup();
   const { errors: passwordErrors, validatePassword } = usePasswordValidation();
   const { errors: emailErrors, validateEmail } = useEmailValidation();
   const { errors: nameErrors, validateName } = useNameValidation();
@@ -155,7 +154,6 @@ export const SignupForm = (): ReactElement => {
         name: result.data.name,
         email: result.data.email,
         passwordLength: result.data.passwordLength,
-        countdown: result.data.countdown,
       });
     } else if (result.error) {
       setError(result.error);
@@ -182,22 +180,17 @@ export const SignupForm = (): ReactElement => {
       {/* エラー表示 */}
       {error && <div className={styles["signup-form__error"]}>{error}</div>}
       {/* サインアップ成功時の表示 */}
-      {successInfo && countdown !== null && (
+      {successInfo && (
         <div className={styles["signup-form__success"]}>
           <Text variant="h3" color="gold">
             {successInfo.name}
             {SIGNUP_SUCCESS_MESSAGE.SUCCESS}
           </Text>
-          <Text color="gold">{SIGNUP_SUCCESS_MESSAGE.LOGIN_NAVIGATION}</Text>
           <Text color="gold">
             {FORM_LABEL.EMAIL}: {successInfo.email}
           </Text>
           <Text color="gold">
             {FORM_LABEL.PASSWORD}: {successInfo.passwordLength}桁
-          </Text>
-          <Text color="gold">
-            {countdown}
-            {SIGNUP_SUCCESS_MESSAGE.LOGIN_NAVIGATION_COUNT}
           </Text>
         </div>
       )}

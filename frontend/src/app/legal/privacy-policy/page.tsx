@@ -1,5 +1,7 @@
 import fs from "fs";
 import path from "path";
+
+import { type ReactElement } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -7,14 +9,14 @@ import { LEGAL_FILE_NAME, LEGAL_PATH, MARKED_ENCODING } from "@/constants";
 
 import styles from "../legal.module.scss";
 
-export default function PrivacyPolicyPage() {
-  const filePath = path.join(
+export default function PrivacyPolicyPage(): ReactElement {
+  const filePath: string = path.join(
     process.cwd(),
     "public",
     LEGAL_PATH.PRIVACY_POLICY,
     LEGAL_FILE_NAME.PRIVACY_POLICY
   );
-  const markdown = fs.readFileSync(filePath, MARKED_ENCODING);
+  const markdown: string = fs.readFileSync(filePath, MARKED_ENCODING);
 
   return (
     <div className={styles.legal}>
