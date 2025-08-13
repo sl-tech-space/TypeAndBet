@@ -71,13 +71,13 @@ class UserValidator:
                 details=[AuthErrorMessages.PASSWORD_TOO_LONG],
             )
 
-        if len(re.findall(r"[A-Z]", password)) < 1:
+        if len(re.findall(r"[A-Z]", password)) < 2:
             raise ValidationError(
                 message=AuthErrorMessages.INVALID_INPUT,
                 details=[AuthErrorMessages.PASSWORD_UPPERCASE_REQUIRED],
             )
 
-        if len(re.findall(r"[0-9]", password)) < 1:
+        if len(re.findall(r"[0-9]", password)) < 2:
             raise ValidationError(
                 message=AuthErrorMessages.INVALID_INPUT,
                 details=[AuthErrorMessages.PASSWORD_NUMBER_REQUIRED],
@@ -117,7 +117,7 @@ class GameValidator:
 
     @staticmethod
     def validate_accuracy(accuracy):
-        if accuracy <= 0 or accuracy > 1:
+        if accuracy < 0 or accuracy > 1:
             raise ValidationError(
                 message=GameErrorMessages.INVALID_INPUT,
                 details=[GameErrorMessages.ACCURACY_INVALID],

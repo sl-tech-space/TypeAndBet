@@ -10,6 +10,9 @@ class GameCalculator:
         """
         スコアを計算する
         """
+        # accuracy が 0 の場合はゼロ除算を避け、スコア 0 を返す
+        if accuracy == 0:
+            return 0
         return int(correct_typed * 10 / accuracy)
 
     @staticmethod

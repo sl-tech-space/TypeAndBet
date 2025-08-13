@@ -8,8 +8,8 @@ from graphene_django.types import DjangoObjectType
 from app.models import Game, Ranking
 from app.utils.constants import GameErrorMessages
 from app.utils.game_calculator import GameCalculator
-from app.utils.validators import GameValidator
 from app.utils.sanitizer import sanitize_string
+from app.utils.validators import GameValidator
 
 logger = logging.getLogger("app")
 
@@ -184,7 +184,12 @@ class UpdateGameScore(graphene.Mutation):
             logger.info(f"ゲーム更新: game_id={game.id}")
 
             # ユーザーの所持金を更新
-            user.gold += gold_change
+            new_gold = user.gold + gold_change
+            if new_gold < 0:
+                logger.warning(f"所持金が負になるため0に制限: user_id={user.id}")
+                user.gold = 0
+            else:
+                user.gold = new_gold
             user.save()
             logger.info(f"所持金更新: new_gold={user.gold}")
 

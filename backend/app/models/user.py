@@ -1,7 +1,7 @@
 import uuid
 
-from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 
 from .managers import UserManager
@@ -48,5 +48,9 @@ class User(AbstractBaseUser, PermissionsMixin):
                 fields=["email"],
                 condition=models.Q(is_active=True),
                 name="unique_active_email",
+            ),
+            models.CheckConstraint(
+                check=models.Q(gold__gte=0),
+                name="gold_non_negative",
             ),
         ]
