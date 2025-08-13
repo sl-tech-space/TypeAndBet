@@ -148,6 +148,13 @@ class UpdateGameScore(graphene.Mutation):
                 )
                 raise ValidationError(GameErrorMessages.NO_PERMISSION)
 
+            # 重複実行チェック（既にスコアが設定済みの場合は拒否）
+            if game.score > 0:
+                logger.warning(
+                    f"ゲーム既に完了済み: game_id={game.id}, user_id={user.id}, existing_score={game.score}"
+                )
+                raise ValidationError(GameErrorMessages.GAME_ALREADY_COMPLETED)
+
             # スコア計算
             score = GameCalculator.calculate_score(correct_typed, accuracy)
             logger.info(f"スコア計算: score={score}")

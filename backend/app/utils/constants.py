@@ -30,6 +30,7 @@ class GameErrorMessages:
     INSUFFICIENT_GOLD = "所持金が不足しています"
     CORRECT_TYPED_INVALID = "正タイプ数は0以上である必要があります"
     ACCURACY_INVALID = "正タイプ率は0より大きく1以下である必要があります"
+    GAME_ALREADY_COMPLETED = "このゲームは既に完了しています"
     BET_SETTING_ERROR = "掛け金の設定中にエラーが発生しました"
     SCORE_UPDATE_ERROR = "スコアの更新中にエラーが発生しました"
 
