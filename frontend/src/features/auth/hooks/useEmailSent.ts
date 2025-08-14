@@ -43,17 +43,11 @@ export const useEmailSent = (): UseEmailSentReturn => {
     };
   }, [resendState, cooldownTime]);
 
-  // 成功・エラーメッセージの自動リセット
+  // エラーメッセージの自動リセット
   useEffect(() => {
     let timer: NodeJS.Timeout;
 
-    if (resendState === "success") {
-      timer = setTimeout(() => {
-        setResendState("cooldown");
-        setCooldownTime(30);
-        setResendMessage("");
-      }, 3000);
-    } else if (resendState === "error") {
+    if (resendState === "error") {
       timer = setTimeout(() => {
         setResendMessage("");
       }, 5000);
@@ -80,7 +74,8 @@ export const useEmailSent = (): UseEmailSentReturn => {
         const result = await resendVerificationEmail(email);
 
         if (result.success) {
-          setResendState("success");
+          setResendState("cooldown");
+          setCooldownTime(30);
           setResendMessage(EMAIL_SENT_MESSAGE.RESEND_SUCCESS);
         } else {
           setResendState("error");

@@ -97,14 +97,13 @@ export const EmailSent = (): ReactElement => {
             `${cooldownTime}${EMAIL_SENT_MESSAGE.RESEND_COOLDOWN}`}
           {(resendState === "idle" || resendState === "error") &&
             EMAIL_SENT_MESSAGE.RESEND_BUTTON}
-          {resendState === "success" && "送信完了"}
         </Button>
 
         {resendMessage && (
           <Text
             variant="p"
             size="small"
-            color={resendState === "success" ? "gold" : "secondary"}
+            color="secondary"
             className={styles["email-sent__resend-message"]}
           >
             {resendMessage}
