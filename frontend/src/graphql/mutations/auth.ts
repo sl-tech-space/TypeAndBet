@@ -84,6 +84,45 @@ export const RESEND_VERIFICATION_EMAIL = gql`
 `;
 
 /**
+ * パスワードリセット要求
+ * @param email メールアドレス
+ * @returns 成功フラグとエラー
+ */
+export const REQUEST_PASSWORD_RESET = gql`
+  mutation RequestPasswordReset($email: String!) {
+    requestPasswordReset(email: $email) {
+      success
+      message
+      errors
+    }
+  }
+`;
+
+/**
+ * パスワードリセット
+ * @param token トークン
+ * @param password パスワード
+ * @returns 成功フラグとエラー
+ */
+export const RESET_PASSWORD = gql`
+  mutation ResetPassword(
+    $token: String!
+    $password: String!
+    $passwordConfirm: String!
+  ) {
+    resetPassword(
+      token: $token
+      password: $password
+      passwordConfirm: $passwordConfirm
+    ) {
+      success
+      message
+      errors
+    }
+  }
+`;
+
+/**
  * Google認証
  * @param email メールアドレス
  * @param name 名前

@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { login as loginAction } from "@/actions/auth";
@@ -44,6 +44,12 @@ export const useLogin = (): {
         });
 
         router.push(ROUTE.HOME);
+
+        // ログイン完了後に強制的に画面更新
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
+
         return {
           success: true,
         };

@@ -67,6 +67,11 @@ export const HeaderActionsClient = (): React.ReactNode => {
       });
       toHome();
       refresh();
+
+      // ログアウト完了後に強制的に画面更新
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
     } catch (error: unknown) {
       console.error("ログアウトエラー:", error);
       setIsLoggingOut(false);

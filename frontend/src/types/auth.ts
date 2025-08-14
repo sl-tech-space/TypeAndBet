@@ -90,6 +90,28 @@ export interface ResendVerificationEmailResponse
 }
 
 /**
+ * パスワードリセット要求レスポンス
+ */
+export interface RequestPasswordResetResponse extends Record<string, unknown> {
+  requestPasswordReset: {
+    success: boolean;
+    message?: string;
+    errors?: string[];
+  };
+}
+
+/**
+ * パスワードリセットレスポンス
+ */
+export interface ResetPasswordResponse extends Record<string, unknown> {
+  resetPassword: {
+    success: boolean;
+    message?: string;
+    errors?: string[];
+  };
+}
+
+/**
  * トークン更新レスポンス
  */
 export interface RefreshTokenResponse extends Record<string, unknown> {

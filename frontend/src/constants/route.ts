@@ -9,6 +9,7 @@ export type RouteKey =
   | "SIGNUP"
   | "SIGNUP_EMAIL_SENT"
   | "PASSWORD_FORGET"
+  | "PASSWORD_RESET"
   | "LOGOUT"
   | "TERMS"
   | "PRIVACY"
@@ -31,6 +32,7 @@ export const ROUTE: Routes = {
   SIGNUP: "/auth/signup",
   SIGNUP_EMAIL_SENT: "/auth/signup/email-sent",
   PASSWORD_FORGET: "/auth/password-forget",
+  PASSWORD_RESET: "/reset-password",
   LOGOUT: "/auth/logout",
   TERMS: "/legal/terms-of-service",
   PRIVACY: "/legal/privacy-policy",
@@ -44,7 +46,7 @@ export const ROUTE: Routes = {
  */
 export type RouteNameKey = Exclude<
   RouteKey,
-  "PASSWORD_FORGET" | "SIGNUP_EMAIL_SENT"
+  "PASSWORD_FORGET" | "PASSWORD_RESET" | "SIGNUP_EMAIL_SENT"
 >;
 
 export type RouteNames = {

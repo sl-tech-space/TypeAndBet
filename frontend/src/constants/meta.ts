@@ -17,6 +17,8 @@ export type MetaKey =
   | "TERMS"
   | "PRIVACY"
   | "VERIFY_EMAIL"
+  | "PASSWORD_FORGET"
+  | "PASSWORD_RESET"
   | "NOT_FOUND"
   | "SERVER_ERROR";
 
@@ -41,6 +43,8 @@ export const META_TITLE: MetaInfo = {
   TERMS: "利用規約",
   PRIVACY: "プライバシーポリシー",
   VERIFY_EMAIL: "メール認証",
+  PASSWORD_FORGET: "パスワードを忘れた",
+  PASSWORD_RESET: "パスワードをリセット",
   NOT_FOUND: "ページが見つかりません",
   SERVER_ERROR: "サーバーエラー",
 };
@@ -65,6 +69,10 @@ export const META_DESCRIPTION: MetaInfo = {
     "Type&Betのプライバシーポリシーページです。プライバシーポリシーを確認することができます。",
   VERIFY_EMAIL:
     "Type&Betのメール認証ページです。メール認証を行うことで、Type&Betを楽しむことができます。",
+  PASSWORD_FORGET:
+    "Type&Betのパスワードを忘れたページです。パスワードを忘れた場合はこちらからリセットできます。",
+  PASSWORD_RESET:
+    "Type&Betのパスワードをリセットページです。パスワードをリセットすることで、Type&Betを楽しむことができます。",
   NOT_FOUND: "ページが見つかりません",
   SERVER_ERROR: "サーバーエラー",
 };
@@ -84,6 +92,8 @@ export const META_KEYWORDS: MetaInfo = {
   TERMS: "Type&Bet, 利用規約, プライバシーポリシー",
   PRIVACY: "Type&Bet, プライバシーポリシー, 利用規約",
   VERIFY_EMAIL: "Type&Bet, メール認証",
+  PASSWORD_FORGET: "Type&Bet, パスワードを忘れた",
+  PASSWORD_RESET: "Type&Bet, パスワードをリセット",
   NOT_FOUND: "Type&Bet, ページが見つかりません",
   SERVER_ERROR: "Type&Bet, サーバーエラー",
 };

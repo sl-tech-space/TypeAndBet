@@ -6,8 +6,7 @@ import { OAUTH_PROVIDER } from "@/constants";
 import { AuthService, GraphQLServerClient } from "@/graphql";
 import { getAuthorizedServerClient } from "@/lib/apollo-server";
 
-import type { Session } from "next-auth";
-import type { User } from "next-auth";
+import type { Session, User } from "next-auth";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   providers: [
@@ -220,7 +219,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           name: token.name ?? undefined,
           email: token.email ?? undefined,
           gold: (token.gold as number | undefined) ?? 0,
-          icon: token.picture ?? undefined,
+          icon: (token.icon as string) ?? token.picture ?? undefined,
         },
         accessToken: token.accessToken as string | undefined,
         refreshToken: token.refreshToken as string | undefined,

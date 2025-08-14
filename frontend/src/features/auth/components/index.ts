@@ -4,4 +4,6 @@ export * from "./EmailSent";
 export * from "./EmailVerify";
 export * from "./login";
 export * from "./oauth";
+export * from "./PasswordForget";
+export * from "./PasswordReset";
 export * from "./signup";
