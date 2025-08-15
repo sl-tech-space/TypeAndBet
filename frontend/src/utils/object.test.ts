@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { isEmptyObject, isNull, isUndefined } from "./object";
 
 describe("Object Utils", () => {

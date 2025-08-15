@@ -1,5 +1,4 @@
 import { GET_RANKINGS, GraphQLServerClient } from "@/graphql";
-
 import type { GetRankingsResponse } from "@/types";
 
 /**

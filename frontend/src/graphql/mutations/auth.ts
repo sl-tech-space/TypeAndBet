@@ -36,7 +36,7 @@ export const LOGIN = gql`
  * @returns 成功フラグとエラーとユーザー情報
  */
 export const SIGNUP = gql`
-  mutation Signup(
+  mutation RegisterUser(
     $name: String!
     $email: String!
     $password: String!
@@ -49,6 +49,74 @@ export const SIGNUP = gql`
       passwordConfirm: $passwordConfirm
     ) {
       success
+      errors
+    }
+  }
+`;
+
+/**
+ * メールアドレスの確認
+ * @param token トークン
+ * @returns 成功フラグとエラー
+ */
+export const VERIFY_EMAIL = gql`
+  mutation VerifyEmail($token: String!) {
+    verifyEmail(token: $token) {
+      success
+      message
+      errors
+    }
+  }
+`;
+
+/**
+ * メール確認メールを再送信
+ * @param email メールアドレス
+ * @returns 成功フラグとエラー
+ */
+export const RESEND_VERIFICATION_EMAIL = gql`
+  mutation ResendVerificationEmail($email: String!) {
+    resendVerificationEmail(email: $email) {
+      success
+      errors
+    }
+  }
+`;
+
+/**
+ * パスワードリセット要求
+ * @param email メールアドレス
+ * @returns 成功フラグとエラー
+ */
+export const REQUEST_PASSWORD_RESET = gql`
+  mutation RequestPasswordReset($email: String!) {
+    requestPasswordReset(email: $email) {
+      success
+      message
+      errors
+    }
+  }
+`;
+
+/**
+ * パスワードリセット
+ * @param token トークン
+ * @param password パスワード
+ * @returns 成功フラグとエラー
+ */
+export const RESET_PASSWORD = gql`
+  mutation ResetPassword(
+    $token: String!
+    $password: String!
+    $passwordConfirm: String!
+  ) {
+    resetPassword(
+      token: $token
+      password: $password
+      passwordConfirm: $passwordConfirm
+    ) {
+      success
+      message
       errors
     }
   }

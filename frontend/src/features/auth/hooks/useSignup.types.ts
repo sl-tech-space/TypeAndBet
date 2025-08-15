@@ -5,7 +5,6 @@ export type SignupResult = {
     name: string;
     email: string;
     passwordLength: number;
-    countdown: number;
   };
 };
 
@@ -13,5 +12,4 @@ export type SignupSuccessInfo = {
   name: string;
   email: string;
   passwordLength: number;
-  countdown: number;
 };

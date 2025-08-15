@@ -7,7 +7,6 @@ import {
   NODE_ENV,
   SESSION_EXPIRY_TIME_MS,
 } from "@/constants";
-
 import type { GameResult } from "@/features/result/types";
 
 /**

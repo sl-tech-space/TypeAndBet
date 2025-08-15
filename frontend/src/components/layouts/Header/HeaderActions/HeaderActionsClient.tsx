@@ -1,13 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 
-import { Button, Text, Icon } from "@/components/ui";
+import { Button, Icon, Text } from "@/components/ui";
 import { ROUTE, ROUTE_NAME } from "@/constants";
 import { useBaseRouter, useNavigator, usePersistentSession } from "@/hooks";
-import { maskEmail, isRevalidateRoute } from "@/utils";
+import { isRevalidateRoute, maskEmail } from "@/utils";
 
 import styles from "./HeaderActions.module.scss";
 
@@ -55,7 +55,7 @@ export const HeaderActionsClient = (): React.ReactNode => {
     }
   }, [isLoading, isAuthenticated, persistentUser, syncGold]);
 
-  // persistentUserが存在する限り、ログイン済みとして扱う（同期中でもちらつかない）
+  // persistentUserが存在する限り、ログイン済みとして扱う
   const isLoggedIn =
     (persistentUser || (isAuthenticated && accessToken)) && !isLoggingOut;
 
@@ -67,6 +67,11 @@ export const HeaderActionsClient = (): React.ReactNode => {
       });
       toHome();
       refresh();
+
+      // ログアウト完了後に強制的に画面更新
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
     } catch (error: unknown) {
       console.error("ログアウトエラー:", error);
       setIsLoggingOut(false);

@@ -1,7 +1,7 @@
+import type { GetGoldResponse } from "@/types/user";
+
 import { GET_USER_GOLD } from "../queries/user";
 import { GraphQLServerClient } from "../utils";
-
-import type { GetGoldResponse } from "@/types/user";
 
 /**
  * ユーザーサービスクラス

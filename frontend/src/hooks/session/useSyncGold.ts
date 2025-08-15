@@ -27,7 +27,7 @@ export const useSyncGold = (): (() => Promise<void>) => {
           gold: freshGold,
         },
       });
-    } catch (error) {
+    } catch {
       // エラーは無視
     }
   }, [session, update]);

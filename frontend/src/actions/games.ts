@@ -5,7 +5,6 @@ import { ApolloError } from "@apollo/client";
 import { ERROR_MESSAGE } from "@/constants";
 import { GamesService, GraphQLServerClient } from "@/graphql";
 import { getAuthorizedServerClient } from "@/lib/apollo-server";
-
 import type {
   CompletePlayResponse,
   CompleteSimulateResponse,
@@ -35,8 +34,6 @@ export async function generateText(): Promise<{
         error: ERROR_MESSAGE.GENERATE_TEXT_FAILED,
       };
     }
-
-    console.log("生成テキストを取得", data.getRandomTextPair.textPairs);
 
     return {
       success: true,

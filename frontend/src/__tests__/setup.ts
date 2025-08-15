@@ -29,7 +29,7 @@ vi.mock("next/image", () => ({
   __esModule: true,
   default: (props: any) => {
     const { src, alt, ...rest } = props;
-    // eslint-disable-next-line @next/next/no-img-element
+
     return `<img src="${src}" alt="${alt}" {...rest} />`;
   },
 }));

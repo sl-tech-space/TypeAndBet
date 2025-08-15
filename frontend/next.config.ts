@@ -6,12 +6,56 @@ const nextConfig: NextConfig = {
   reactStrictMode: true, // 副作用検出＆安全性向上
   poweredByHeader: false, // "X-Powered-By" ヘッダー削除
 
+  // メモリ最適化設定
+  experimental: {
+    // メモリ使用量削減のための最適化
+    optimizePackageImports: ["@/components", "@/features", "@/utils"],
+    // キャッシュ最適化
+    turbo: {
+      rules: {
+        "*.scss": {
+          loaders: ["sass-loader"],
+          as: "*.css",
+        },
+      },
+    },
+  },
+
+  // ビルド最適化
+  compiler: {
+    // 開発時のReactコンポーネント表示名を削除してメモリ節約
+    removeConsole: isProduction,
+  },
+
   // ESLint & 型チェック設定
   eslint: {
     ignoreDuringBuilds: !isProduction, // 本番はLintエラーでビルド中断
   },
   typescript: {
     ignoreBuildErrors: !isProduction, // 本番は型エラーでビルド中断
+  },
+
+  // Webpack最適化
+  webpack: (config, { dev }) => {
+    if (dev) {
+      // 開発時のメモリ最適化
+      config.watchOptions = {
+        poll: 1000,
+        aggregateTimeout: 300,
+        ignored: /node_modules/,
+      };
+
+      // キャッシュ設定でメモリ使用量削減
+      config.cache = {
+        type: "memory",
+        maxGenerations: 1,
+      };
+
+      // 並列処理数を制限してメモリ使用量を抑制
+      config.parallelism = 1;
+    }
+
+    return config;
   },
 
   // Sassの設定

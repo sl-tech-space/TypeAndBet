@@ -1,4 +1,5 @@
 import { ROUTE } from "../constants";
+
 import { isAuthPage, isProtectedRoute, isRevalidateRoute } from "./route";
 
 describe("Route Utils", () => {
