@@ -1,0 +1,59 @@
+name: Development Security Scan
+
+on:
+  schedule:
+    - cron: "0 0 * * 1" # 毎週月曜日の午前0時
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [develop]
+  workflow_dispatch:
+
+jobs:
+  security-scan:
+    name: Security Scan with Trivy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner for filesystem
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          scan-ref: "."
+          format: "table"
+          severity: "CRITICAL,HIGH"
+
+      - name: Run Trivy vulnerability scanner for Docker images
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "image"
+          scan-ref: "node:20-alpine"
+          format: "table"
+          severity: "CRITICAL,HIGH"
+
+      - name: Run Trivy vulnerability scanner for frontend dependencies
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          scan-ref: "./frontend"
+          format: "table"
+          severity: "CRITICAL,HIGH"
+
+      - name: Run Trivy vulnerability scanner for backend dependencies
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          scan-ref: "./backend"
+          format: "table"
+          severity: "CRITICAL,HIGH"
+
+      - name: Run Trivy vulnerability scanner for Python requirements
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          scan-ref: "./backend/requirements.txt"
+          format: "table"
+          severity: "CRITICAL,HIGH"
