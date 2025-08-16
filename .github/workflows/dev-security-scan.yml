@@ -1,4 +1,4 @@
-name: Development Security Scan
+name: 開発環境セキュリティスキャン
 
 on:
   schedule:
@@ -11,19 +11,19 @@ on:
 
 jobs:
   security-scan:
-    name: Security Scan with Trivy
+    name: Trivyセキュリティスキャン実行
     runs-on: ubuntu-latest
-    timeout-minutes: 30 # 30分でタイムアウト
+    timeout-minutes: 30
     env:
       TZ: Asia/Tokyo
 
     steps:
-      - name: Checkout code
+      - name: コードのチェックアウト
         uses: actions/checkout@v4
 
-      - name: Run Trivy vulnerability scanner for filesystem
+      - name: ファイルシステム脆弱性スキャン実行
         uses: aquasecurity/trivy-action@master
-        timeout-minutes: 15 # 個別ステップのタイムアウト
+        timeout-minutes: 15
         with:
           scan-type: "fs"
           scan-ref: "."
@@ -31,7 +31,7 @@ jobs:
           severity: "CRITICAL,HIGH"
           skip-db-update: true
 
-      - name: Run Trivy vulnerability scanner for Docker images
+      - name: Dockerイメージ脆弱性スキャン実行
         uses: aquasecurity/trivy-action@master
         timeout-minutes: 10
         with:
@@ -41,7 +41,7 @@ jobs:
           severity: "CRITICAL,HIGH"
           skip-db-update: true
 
-      - name: Run Trivy vulnerability scanner for frontend dependencies
+      - name: フロントエンド依存関係脆弱性スキャン実行
         uses: aquasecurity/trivy-action@master
         timeout-minutes: 10
         with:
@@ -51,7 +51,7 @@ jobs:
           severity: "CRITICAL,HIGH"
           skip-db-update: true
 
-      - name: Run Trivy vulnerability scanner for backend dependencies
+      - name: バックエンド依存関係脆弱性スキャン実行
         uses: aquasecurity/trivy-action@master
         timeout-minutes: 10
         with:
@@ -61,7 +61,7 @@ jobs:
           severity: "CRITICAL,HIGH"
           skip-db-update: true
 
-      - name: Run Trivy vulnerability scanner for Python requirements
+      - name: Python依存関係脆弱性スキャン実行
         uses: aquasecurity/trivy-action@master
         timeout-minutes: 10
         with:
