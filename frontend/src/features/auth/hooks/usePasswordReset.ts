@@ -5,10 +5,10 @@ import { useCallback, useEffect, useState } from "react";
 
 import { resetPassword } from "@/actions/auth";
 import { NEW_PASSWORD_MESSAGE } from "@/constants";
+import { useNavigator } from "@/hooks/routing/useNavigator";
 
 import { usePasswordValidation } from "./useValidation";
 
-import { useNavigator } from "@/hooks/routing/useNavigator";
 import type {
   PasswordResetState,
   UsePasswordResetReturn,

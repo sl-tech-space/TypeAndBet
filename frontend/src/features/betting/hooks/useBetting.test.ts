@@ -81,6 +81,11 @@ describe("useBetting", () => {
     toSimulate: vi.fn(),
     toSimulateById: vi.fn(),
     toResult: vi.fn(),
+    toEmailSent: vi.fn(),
+    toPasswordForget: vi.fn(),
+    toPasswordReset: vi.fn(),
+    toTerms: vi.fn(),
+    toPrivacy: vi.fn(),
     toError: {
       to404: vi.fn(),
       to500: vi.fn(),

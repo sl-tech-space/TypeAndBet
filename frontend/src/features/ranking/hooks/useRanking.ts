@@ -22,7 +22,7 @@ export const useRanking = (): {
   /**
    * サーバーアクションのエラーを処理するカスタムエラーハンドラー
    */
-  const handleRankingError = useCallback((error: unknown) => {
+  const handleRankingError = useCallback(() => {
     // ランキングをクリア
     setRankings([]);
   }, []);

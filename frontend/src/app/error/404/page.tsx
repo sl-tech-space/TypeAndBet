@@ -4,7 +4,6 @@ import Link from "next/link";
 import { type ReactElement } from "react";
 
 import { HOME_BACK_BUTTON, ROUTE } from "@/constants";
-
 import { useBaseRouter } from "@/hooks/routing/useBaseRouter";
 import { useNavigator } from "@/hooks/routing/useNavigator";
 

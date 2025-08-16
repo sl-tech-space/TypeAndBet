@@ -99,7 +99,9 @@ describe("useLogin", () => {
       });
 
       expect(loginResult.success).toBe(false);
-      expect(loginResult.error).toBe("メールアドレスまたはパスワードが正しくありません");
+      expect(loginResult.error).toBe(
+        "メールアドレスまたはパスワードが正しくありません"
+      );
       expect(mockSignIn).not.toHaveBeenCalled();
       expect(mockPush).not.toHaveBeenCalled();
     });
@@ -142,7 +144,9 @@ describe("useLogin", () => {
       });
 
       expect(loginResult.success).toBe(false);
-      expect(loginResult.error).toBe("ログイン処理に失敗しました。もう一度お試しください。");
+      expect(loginResult.error).toBe(
+        "ログイン処理に失敗しました。もう一度お試しください。"
+      );
       expect(mockSignIn).not.toHaveBeenCalled();
       expect(mockPush).not.toHaveBeenCalled();
     });

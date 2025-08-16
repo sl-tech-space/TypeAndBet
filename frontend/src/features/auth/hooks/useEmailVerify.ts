@@ -43,7 +43,7 @@ export const useEmailVerify = (): UseEmailVerifyReturn => {
 
   // カウントダウン開始の共通処理
   const startCountdown = useCallback(
-    (redirectTo: string) => {
+    (redirectTo: string): void => {
       // 既存のタイマーをクリア
       if (countdownRef.current) {
         clearTimeout(countdownRef.current);
@@ -52,7 +52,7 @@ export const useEmailVerify = (): UseEmailVerifyReturn => {
       setCountdown(3);
       let count = 3;
 
-      const tick = () => {
+      const tick = (): void => {
         count -= 1;
         setCountdown(count);
 
@@ -70,7 +70,7 @@ export const useEmailVerify = (): UseEmailVerifyReturn => {
 
   // メール認証処理
   const handleVerifyEmail = useCallback(
-    async (token: string) => {
+    async (token: string): Promise<void> => {
       if (!token) {
         setVerifyState("error");
         setError("認証トークンが見つかりません");
@@ -123,7 +123,7 @@ export const useEmailVerify = (): UseEmailVerifyReturn => {
   handleVerifyEmailRef.current = handleVerifyEmail;
 
   // URLパラメータからトークンを取得して認証処理を実行
-  useEffect(() => {
+  useEffect((): void => {
     const token = searchParams.get("token");
 
     if (!token) {
@@ -140,7 +140,7 @@ export const useEmailVerify = (): UseEmailVerifyReturn => {
   }, [searchParams]); // 依存配列をsearchParamsのみに制限
 
   // クリーンアップ処理
-  useEffect(() => {
+  useEffect((): (() => void) => {
     return () => {
       if (countdownRef.current) {
         clearTimeout(countdownRef.current);
