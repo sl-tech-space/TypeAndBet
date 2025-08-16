@@ -2,7 +2,7 @@ name: Development Security Scan
 
 on:
   schedule:
-    - cron: "0 0 * * 1" # 毎週月曜日の午前0時
+    - cron: "0 0 * * 1" # 毎週月曜日の午前0時 (JST)
   push:
     branches: [develop]
   pull_request:
@@ -13,6 +13,9 @@ jobs:
   security-scan:
     name: Security Scan with Trivy
     runs-on: ubuntu-latest
+    timeout-minutes: 30 # 30分でタイムアウト
+    env:
+      TZ: Asia/Tokyo
 
     steps:
       - name: Checkout code
@@ -20,40 +23,50 @@ jobs:
 
       - name: Run Trivy vulnerability scanner for filesystem
         uses: aquasecurity/trivy-action@master
+        timeout-minutes: 15 # 個別ステップのタイムアウト
         with:
           scan-type: "fs"
           scan-ref: "."
           format: "table"
           severity: "CRITICAL,HIGH"
+          skip-db-update: true
 
       - name: Run Trivy vulnerability scanner for Docker images
         uses: aquasecurity/trivy-action@master
+        timeout-minutes: 10
         with:
           scan-type: "image"
           scan-ref: "node:20-alpine"
           format: "table"
           severity: "CRITICAL,HIGH"
+          skip-db-update: true
 
       - name: Run Trivy vulnerability scanner for frontend dependencies
         uses: aquasecurity/trivy-action@master
+        timeout-minutes: 10
         with:
           scan-type: "fs"
           scan-ref: "./frontend"
           format: "table"
           severity: "CRITICAL,HIGH"
+          skip-db-update: true
 
       - name: Run Trivy vulnerability scanner for backend dependencies
         uses: aquasecurity/trivy-action@master
+        timeout-minutes: 10
         with:
           scan-type: "fs"
           scan-ref: "./backend"
           format: "table"
           severity: "CRITICAL,HIGH"
+          skip-db-update: true
 
       - name: Run Trivy vulnerability scanner for Python requirements
         uses: aquasecurity/trivy-action@master
+        timeout-minutes: 10
         with:
           scan-type: "fs"
           scan-ref: "./backend/requirements.txt"
           format: "table"
           severity: "CRITICAL,HIGH"
+          skip-db-update: true
