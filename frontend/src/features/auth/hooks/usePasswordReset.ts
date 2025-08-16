@@ -1,13 +1,14 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import { resetPassword } from "@/actions/auth";
-import { NEW_PASSWORD_MESSAGE, ROUTE } from "@/constants";
+import { NEW_PASSWORD_MESSAGE } from "@/constants";
 
 import { usePasswordValidation } from "./useValidation";
 
+import { useNavigator } from "@/hooks/routing/useNavigator";
 import type {
   PasswordResetState,
   UsePasswordResetReturn,
@@ -18,7 +19,7 @@ import type {
  * @returns パスワードリセットに関する状態と処理
  */
 export const usePasswordReset = (): UsePasswordResetReturn => {
-  const router = useRouter();
+  const { toLogin } = useNavigator();
   const searchParams = useSearchParams();
   const token = searchParams.get("token") || "";
 
@@ -47,11 +48,11 @@ export const usePasswordReset = (): UsePasswordResetReturn => {
   useEffect(() => {
     if (state === "success") {
       const timer = setTimeout(() => {
-        router.push(ROUTE.LOGIN);
+        toLogin();
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [state, router]);
+  }, [state, toLogin]);
 
   // エラーメッセージの自動リセット
   useEffect(() => {

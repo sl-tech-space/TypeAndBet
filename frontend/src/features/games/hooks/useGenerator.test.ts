@@ -67,12 +67,10 @@ describe("useGenerator", () => {
     const { result } = renderHook(() => useGenerator());
 
     expect(result.current.sentences).toEqual([]);
-    expect(result.current.promptDetail).toBeNull();
     expect(result.current.error).toBeNull();
     expect(result.current.isLoading).toBe(false);
     expect(typeof result.current.generate).toBe("function");
     expect(typeof result.current.setSentences).toBe("function");
-    expect(typeof result.current.setPromptDetail).toBe("function");
   });
 
   it("setSentencesが呼ばれた時に文章を設定すること", () => {
@@ -83,21 +81,6 @@ describe("useGenerator", () => {
     });
 
     expect(result.current.sentences).toEqual([mockSentence]);
-  });
-
-  it("setPromptDetailが呼ばれた時にプロンプト詳細を設定すること", () => {
-    const { result } = renderHook(() => useGenerator());
-
-    const mockPromptDetail = {
-      category: "日常会話",
-      theme: "挨拶",
-    };
-
-    act(() => {
-      result.current.setPromptDetail(mockPromptDetail);
-    });
-
-    expect(result.current.promptDetail).toEqual(mockPromptDetail);
   });
 
   describe("generate", () => {
@@ -116,11 +99,7 @@ describe("useGenerator", () => {
 
       const mockResponse = {
         success: true,
-        result: {
-          pairs: [mockTextPair],
-          category: "日常会話",
-          theme: "挨拶",
-        },
+        result: [mockTextPair],
         error: null,
       };
 
@@ -136,10 +115,6 @@ describe("useGenerator", () => {
       expect(mockGenerateText).toHaveBeenCalled();
       expect(mockGetCharacterPatterns).toHaveBeenCalledWith("きょう");
       expect(result.current.sentences).toEqual([mockSentence]);
-      expect(result.current.promptDetail).toEqual({
-        category: "日常会話",
-        theme: "挨拶",
-      });
     });
 
     it("複数のテキストペアを処理すること", async () => {
@@ -156,14 +131,10 @@ describe("useGenerator", () => {
 
       const mockResponse = {
         success: true,
-        result: {
-          pairs: [
-            { kanji: "今日", hiragana: "きょう" },
-            { kanji: "明日", hiragana: "あした" },
-          ],
-          category: "日常会話",
-          theme: "時間",
-        },
+        result: [
+          { kanji: "今日", hiragana: "きょう" },
+          { kanji: "明日", hiragana: "あした" },
+        ],
         error: null,
       };
 
@@ -220,7 +191,6 @@ describe("useGenerator", () => {
       expect(mockWithAsyncLoading).toHaveBeenCalled();
       expect(mockGenerateText).toHaveBeenCalled();
       expect(result.current.sentences).toEqual([]);
-      expect(result.current.promptDetail).toBeNull();
     });
 
     it("generateTextのエラーを適切に処理すること", async () => {
@@ -265,11 +235,7 @@ describe("useGenerator", () => {
 
       const mockResponse = {
         success: true,
-        result: {
-          pairs: [],
-          category: "日常会話",
-          theme: "挨拶",
-        },
+        result: [],
         error: null,
       };
 
@@ -282,10 +248,6 @@ describe("useGenerator", () => {
       });
 
       expect(result.current.sentences).toEqual([]);
-      expect(result.current.promptDetail).toEqual({
-        category: "日常会話",
-        theme: "挨拶",
-      });
     });
 
     it("jp-transliteratorのエラーを適切に処理すること", async () => {
@@ -302,11 +264,7 @@ describe("useGenerator", () => {
 
       const mockResponse = {
         success: true,
-        result: {
-          pairs: [mockTextPair],
-          category: "日常会話",
-          theme: "挨拶",
-        },
+        result: [mockTextPair],
         error: null,
       };
 
@@ -348,11 +306,7 @@ describe("useGenerator", () => {
       // 新しい文章を生成
       const mockResponse = {
         success: true,
-        result: {
-          pairs: [{ kanji: "明日", hiragana: "あした" }],
-          category: "日常会話",
-          theme: "時間",
-        },
+        result: [{ kanji: "明日", hiragana: "あした" }],
         error: null,
       };
 
@@ -387,11 +341,7 @@ describe("useGenerator", () => {
 
     const mockResponse = {
       success: true,
-      result: {
-        pairs: [{ kanji: "学校", hiragana: "がっこう" }],
-        category: "教育",
-        theme: "学校生活",
-      },
+      result: [{ kanji: "学校", hiragana: "がっこう" }],
       error: null,
     };
 

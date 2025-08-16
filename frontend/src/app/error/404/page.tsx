@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { type ReactElement } from "react";
 
 import { HOME_BACK_BUTTON, ROUTE } from "@/constants";
+
+import { useBaseRouter } from "@/hooks/routing/useBaseRouter";
+import { useNavigator } from "@/hooks/routing/useNavigator";
 
 import styles from "../error.module.scss";
 
@@ -13,13 +15,14 @@ import styles from "../error.module.scss";
  * @returns 404ページコンポーネント
  */
 export default function NotFoundPage(): ReactElement {
-  const router = useRouter();
+  const { toHome } = useNavigator();
+  const { back } = useBaseRouter();
 
   const handleGoBack = (): void => {
     if (window.history.length > 1) {
-      router.back();
+      back();
     } else {
-      router.push(ROUTE.HOME);
+      toHome();
     }
   };
 
