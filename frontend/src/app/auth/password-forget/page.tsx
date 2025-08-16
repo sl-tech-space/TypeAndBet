@@ -1,8 +1,8 @@
 import { type ReactElement } from "react";
 
+import { META_TITLE } from "@/constants";
 import { AuthCard, PasswordForgetForm } from "@/features/auth";
 
-import { META_TITLE } from "@/constants";
 import styles from "./page.module.scss";
 
 /**

@@ -77,7 +77,7 @@ export const useEmailVerify = (): UseEmailVerifyReturn => {
 
         if (result.success) {
           setVerifyState("success");
-          setMessage(result.message);
+          setMessage(result.message ?? null);
           setError(null);
 
           // 3秒カウントダウン後にログインページにリダイレクト
@@ -102,7 +102,7 @@ export const useEmailVerify = (): UseEmailVerifyReturn => {
         setIsLoading(false);
       }
     },
-    [router, startCountdown]
+    [startCountdown]
   );
 
   // URLパラメータからトークンを取得して認証処理を実行

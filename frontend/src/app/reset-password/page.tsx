@@ -1,9 +1,9 @@
 import { Suspense, type ReactElement } from "react";
 
 import { Loading } from "@/components/ui";
+import { META_TITLE } from "@/constants";
 import { AuthCard, PasswordResetForm } from "@/features/auth";
 
-import { META_TITLE } from "@/constants";
 import styles from "./page.module.scss";
 
 /**

@@ -9,6 +9,7 @@ import { NEW_PASSWORD_MESSAGE, ROUTE } from "@/constants";
 import { usePasswordReset, usePasswordVisibility } from "@/features/auth/hooks";
 
 import styles from "./PasswordResetForm.module.scss";
+
 import type { PasswordResetFormProps } from "./PasswordResetForm.types";
 
 /**

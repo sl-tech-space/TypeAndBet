@@ -9,6 +9,7 @@ import { PASSWORD_RESET_MESSAGE, ROUTE } from "@/constants";
 import { usePasswordForget } from "@/features/auth/hooks";
 
 import styles from "./PasswordForgetForm.module.scss";
+
 import type { PasswordForgetFormProps } from "./PasswordForgetForm.types";
 
 /**

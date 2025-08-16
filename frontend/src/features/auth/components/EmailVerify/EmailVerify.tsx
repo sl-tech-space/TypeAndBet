@@ -83,20 +83,16 @@ export const EmailVerify = (): ReactElement => {
         >
           {verifyState === "verifying" &&
             "認証処理を実行しています。しばらくお待ちください..."}
-          {verifyState === "success" && countdown !== null && (
-            <>
-              {countdown > 0
-                ? "ログインページに移動します"
-                : "ログインページに移動中..."}
-            </>
-          )}
-          {verifyState === "error" && countdown !== null && (
-            <>
-              {countdown > 0
-                ? "エラーページに移動します"
-                : "エラーページに移動中..."}
-            </>
-          )}
+          {verifyState === "success" &&
+            countdown !== null &&
+            (countdown > 0
+              ? "ログインページに移動します"
+              : "ログインページに移動中...")}
+          {verifyState === "error" &&
+            countdown !== null &&
+            (countdown > 0
+              ? "エラーページに移動します"
+              : "エラーページに移動中...")}
         </Text>
 
         {/* プログレスバー風の表示 */}

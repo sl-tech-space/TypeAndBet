@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { resendVerificationEmail } from "@/actions/auth";
 import { EMAIL_SENT_MESSAGE } from "@/constants";
+
 import {
   type ResendState,
   type UseEmailSentReturn,
