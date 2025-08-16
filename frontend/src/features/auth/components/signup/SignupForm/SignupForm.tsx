@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useState, type FormEvent, type ReactElement } from "react";
 
 import { Button, Input, Label } from "@/components/ui";
@@ -9,7 +8,6 @@ import {
   ERROR_MESSAGE,
   FORM_LABEL,
   FORM_PLACEHOLDER,
-  ROUTE,
   ROUTE_NAME,
 } from "@/constants";
 import type { SignupResult } from "@/features/auth";
@@ -21,6 +19,7 @@ import {
   useSignup,
   useSignupSuccessStore,
 } from "@/features/auth";
+import { useNavigator } from "@/hooks/routing/useNavigator";
 
 import styles from "./SignupForm.module.scss";
 
@@ -30,7 +29,7 @@ import styles from "./SignupForm.module.scss";
  * @returns 新規登録フォーム
  */
 export const SignupForm = (): ReactElement => {
-  const router = useRouter();
+  const { toEmailSent } = useNavigator();
   const { isVisible, toggleVisibility, inputType } = usePasswordVisibility();
   const { signup, isLoading } = useSignup();
   const { setSuccessInfo } = useSignupSuccessStore();
@@ -156,7 +155,7 @@ export const SignupForm = (): ReactElement => {
         passwordLength: result.data.passwordLength,
       });
       // email-sentページにリダイレクト
-      router.push(ROUTE.SIGNUP_EMAIL_SENT);
+      toEmailSent();
     } else if (result.error) {
       setError(result.error);
     } else {

@@ -26,7 +26,6 @@ export const useRanking = (): {
     return withAsyncLoading(async () => {
       const rankingsData = await getRankings();
       setRankings(rankingsData);
-      console.log(rankingsData);
       return rankingsData;
     })();
   }, [withAsyncLoading]);

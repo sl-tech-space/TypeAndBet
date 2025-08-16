@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { verifyEmail } from "@/actions/auth";
 import { ROUTE } from "@/constants";
@@ -38,23 +38,32 @@ export const useEmailVerify = (): UseEmailVerifyReturn => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [countdown, setCountdown] = useState<number | null>(null);
 
+  // タイマーの参照を保持
+  const countdownRef = useRef<NodeJS.Timeout | null>(null);
+
   // カウントダウン開始の共通処理
   const startCountdown = useCallback(
     (redirectTo: string) => {
+      // 既存のタイマーをクリア
+      if (countdownRef.current) {
+        clearTimeout(countdownRef.current);
+      }
+
       setCountdown(3);
       let count = 3;
 
-      const interval = setInterval(() => {
+      const tick = () => {
         count -= 1;
         setCountdown(count);
 
-        if (count <= 0) {
-          clearInterval(interval);
+        if (count > 0) {
+          countdownRef.current = setTimeout(tick, 1000);
+        } else {
           router.replace(redirectTo);
         }
-      }, 1000);
+      };
 
-      return () => clearInterval(interval);
+      countdownRef.current = setTimeout(tick, 1000);
     },
     [router]
   );
@@ -77,7 +86,7 @@ export const useEmailVerify = (): UseEmailVerifyReturn => {
 
         if (result.success) {
           setVerifyState("success");
-          setMessage(result.message);
+          setMessage(result.message ?? null);
           setError(null);
 
           // 3秒カウントダウン後にログインページにリダイレクト
@@ -102,8 +111,16 @@ export const useEmailVerify = (): UseEmailVerifyReturn => {
         setIsLoading(false);
       }
     },
-    [router, startCountdown]
+    [startCountdown]
   );
+
+  // 関数をrefで安定化
+  const startCountdownRef = useRef(startCountdown);
+  const handleVerifyEmailRef = useRef(handleVerifyEmail);
+
+  // 最新の関数をrefに保存
+  startCountdownRef.current = startCountdown;
+  handleVerifyEmailRef.current = handleVerifyEmail;
 
   // URLパラメータからトークンを取得して認証処理を実行
   useEffect(() => {
@@ -115,12 +132,21 @@ export const useEmailVerify = (): UseEmailVerifyReturn => {
       setIsLoading(false);
 
       // 3秒カウントダウン後に500エラーページにリダイレクト
-      startCountdown(ROUTE.SERVER_ERROR);
+      startCountdownRef.current(ROUTE.SERVER_ERROR);
       return;
     }
 
-    handleVerifyEmail(token);
-  }, [searchParams, handleVerifyEmail, startCountdown]);
+    handleVerifyEmailRef.current(token);
+  }, [searchParams]); // 依存配列をsearchParamsのみに制限
+
+  // クリーンアップ処理
+  useEffect(() => {
+    return () => {
+      if (countdownRef.current) {
+        clearTimeout(countdownRef.current);
+      }
+    };
+  }, []);
 
   return {
     verifyState,

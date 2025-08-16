@@ -3,9 +3,9 @@
 import { useState } from "react";
 
 import {
-  PASSWORD_VALIDATION,
   EMAIL_VALIDATION,
   NAME_VALIDATION,
+  PASSWORD_VALIDATION,
 } from "@/constants";
 
 /**
@@ -22,7 +22,7 @@ export const usePasswordValidation = (): {
     const newErrors: string[] = [];
 
     // 必須チェック
-    if (!password) {
+    if (!password || password.trim() === "") {
       newErrors.push(PASSWORD_VALIDATION.ERROR_MESSAGES.REQUIRED);
       setErrors(newErrors);
       return false;
@@ -99,7 +99,7 @@ export const useEmailValidation = (): {
     const newErrors: string[] = [];
 
     // 必須チェック
-    if (!email) {
+    if (!email || email.trim() === "") {
       newErrors.push(EMAIL_VALIDATION.ERROR_MESSAGES.REQUIRED);
       setErrors(newErrors);
       return false;
@@ -138,7 +138,7 @@ export const useNameValidation = (): {
     const newErrors: string[] = [];
 
     // 必須チェック
-    if (!name) {
+    if (!name || name.trim() === "") {
       newErrors.push(NAME_VALIDATION.ERROR_MESSAGES.REQUIRED);
       setErrors(newErrors);
       return false;
