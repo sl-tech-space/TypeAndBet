@@ -29,7 +29,6 @@ jobs:
           scan-ref: "."
           format: "table"
           severity: "CRITICAL,HIGH"
-          skip-db-update: true
 
       - name: Dockerイメージ脆弱性スキャン実行
         uses: aquasecurity/trivy-action@master
@@ -39,7 +38,6 @@ jobs:
           scan-ref: "node:20-alpine"
           format: "table"
           severity: "CRITICAL,HIGH"
-          skip-db-update: true
 
       - name: フロントエンド依存関係脆弱性スキャン実行
         uses: aquasecurity/trivy-action@master
@@ -49,7 +47,6 @@ jobs:
           scan-ref: "./frontend"
           format: "table"
           severity: "CRITICAL,HIGH"
-          skip-db-update: true
 
       - name: バックエンド依存関係脆弱性スキャン実行
         uses: aquasecurity/trivy-action@master
@@ -59,7 +56,6 @@ jobs:
           scan-ref: "./backend"
           format: "table"
           severity: "CRITICAL,HIGH"
-          skip-db-update: true
 
       - name: Python依存関係脆弱性スキャン実行
         uses: aquasecurity/trivy-action@master
@@ -69,4 +65,3 @@ jobs:
           scan-ref: "./backend/requirements.txt"
           format: "table"
           severity: "CRITICAL,HIGH"
-          skip-db-update: true
