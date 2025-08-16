@@ -20,6 +20,14 @@ export const useRanking = (): {
   const { error, isLoading, withAsyncLoading } = useAsyncState();
 
   /**
+   * サーバーアクションのエラーを処理するカスタムエラーハンドラー
+   */
+  const handleRankingError = useCallback((error: unknown) => {
+    // ランキングをクリア
+    setRankings([]);
+  }, []);
+
+  /**
    * ランキングを取得する関数
    */
   const fetchRankings = useCallback(async () => {
@@ -27,11 +35,14 @@ export const useRanking = (): {
       const rankingsData = await getRankings();
       setRankings(rankingsData);
       return rankingsData;
-    })();
-  }, [withAsyncLoading]);
+    }, handleRankingError)();
+  }, [withAsyncLoading, handleRankingError]);
 
   useEffect(() => {
-    fetchRankings();
+    fetchRankings().catch(() => {
+      // useEffect内でのエラーは既にfetchRankings内で処理されている
+      // ここでは何もしない
+    });
   }, [fetchRankings]);
 
   return {
