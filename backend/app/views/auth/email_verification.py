@@ -1,7 +1,8 @@
 import logging
+
 import graphene
-from django.shortcuts import redirect
 from django.conf import settings
+from django.shortcuts import redirect
 
 from app.models import EmailVerification
 from app.utils.email_service import EmailService
@@ -136,6 +137,7 @@ class ResendVerificationEmail(graphene.Mutation):
                 to_email=user.email,
                 username=user.name,
                 verification_url=verification_url,
+                expiration_hours=24,
             )
 
             if not email_sent:

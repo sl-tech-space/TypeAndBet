@@ -182,6 +182,7 @@ class RegisterUser(graphene.Mutation):
                 to_email=user.email,
                 username=user.name,
                 verification_url=verification_url,
+                expiration_hours=24,
             )
 
             if not email_sent:
