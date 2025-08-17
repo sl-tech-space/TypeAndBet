@@ -44,48 +44,106 @@ class User(AbstractBaseUser, PermissionsMixin):
 
         super().save(*args, **kwargs)
 
-        if is_new and self.is_active:
-            # 新規アクティブユーザーの場合、ランキングを作成
-            Ranking.objects.create(user=self, ranking=1)
-        elif not is_new:
-            # 既存ユーザーの場合、以下の条件でランキングを更新
-            should_update_rankings = False
-
-            # ゴールドが変更された場合
-            if hasattr(self, "_old_gold") and self._old_gold != self.gold:
-                should_update_rankings = True
-                logger.info(
-                    f"ユーザー {self.id} のゴールドが変更: {self._old_gold} → {self.gold}"
-                )
-
-            # is_activeが変更された場合
+        if not is_new:
+            # ランキング処理
             if (
                 hasattr(self, "_old_is_active")
                 and self._old_is_active != self.is_active
+                and self.is_active
             ):
-                should_update_rankings = True
-                logger.info(
-                    f"ユーザー {self.id} のis_activeが変更: {self._old_is_active} → {self.is_active}"
-                )
-
-            # ランキング更新が必要な場合
-            if should_update_rankings:
-                logger.info(f"ユーザー {self.id} の変更によりランキングを更新")
-                User.update_rankings()
+                # is_activeがFalseからTrueに変更された場合
+                self._handle_activation()
+            elif (
+                hasattr(self, "_old_gold")
+                and self._old_gold != self.gold
+                and self.is_active
+            ):
+                # アクティブユーザーのゴールドが変更された場合
+                self._handle_gold_update()
 
     @classmethod
-    def update_rankings(cls):
-        """アクティブユーザーのランキングを更新"""
-        users = cls.objects.filter(is_active=True).order_by("-gold")
-        for index, user in enumerate(users):
-            Ranking.objects.filter(user=user).update(ranking=index + 1)
+    def insert_user_ranking(cls, user):
+        """新規ユーザーを適切なランキングに挿入"""
+        # 1回のクエリで適切なランキングを計算
+        new_ranking = cls.objects.filter(is_active=True, gold__gt=user.gold).count() + 1
 
-    def delete(self, *args, **kwargs):
-        """ユーザー削除時にランキングを再計算"""
-        logger.info(f"ユーザー {self.id} を削除し、ランキングを更新")
-        super().delete(*args, **kwargs)
-        # 削除後にランキングを再計算
-        User.update_rankings()
+        # ランキングレコードを作成
+        ranking = Ranking.objects.create(user=user, ranking=new_ranking)
+
+        # 下位のユーザーのランキングを1つずつ下げる
+        cls._shift_rankings_down(new_ranking + 1)
+
+        return ranking
+
+    def _handle_activation(self):
+        """ユーザーがアクティブになった時の処理"""
+        # 既存のランキングレコードを確認（1回のクエリで判定）
+        existing_ranking = Ranking.objects.filter(user=self).exists()
+
+        if not existing_ranking:
+            User.insert_user_ranking(self)
+
+    def _handle_gold_update(self):
+        """アクティブユーザーのゴールド更新時の処理"""
+        User.update_user_ranking(self)
+
+    @classmethod
+    def update_user_ranking(cls, user):
+        """特定ユーザーのランキングを更新"""
+        try:
+            # 現在のランキングを取得
+            current_ranking = Ranking.objects.get(user=user)
+            old_ranking = current_ranking.ranking
+
+            # 新しいランキングを計算
+            new_ranking = (
+                cls.objects.filter(is_active=True, gold__gt=user.gold).count() + 1
+            )
+
+            # ランキングが変わった場合のみ更新
+            if old_ranking != new_ranking:
+                if new_ranking < old_ranking:
+                    # 上位に移動した場合、下位のユーザーのランキングを1つずつ下げる
+                    cls._shift_rankings_down(new_ranking + 1, old_ranking)
+                else:
+                    # 下位に移動した場合、上位のユーザーのランキングを1つずつ上げる
+                    cls._shift_rankings_up(old_ranking, new_ranking - 1)
+
+                # ユーザーのランキングを更新
+                current_ranking.ranking = new_ranking
+                current_ranking.save()
+        except Ranking.DoesNotExist:
+            # ランキングレコードが存在しない場合は新規作成
+            cls.insert_user_ranking(user)
+
+    @classmethod
+    def _shift_rankings_down(cls, start_rank, end_rank=None):
+        """指定された範囲のランキングを1つずつ下げる"""
+        if end_rank is None:
+            # 指定範囲以降のすべてのランキングを下げる
+            rankings = Ranking.objects.filter(ranking__gte=start_rank).order_by(
+                "ranking"
+            )
+        else:
+            # 指定範囲のランキングを下げる
+            rankings = Ranking.objects.filter(
+                ranking__gte=start_rank, ranking__lte=end_rank
+            ).order_by("ranking")
+
+        for ranking in rankings:
+            ranking.ranking += 1
+            ranking.save()
+
+    @classmethod
+    def _shift_rankings_up(cls, start_rank, end_rank):
+        """指定された範囲のランキングを1つずつ上げる"""
+        rankings = Ranking.objects.filter(
+            ranking__gte=start_rank, ranking__lte=end_rank
+        ).order_by("-ranking")  # 降順で処理（上位から）
+
+        for ranking in rankings:
+            ranking.ranking -= 1
+            ranking.save()
 
     class Meta:
         db_table = "users"
