@@ -1,24 +1,31 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { type ReactElement } from "react";
 
 import { HOME_BACK_BUTTON, ROUTE } from "@/constants";
+import { useBaseRouter } from "@/hooks/routing/useBaseRouter";
+import { useNavigator } from "@/hooks/routing/useNavigator";
 
 import styles from "../error.module.scss";
 
-export default function ServerErrorPage() {
-  const router = useRouter();
+/**
+ * 500ページコンポーネント
+ * @returns 500ページコンポーネント
+ */
+export default function ServerErrorPage(): ReactElement {
+  const { toHome } = useNavigator();
+  const { back } = useBaseRouter();
 
-  const handleReload = () => {
+  const handleReload = (): void => {
     window.location.reload();
   };
 
-  const handleGoBack = () => {
+  const handleGoBack = (): void => {
     if (window.history.length > 1) {
-      router.back();
+      back();
     } else {
-      router.push(ROUTE.HOME);
+      toHome();
     }
   };
 

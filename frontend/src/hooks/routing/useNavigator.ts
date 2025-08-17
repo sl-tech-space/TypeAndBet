@@ -17,6 +17,11 @@ export const useNavigator = (): {
   toSimulate: () => void;
   toSimulateById: (sessionId: string) => void;
   toResult: () => void;
+  toEmailSent: () => void;
+  toPasswordForget: () => void;
+  toPasswordReset: () => void;
+  toTerms: () => void;
+  toPrivacy: () => void;
   toError: {
     to404: () => void;
     to500: () => void;
@@ -37,6 +42,12 @@ export const useNavigator = (): {
       push(`${ROUTE.SIMULATE}/${sessionId}`),
 
     toResult: () => push(ROUTE.RESULT),
+
+    toEmailSent: () => push(ROUTE.SIGNUP_EMAIL_SENT),
+    toPasswordForget: () => push(ROUTE.PASSWORD_FORGET),
+    toPasswordReset: () => push(ROUTE.PASSWORD_RESET),
+    toTerms: () => push(ROUTE.TERMS),
+    toPrivacy: () => push(ROUTE.PRIVACY),
 
     toError: {
       to404: () => push(ROUTE.NOT_FOUND),

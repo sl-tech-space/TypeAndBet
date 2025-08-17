@@ -4,6 +4,7 @@ import { Card, Text } from "@/components/ui";
 import { RANKING_TITLE } from "@/constants";
 
 import { RankingList } from "../RankingList";
+
 import styles from "./RankingCard.module.scss";
 
 /**

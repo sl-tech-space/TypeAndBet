@@ -1,0 +1,33 @@
+name: フロントエンドテスト実行
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test:
+    name: フロントエンドテスト実行
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Tokyo
+
+    steps:
+      - name: コードのチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Node.js 20.x環境のセットアップ
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: "yarn"
+          cache-dependency-path: "frontend/yarn.lock"
+
+      - name: 依存関係のインストール
+        working-directory: ./frontend
+        run: yarn install --frozen-lockfile
+
+      - name: テストの実行
+        working-directory: ./frontend
+        run: yarn test

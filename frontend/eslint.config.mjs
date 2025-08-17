@@ -18,6 +18,13 @@ const eslintConfig = [
   ...compat.extends("next/core-web-vitals"),
   {
     files: ["**/*.ts", "**/*.tsx"],
+    ignores: [
+      "**/*.test.ts",
+      "**/*.test.tsx",
+      "**/*.spec.ts",
+      "**/*.spec.tsx",
+      "src/__tests__/**/*",
+    ],
     plugins: {
       "@typescript-eslint": typescriptPlugin,
       import: importPlugin,
@@ -81,11 +88,20 @@ const eslintConfig = [
             order: "asc",
             caseInsensitive: true,
           },
+          pathGroups: [
+            {
+              pattern: "@/**",
+              group: "internal",
+              position: "before",
+            },
+          ],
+          pathGroupsExcludedImportTypes: ["builtin"],
+          distinctGroup: false,
         },
       ],
 
-      // Prettier関連
-      "prettier/prettier": "error",
+      // Prettier関連（競合回避のため警告レベルに）
+      "prettier/prettier": "warn",
     },
   },
   // Prettierとの競合を回避

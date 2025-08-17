@@ -1,28 +1,27 @@
 "use client";
 
 import Image from "next/image";
-import { type FormEvent, type ReactElement, useState } from "react";
+import { useState, type FormEvent, type ReactElement } from "react";
 
-import { Text, Button, Input, Label } from "@/components/ui";
+import { Button, Input, Label } from "@/components/ui";
 import {
+  ERROR_MESSAGE,
   FORM_LABEL,
   FORM_PLACEHOLDER,
-  SIGNUP_SUCCESS_MESSAGE,
-  ERROR_MESSAGE,
   ROUTE_NAME,
 } from "@/constants";
+import type { SignupResult } from "@/features/auth";
 import {
-  usePasswordVisibility,
-  useSignup,
-  usePasswordValidation,
   useEmailValidation,
   useNameValidation,
-  type SignupSuccessInfo,
+  usePasswordValidation,
+  usePasswordVisibility,
+  useSignup,
+  useSignupSuccessStore,
 } from "@/features/auth";
+import { useNavigator } from "@/hooks/routing/useNavigator";
 
 import styles from "./SignupForm.module.scss";
-
-import type { SignupResult } from "@/features/auth";
 
 /**
  * クライアントコンポーネント
@@ -30,8 +29,10 @@ import type { SignupResult } from "@/features/auth";
  * @returns 新規登録フォーム
  */
 export const SignupForm = (): ReactElement => {
+  const { toEmailSent } = useNavigator();
   const { isVisible, toggleVisibility, inputType } = usePasswordVisibility();
-  const { signup, isLoading, countdown } = useSignup();
+  const { signup, isLoading } = useSignup();
+  const { setSuccessInfo } = useSignupSuccessStore();
   const { errors: passwordErrors, validatePassword } = usePasswordValidation();
   const { errors: emailErrors, validateEmail } = useEmailValidation();
   const { errors: nameErrors, validateName } = useNameValidation();
@@ -41,9 +42,6 @@ export const SignupForm = (): ReactElement => {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
-  const [successInfo, setSuccessInfo] = useState<SignupSuccessInfo | null>(
-    null
-  );
   const [passwordConfirmError, setPasswordConfirmError] = useState<
     string | null
   >(null);
@@ -123,7 +121,6 @@ export const SignupForm = (): ReactElement => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setError(null);
-    setSuccessInfo(null);
 
     // 各フィールドのバリデーション
     const isNameValid = validateName(name);
@@ -151,12 +148,14 @@ export const SignupForm = (): ReactElement => {
     );
 
     if (result.success && result.data) {
+      // Zustandストアに成功情報を保存
       setSuccessInfo({
         name: result.data.name,
         email: result.data.email,
         passwordLength: result.data.passwordLength,
-        countdown: result.data.countdown,
       });
+      // email-sentページにリダイレクト
+      toEmailSent();
     } else if (result.error) {
       setError(result.error);
     } else {
@@ -181,26 +180,6 @@ export const SignupForm = (): ReactElement => {
     <form className={styles["signup-form"]} onSubmit={handleSubmit}>
       {/* エラー表示 */}
       {error && <div className={styles["signup-form__error"]}>{error}</div>}
-      {/* サインアップ成功時の表示 */}
-      {successInfo && countdown !== null && (
-        <div className={styles["signup-form__success"]}>
-          <Text variant="h3" color="gold">
-            {successInfo.name}
-            {SIGNUP_SUCCESS_MESSAGE.SUCCESS}
-          </Text>
-          <Text color="gold">{SIGNUP_SUCCESS_MESSAGE.LOGIN_NAVIGATION}</Text>
-          <Text color="gold">
-            {FORM_LABEL.EMAIL}: {successInfo.email}
-          </Text>
-          <Text color="gold">
-            {FORM_LABEL.PASSWORD}: {successInfo.passwordLength}桁
-          </Text>
-          <Text color="gold">
-            {countdown}
-            {SIGNUP_SUCCESS_MESSAGE.LOGIN_NAVIGATION_COUNT}
-          </Text>
-        </div>
-      )}
       {/* ユーザ名入力フィールド */}
       <div className={styles["signup-form__name-field"]}>
         <div className={styles["signup-form__name-field__label-container"]}>

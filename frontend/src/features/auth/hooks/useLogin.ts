@@ -44,6 +44,12 @@ export const useLogin = (): {
         });
 
         router.push(ROUTE.HOME);
+
+        // ログイン完了後に強制的に画面更新
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
+
         return {
           success: true,
         };

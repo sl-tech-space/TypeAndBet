@@ -61,8 +61,52 @@ export interface LoginUserResponse extends Record<string, unknown> {
  * サインアップレスポンス
  */
 export interface SignupUserResponse extends Record<string, unknown> {
-  signupUser: {
+  registerUser: {
     success: boolean;
+    errors?: string[];
+  };
+}
+
+/**
+ * メールアドレス確認レスポンス
+ */
+export interface VerifyEmailResponse extends Record<string, unknown> {
+  verifyEmail: {
+    success: boolean;
+    message?: string;
+    errors?: string[];
+  };
+}
+
+/**
+ * メール確認メール再送信レスポンス
+ */
+export interface ResendVerificationEmailResponse
+  extends Record<string, unknown> {
+  resendVerificationEmail: {
+    success: boolean;
+    errors?: string[];
+  };
+}
+
+/**
+ * パスワードリセット要求レスポンス
+ */
+export interface RequestPasswordResetResponse extends Record<string, unknown> {
+  requestPasswordReset: {
+    success: boolean;
+    message?: string;
+    errors?: string[];
+  };
+}
+
+/**
+ * パスワードリセットレスポンス
+ */
+export interface ResetPasswordResponse extends Record<string, unknown> {
+  resetPassword: {
+    success: boolean;
+    message?: string;
     errors?: string[];
   };
 }

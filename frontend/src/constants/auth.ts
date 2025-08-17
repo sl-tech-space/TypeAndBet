@@ -66,23 +66,106 @@ export const AUTH_ACTIONS: AuthActions = {
 };
 
 /**
- * サインアップ成功メッセージの型定義
+ * メール送信完了ページの文言
  */
-export type SignupSuccessMessage = {
-  SUCCESS: string;
-  LOGIN_NAVIGATION: string;
-  LOGIN_NAVIGATION_COUNT: string;
+export type EmailSentMessage = {
+  TITLE: string;
+  MAIN_MESSAGE: string;
+  INSTRUCTION: string;
+  NOTE: string;
+  LOGIN_BUTTON: string;
+  HOME_BUTTON: string;
+  RESEND_BUTTON: string;
+  RESEND_SUCCESS: string;
+  RESEND_ERROR: string;
+  RESEND_COOLDOWN: string;
 };
 
-export const SIGNUP_SUCCESS_MESSAGE: SignupSuccessMessage = {
-  SUCCESS: "様、登録ありがとうございます。",
-  LOGIN_NAVIGATION: "ログイン画面からログインしてください。",
-  LOGIN_NAVIGATION_COUNT: "秒後にログイン画面に遷移します...",
+export const EMAIL_SENT_MESSAGE: EmailSentMessage = {
+  TITLE: "メールを確認してください",
+  MAIN_MESSAGE:
+    "ご登録いただいたメールアドレス宛に、認証メールを送信いたしました。",
+  INSTRUCTION:
+    "メールに記載されたリンクをクリックして、アカウントの認証を完了してください。",
+  NOTE: "※ メールが届かない場合は、迷惑メールフォルダもご確認ください",
+  LOGIN_BUTTON: "ログインページへ",
+  HOME_BUTTON: "ホームへ戻る",
+  RESEND_BUTTON: "認証メールを再送信",
+  RESEND_SUCCESS: "認証メールを再送信いたしました",
+  RESEND_ERROR: "メールの再送信に失敗しました",
+  RESEND_COOLDOWN: "秒後に再送信できます",
 };
 
-export const SIGNUP_SUCCESS_COUNTDOWN: number = 5; //5s
-export const SIGNUP_SUCCESS_DECREMENT: number = 1; //1s
-export const SIGNUP_SUCCESS_COUNTDOWN_MIN: number = 0; //0s
+/**
+ * パスワードリセット要求ページの文言
+ */
+export type PasswordResetMessage = {
+  TITLE: string;
+  DESCRIPTION: string;
+  EMAIL_LABEL: string;
+  EMAIL_PLACEHOLDER: string;
+  SUBMIT_BUTTON: string;
+  SUBMITTING_BUTTON: string;
+  SUCCESS_MESSAGE: string;
+  ERROR_MESSAGE: string;
+  BACK_TO_LOGIN: string;
+  NOTE: string;
+};
+
+export const PASSWORD_RESET_MESSAGE: PasswordResetMessage = {
+  TITLE: "パスワードをリセット",
+  DESCRIPTION:
+    "パスワードをリセットするため、登録されているメールアドレスを入力してください。",
+  EMAIL_LABEL: "メールアドレス",
+  EMAIL_PLACEHOLDER: "メールアドレスを入力してください",
+  SUBMIT_BUTTON: "リセットメールを送信",
+  SUBMITTING_BUTTON: "送信中...",
+  SUCCESS_MESSAGE:
+    "パスワードリセット用のメールを送信しました。メールをご確認ください。",
+  ERROR_MESSAGE: "メールの送信に失敗しました。もう一度お試しください。",
+  BACK_TO_LOGIN: "ログインページへ戻る",
+  NOTE: "※ メールが届かない場合は、迷惑メールフォルダもご確認ください",
+};
+
+/**
+ * パスワード新規設定ページの文言
+ */
+export type NewPasswordMessage = {
+  TITLE: string;
+  DESCRIPTION: string;
+  PASSWORD_LABEL: string;
+  PASSWORD_CONFIRM_LABEL: string;
+  PASSWORD_PLACEHOLDER: string;
+  PASSWORD_CONFIRM_PLACEHOLDER: string;
+  SUBMIT_BUTTON: string;
+  SUBMITTING_BUTTON: string;
+  SUCCESS_MESSAGE: string;
+  ERROR_MESSAGE: string;
+  INVALID_TOKEN_MESSAGE: string;
+  EXPIRED_TOKEN_MESSAGE: string;
+  BACK_TO_LOGIN: string;
+  BACK_TO_FORGET: string;
+};
+
+export const NEW_PASSWORD_MESSAGE: NewPasswordMessage = {
+  TITLE: "新しいパスワードを設定",
+  DESCRIPTION: "新しいパスワードを入力してください。",
+  PASSWORD_LABEL: "新しいパスワード",
+  PASSWORD_CONFIRM_LABEL: "パスワード確認",
+  PASSWORD_PLACEHOLDER: "新しいパスワードを入力してください",
+  PASSWORD_CONFIRM_PLACEHOLDER: "パスワードを再入力してください",
+  SUBMIT_BUTTON: "パスワードを更新",
+  SUBMITTING_BUTTON: "更新中...",
+  SUCCESS_MESSAGE:
+    "パスワードが正常に更新されました。ログインページに移動します。",
+  ERROR_MESSAGE: "パスワードの更新に失敗しました。もう一度お試しください。",
+  INVALID_TOKEN_MESSAGE:
+    "無効なリセットトークンです。もう一度パスワードリセットを行ってください。",
+  EXPIRED_TOKEN_MESSAGE:
+    "リセットトークンの有効期限が切れています。もう一度パスワードリセットを行ってください。",
+  BACK_TO_LOGIN: "ログインページへ",
+  BACK_TO_FORGET: "パスワードを忘れた場合に戻る",
+};
 
 ////////////////////////////
 // バリデーション

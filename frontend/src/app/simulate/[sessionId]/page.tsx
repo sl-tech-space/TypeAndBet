@@ -8,10 +8,9 @@ import {
   TypingProvider,
 } from "@/features/games";
 import { HomeButton } from "@/features/helper";
+import type { GameSessionIdProps } from "@/types";
 
 import styles from "./page.module.scss";
-
-import type { GameSessionIdProps } from "@/types";
 
 export default async function SimulateByIdPage({
   params,

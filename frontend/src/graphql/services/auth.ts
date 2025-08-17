@@ -1,16 +1,23 @@
 import {
-  GraphQLServerClient,
   GOOGLE_AUTH,
-  REFRESH_TOKEN,
+  GraphQLServerClient,
   LOGIN,
+  REFRESH_TOKEN,
+  REQUEST_PASSWORD_RESET,
+  RESEND_VERIFICATION_EMAIL,
+  RESET_PASSWORD,
   SIGNUP,
+  VERIFY_EMAIL,
 } from "@/graphql";
-
 import type {
   LoginUserResponse,
   OAuthResponse,
   RefreshTokenResponse,
+  RequestPasswordResetResponse,
+  ResendVerificationEmailResponse,
+  ResetPasswordResponse,
   SignupUserResponse,
+  VerifyEmailResponse,
 } from "@/types";
 
 /**
@@ -63,6 +70,67 @@ export class AuthService {
 
     return client.executeMutation<SignupUserResponse, typeof variables>(
       SIGNUP,
+      variables
+    );
+  }
+
+  /**
+   * メールアドレスの確認
+   * @param token トークン
+   * @returns
+   */
+  public static async verifyEmail(
+    client: GraphQLServerClient,
+    token: string
+  ): Promise<{ data: VerifyEmailResponse }> {
+    return client.executeMutation(VERIFY_EMAIL, { token });
+  }
+
+  /**
+   * メール確認メールを再送信
+   * @param email メールアドレス
+   * @returns
+   */
+  public static async resendVerificationEmail(
+    client: GraphQLServerClient,
+    email: string
+  ): Promise<{ data: ResendVerificationEmailResponse }> {
+    return client.executeMutation(RESEND_VERIFICATION_EMAIL, { email });
+  }
+
+  /**
+   * パスワードリセット要求
+   * @param email メールアドレス
+   * @returns 成功フラグとエラー
+   */
+  public static async requestPasswordReset(
+    client: GraphQLServerClient,
+    email: string
+  ): Promise<{ data: RequestPasswordResetResponse }> {
+    return client.executeMutation(REQUEST_PASSWORD_RESET, { email });
+  }
+
+  /**
+   * パスワードリセット
+   * @param token トークン
+   * @param password パスワード
+   * @param passwordConfirm パスワード確認
+   * @returns 成功フラグとエラー
+   */
+  public static async resetPassword(
+    client: GraphQLServerClient,
+    token: string,
+    password: string,
+    passwordConfirm: string
+  ): Promise<{ data: ResetPasswordResponse }> {
+    const variables = {
+      token,
+      password,
+      passwordConfirm,
+    };
+
+    return client.executeMutation<ResetPasswordResponse, typeof variables>(
+      RESET_PASSWORD,
       variables
     );
   }

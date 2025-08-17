@@ -1,8 +1,7 @@
 "use server";
 
-import { getAuthorizedServerClient } from "@/lib/apollo-server";
-
 import { GraphQLServerClient, RankingService } from "@/graphql";
+import { getAuthorizedServerClient } from "@/lib/apollo-server";
 import { Ranking } from "@/types";
 
 /**

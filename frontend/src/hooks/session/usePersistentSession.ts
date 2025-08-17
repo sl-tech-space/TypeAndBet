@@ -99,7 +99,7 @@ export const usePersistentSession = (): {
           gold: freshGold,
         },
       });
-    } catch (error) {
+    } catch {
       // タイムアウト/その他エラーはいったん無視して同期を中断
     } finally {
       setIsSyncing(false);
@@ -121,7 +121,7 @@ export const usePersistentSession = (): {
           // 手動同期中でなければ実行
           try {
             await syncGold();
-          } catch (error) {
+          } catch {
             // エラーは無視
           }
         }

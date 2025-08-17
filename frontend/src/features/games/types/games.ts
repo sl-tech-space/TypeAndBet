@@ -1,9 +1,9 @@
-import { GAME_MODES } from "@/constants";
+import { GAME_MODE } from "@/constants";
 
 /**
  * ゲームモードの型
  */
-export type GameMode = (typeof GAME_MODES)[keyof typeof GAME_MODES];
+export type GameMode = (typeof GAME_MODE)[keyof typeof GAME_MODE];
 
 /**
  * ゲームモードを選択するためのカスタムフックの戻り値型

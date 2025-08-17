@@ -11,6 +11,10 @@ import { SummaryResult } from "../SummaryResult";
 
 import styles from "./ResultCard.module.scss";
 
+/**
+ * 結果カードコンポーネント
+ * @returns 結果カードコンポーネント
+ */
 export const ResultCard = (): ReactElement => {
   const { result, isLoading, isSimulate, isPlay } = useResult();
 
