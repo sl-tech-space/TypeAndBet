@@ -8,6 +8,7 @@ from app.models import EmailVerification
 from app.utils.email_service import EmailService
 from app.utils.errors import BaseError, ErrorHandler
 from app.utils.logging_utils import mask_email, mask_token
+from app.utils.graphql_throttling import graphql_throttle, get_user_identifier
 
 logger = logging.getLogger("app")
 
@@ -40,6 +41,7 @@ class VerifyEmail(graphene.Mutation):
     errors = graphene.List(graphene.String)
 
     @classmethod
+    @graphql_throttle('10/m', get_user_identifier)
     def mutate(cls, root, info, token):
         try:
             logger.info(f"メール確認開始: token={mask_token(token)}")
@@ -91,6 +93,7 @@ class ResendVerificationEmail(graphene.Mutation):
     errors = graphene.List(graphene.String)
 
     @classmethod
+    @graphql_throttle('3/m', get_user_identifier)
     def mutate(cls, root, info, email):
         try:
             logger.info(f"メール確認メール再送信開始: email={mask_email(email)}")

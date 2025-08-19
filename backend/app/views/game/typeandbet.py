@@ -1,4 +1,5 @@
 import logging
+import uuid
 
 import graphene
 from django.core.exceptions import ValidationError
@@ -8,6 +9,7 @@ from graphene_django.types import DjangoObjectType
 from app.models import Game, Ranking
 from app.utils.constants import GameErrorMessages
 from app.utils.game_calculator import GameCalculator
+from app.utils.graphql_throttling import get_game_action_identifier, graphql_throttle
 from app.utils.sanitizer import sanitize_string
 from app.utils.validators import GameValidator
 
@@ -37,6 +39,7 @@ class CreateBet(graphene.Mutation):
 
     @classmethod
     @transaction.atomic
+    @graphql_throttle("10/m", get_game_action_identifier)
     def mutate(cls, root, info, bet_gold):
         try:
             # 数値は基本GraphQLで型制約されるが念のため文字列から来た場合を考慮
@@ -99,6 +102,7 @@ class UpdateGameScore(graphene.Mutation):
         game_id = graphene.UUID(required=True)
         correct_typed = graphene.Int(required=True)
         accuracy = graphene.Float(required=True)
+        idempotency_key = graphene.String(required=False)
 
     game = graphene.Field(GameType)
     success = graphene.Boolean()
@@ -106,7 +110,8 @@ class UpdateGameScore(graphene.Mutation):
 
     @classmethod
     @transaction.atomic
-    def mutate(cls, root, info, game_id, correct_typed, accuracy):
+    @graphql_throttle("30/m", get_game_action_identifier)
+    def mutate(cls, root, info, game_id, correct_typed, accuracy, idempotency_key=None):
         try:
             # 文字列で来た場合のサニタイジングと安全変換
             if isinstance(game_id, str):
@@ -148,6 +153,28 @@ class UpdateGameScore(graphene.Mutation):
                 )
                 raise ValidationError(GameErrorMessages.NO_PERMISSION)
 
+            # Idempotency keyの処理
+            if idempotency_key:
+                # 既存のidempotency keyをチェック
+                existing_game = Game.objects.filter(
+                    idempotency_key=idempotency_key
+                ).first()
+                if existing_game and existing_game.id != game.id:
+                    logger.warning(f"Idempotency key重複: {idempotency_key}")
+                    raise ValidationError("重複したリクエストです")
+
+                # 同じゲームで既に処理済みの場合
+                if (
+                    existing_game
+                    and existing_game.id == game.id
+                    and existing_game.score > 0
+                ):
+                    logger.info(f"Idempotency keyで既存結果を返却: {idempotency_key}")
+                    return UpdateGameScore(game=existing_game, success=True, errors=[])
+            else:
+                # Idempotency keyが提供されていない場合は自動生成
+                idempotency_key = f"{game_id}_{user.id}_{uuid.uuid4()}"
+
             # 重複実行チェック（既にスコアが設定済みの場合は拒否）
             if game.score > 0:
                 logger.warning(
@@ -187,8 +214,11 @@ class UpdateGameScore(graphene.Mutation):
             game.score = score
             game.score_gold_change = gold_change
             game.result_gold = game.before_bet_gold - game.bet_gold + gold_change
+            game.idempotency_key = idempotency_key
             game.save()
-            logger.info(f"ゲーム更新: game_id={game.id}")
+            logger.info(
+                f"ゲーム更新: game_id={game.id}, idempotency_key={idempotency_key}"
+            )
 
             # ユーザーの所持金を更新
             new_gold = user.gold + gold_change

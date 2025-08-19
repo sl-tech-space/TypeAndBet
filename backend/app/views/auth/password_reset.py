@@ -8,7 +8,7 @@ from app.utils.validators import UserValidator, ValidationError
 from app.utils.logging_utils import mask_email
 from app.utils.errors import BaseError, ErrorHandler
 from app.utils.constants import AuthErrorMessages
-
+from app.utils.graphql_throttling import graphql_throttle, get_user_identifier
 
 logger = logging.getLogger("app")
 
@@ -34,6 +34,7 @@ class RequestPasswordReset(graphene.Mutation):
     errors = graphene.List(graphene.String)
 
     @classmethod
+    @graphql_throttle('3/m', get_user_identifier)
     def mutate(cls, root, info, email):
         try:
             # email フォーマットのみ検証。存在有無に関わらず成功レスポンスを返す（情報漏洩対策）

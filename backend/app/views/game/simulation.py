@@ -9,6 +9,7 @@ from app.models import Game
 from app.utils.game_calculator import GameCalculator
 from app.utils.sanitizer import sanitize_string
 from app.utils.validators import GameValidator
+from app.utils.graphql_throttling import graphql_throttle, get_user_identifier
 
 logger = logging.getLogger("app")
 
@@ -27,6 +28,7 @@ class CompletePractice(Mutation):
 
     @classmethod
     @transaction.atomic
+    @graphql_throttle('30/m', get_user_identifier)
     def mutate(cls, root, info, correct_typed, accuracy):
         try:
             # 文字列で来た場合のサニタイジングと安全変換
