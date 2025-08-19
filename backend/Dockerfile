@@ -11,6 +11,12 @@ RUN apt-get update && \
     mecab-ipadic-utf8 \
     && rm -rf /var/lib/apt/lists/*
 
+# cronジョブ用のユーザーを作成
+RUN useradd -m -s /bin/bash cronuser && \
+    mkdir -p /var/log && \
+    chown -R cronuser:cronuser /var/log && \
+    chmod 755 /var/log
+
 # 作業ディレクトリを設定
 WORKDIR /app
 

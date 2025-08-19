@@ -4,7 +4,7 @@
 # このスクリプトはDockerコンテナ内で実行されることを想定
 
 DJANGO_PROJECT_DIR="/app"
-PYTHON_PATH="/usr/local/bin/python"
+PYTHON_PATH="/opt/venv/bin/python"
 MANAGE_PY="$DJANGO_PROJECT_DIR/manage.py"
 
 echo "cronジョブを設定します..."
@@ -45,20 +45,38 @@ echo "cronジョブの設定が完了しました"
 echo "設定されたcronジョブ:"
 crontab -l
 
-# ログファイルを事前に作成
+# ログファイルを事前に作成（権限を適切に設定）
+echo "ログファイル作成中..."
 touch /var/log/generate_text_job.log
 touch /var/log/convert_hiragana_job.log
 touch /var/log/partition_textpairs.log
 
+# ログファイルの権限を確認
+echo "ログファイルの権限を確認中..."
+ls -la /var/log/*.log 2>/dev/null || echo "ログファイルが見つかりません"
+
 # cronサービスを開始
 echo "cronサービスを開始します..."
-service cron start
+# PIDファイルの権限を確認
+ls -la /var/run/crond.pid 2>/dev/null || echo "PIDファイルが見つかりません"
 
-echo "cronジョブ設定完了！"
+# cronサービスを起動（権限の問題を回避）
+if [ -w /var/run/crond.pid ]; then
+    echo "PIDファイルに書き込み権限があります"
+    cron
+else
+    echo "PIDファイルに書き込み権限がありません。権限を修正します..."
+    sudo chown $USER:$USER /var/run/crond.pid 2>/dev/null || true
+    sudo chmod 644 /var/run/crond.pid 2>/dev/null || true
+    cron
+fi
+
+echo "cronジョブ設定完了"
 
 # ログファイルを監視（存在しない場合は待機）
 while true; do
     if [ -f /var/log/generate_text_job.log ] && [ -f /var/log/convert_hiragana_job.log ] && [ -f /var/log/partition_textpairs.log ]; then
+        echo "すべてのログファイルが作成されました。ログ監視を開始します..."
         tail -f /var/log/generate_text_job.log /var/log/convert_hiragana_job.log /var/log/partition_textpairs.log
     else
         echo "ログファイル作成中..."

@@ -9,6 +9,19 @@ import { getAuthorizedServerClient } from "@/lib/apollo-server";
 import type { Session, User } from "next-auth";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
+  // 信頼できるホストを設定
+  trustHost: true,
+  // セッション設定
+  session: {
+    strategy: "jwt",
+    maxAge: 14 * 24 * 60 * 60, // 14 days
+  },
+  // ページ設定
+  pages: {
+    signIn: "/auth/login",
+    signOut: "/",
+    error: "/auth/login",
+  },
   providers: [
     Credentials({
       name: "Credentials",
@@ -66,10 +79,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
-  session: {
-    strategy: "jwt",
-    maxAge: 14 * 24 * 60 * 60, // 14 days
-  },
   events: {
     // サインイン時
     async signIn({ user, account }) {

@@ -6,17 +6,27 @@ const nextConfig: NextConfig = {
   reactStrictMode: true, // 副作用検出＆安全性向上
   poweredByHeader: false, // "X-Powered-By" ヘッダー削除
 
+  // Next.js Standaloneモード
+  output: "standalone",
+
   // メモリ最適化設定
   experimental: {
     // メモリ使用量削減のための最適化
     optimizePackageImports: ["@/components", "@/features", "@/utils"],
-    // キャッシュ最適化
-    turbo: {
-      rules: {
-        "*.scss": {
-          loaders: ["sass-loader"],
-          as: "*.css",
-        },
+    // Next.js Standaloneモードでミドルウェアを有効化
+    // @ts-ignore - canary版での型定義の問題を回避
+    nodeMiddleware: true,
+  },
+
+  // キャッシュディレクトリの設定
+  distDir: ".next",
+
+  // Turbopack設定（experimental.turboから移動）
+  turbopack: {
+    rules: {
+      "*.scss": {
+        loaders: ["sass-loader"],
+        as: "*.css",
       },
     },
   },
@@ -30,9 +40,6 @@ const nextConfig: NextConfig = {
   // ESLint & 型チェック設定
   eslint: {
     ignoreDuringBuilds: !isProduction, // 本番はLintエラーでビルド中断
-  },
-  typescript: {
-    ignoreBuildErrors: !isProduction, // 本番は型エラーでビルド中断
   },
 
   // Webpack最適化
@@ -66,7 +73,14 @@ const nextConfig: NextConfig = {
 
   // 画像の設定
   images: {
-    domains: ["lh3.googleusercontent.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        port: "",
+        pathname: "/**",
+      },
+    ],
   },
 
   // ヘッダーの設定
@@ -77,21 +91,6 @@ const nextConfig: NextConfig = {
       {
         source: "/(.*)",
         headers: [
-          {
-            key: "Content-Security-Policy",
-            value:
-              "default-src 'self'; " +
-              "script-src 'self'; " +
-              "style-src 'self' 'unsafe-inline'; " +
-              "img-src 'self' data:; " +
-              "font-src 'self'; " +
-              "connect-src 'self'; " +
-              "object-src 'none'; " +
-              "frame-ancestors 'none'; " +
-              "base-uri 'self'; " +
-              "form-action 'self'; " +
-              "upgrade-insecure-requests;",
-          },
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "X-Frame-Options", value: "DENY" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
@@ -107,20 +106,6 @@ const nextConfig: NextConfig = {
               "geolocation=(), microphone=(), camera=(), fullscreen=(), payment=()",
           },
         ],
-      },
-    ];
-  },
-
-  // HTTP → HTTPS リダイレクト（必要なら有効化）
-  async redirects() {
-    if (!isProduction) return [];
-    return [
-      {
-        source: "/(.*)",
-        destination:
-          process.env.APP_URL ||
-          `https://localhost:${process.env.FRONTEND_PORT}`,
-        permanent: true,
       },
     ];
   },

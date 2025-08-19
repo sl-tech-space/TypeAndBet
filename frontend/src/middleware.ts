@@ -1,15 +1,40 @@
-import { NextResponse } from "next/server";
-import { Session } from "next-auth";
+import crypto from "crypto";
+
+import { NextRequest, NextResponse } from "next/server";
 
 import { auth } from "@/auth";
-import { ROUTE, ONE_SECOND_MS } from "@/constants";
+import { ONE_SECOND_MS, ROUTE } from "@/constants";
 import { refreshToken } from "@/lib";
-import { isProtectedRoute, isAuthPage } from "@/utils";
+import { isAuthPage, isProtectedRoute } from "@/utils";
 
-import type { NextRequest } from "next/server";
+import type { Session } from "next-auth";
+
+export const config = {
+  runtime: "nodejs",
+};
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
+  const response = NextResponse.next();
   const pathname: string = request.nextUrl.pathname;
+
+  // リクエストごとに nonce を生成
+  const nonce = crypto.randomBytes(16).toString("base64");
+
+  // CSP ヘッダーに nonce を埋め込む
+  response.headers.set(
+    "Content-Security-Policy",
+    `
+      default-src 'self';
+      script-src 'self' 'nonce-${nonce}';
+      style-src 'self' 'unsafe-inline';
+      img-src 'self' data:;
+      font-src 'self';
+      connect-src 'self';
+    `.replace(/\n\s+/g, " ")
+  );
+
+  // nonce をレスポンスヘッダーに追加してフロントで参照できるようにする
+  response.headers.set("X-Content-Security-Policy-Nonce", nonce);
 
   // セッションチェック
   const session: Session | null = await auth();
@@ -18,12 +43,23 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   if (isProtectedRoute(pathname)) {
     // セッションまたはアクセストークンが存在しない場合はログインページにリダイレクト
     if (!session || !session.accessToken) {
-      return NextResponse.redirect(new URL(ROUTE.LOGIN, request.url));
+      try {
+        const redirectUrl = new URL(ROUTE.LOGIN, request.url);
+        return NextResponse.redirect(redirectUrl);
+      } catch (error) {
+        // フォールバック: 相対パスでリダイレクト
+        return NextResponse.redirect(ROUTE.LOGIN);
+      }
     }
 
     // トークンエラーがある場合はログアウト
     if (session.error === "RefreshAccessTokenError") {
-      return NextResponse.redirect(new URL(ROUTE.LOGIN, request.url));
+      try {
+        const redirectUrl = new URL(ROUTE.LOGIN, request.url);
+        return NextResponse.redirect(redirectUrl);
+      } catch (error) {
+        return NextResponse.redirect(ROUTE.LOGIN);
+      }
     }
 
     // アクセストークンの有効期限チェック
@@ -33,15 +69,25 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     ) {
       const success = await refreshToken();
       if (!success) {
-        return NextResponse.redirect(new URL(ROUTE.LOGIN, request.url));
+        try {
+          const redirectUrl = new URL(ROUTE.LOGIN, request.url);
+          return NextResponse.redirect(redirectUrl);
+        } catch (error) {
+          return NextResponse.redirect(ROUTE.LOGIN);
+        }
       }
     }
   }
 
   // 認証ページにアクセスで、ログイン済みの場合はホームにリダイレクト
   if (isAuthPage(pathname) && session?.accessToken) {
-    return NextResponse.redirect(new URL(ROUTE.HOME, request.url));
+    try {
+      const redirectUrl = new URL(ROUTE.HOME, request.url);
+      return NextResponse.redirect(redirectUrl);
+    } catch (error) {
+      return NextResponse.redirect(ROUTE.HOME);
+    }
   }
 
-  return NextResponse.next();
+  return response;
 }

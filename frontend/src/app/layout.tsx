@@ -1,11 +1,13 @@
-import "./globals.css";
 import { Metadata } from "next";
+import { headers } from "next/headers";
+import Script from "next/script";
 import { type ReactNode } from "react";
 
-import { Header, Footer } from "@/components/layouts";
+import { Footer, Header } from "@/components/layouts";
 import { Background } from "@/components/ui";
-import { META_TITLE, META_DESCRIPTION, META_KEYWORDS } from "@/constants";
+import { META_DESCRIPTION, META_KEYWORDS, META_TITLE } from "@/constants";
 import { createMetadata } from "@/utils";
+import "./globals.css";
 
 /**
  * メタデータを動的に生成
@@ -19,11 +21,14 @@ export async function generateMetadata(): Promise<Metadata> {
   );
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: ReactNode;
-}>): React.ReactElement {
+}>): Promise<React.ReactElement> {
+  const headersList = await headers();
+  const nonce = headersList.get("x-content-security-policy-nonce");
+
   return (
     <html lang="ja">
       <body>
@@ -31,6 +36,7 @@ export default function RootLayout({
         <Header />
         <main>{children}</main>
         <Footer />
+        <Script nonce={nonce ?? undefined} />
       </body>
     </html>
   );
