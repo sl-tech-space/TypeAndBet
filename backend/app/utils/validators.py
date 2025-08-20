@@ -4,8 +4,14 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.validators import EmailValidator
 from graphql import GraphQLError
 
-from app.models import User
 from app.utils.constants import AuthErrorMessages, GameErrorMessages
+
+
+# 遅延インポートで循環インポートを回避
+def get_user_model():
+    from app.models import User
+
+    return User
 
 
 class ValidationError(GraphQLError):
@@ -34,6 +40,8 @@ class UserValidator:
                 message=AuthErrorMessages.INVALID_INPUT,
                 details=[AuthErrorMessages.USERNAME_TOO_LONG],
             )
+        # 遅延インポートで循環インポートを回避
+        User = get_user_model()
         if User.objects.filter(name=name).exists():
             raise ValidationError(
                 message=AuthErrorMessages.INVALID_INPUT,
@@ -51,7 +59,7 @@ class UserValidator:
                 details=[AuthErrorMessages.INVALID_EMAIL_FORMAT],
             )
 
-        # アクティブなユーザーのみを重複として扱う
+        User = get_user_model()
         if User.objects.filter(email=email, is_active=True).exists():
             raise ValidationError(
                 message=AuthErrorMessages.INVALID_INPUT,
