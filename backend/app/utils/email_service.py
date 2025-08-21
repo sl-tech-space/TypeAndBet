@@ -1,11 +1,11 @@
 import logging
-from django.core.mail import send_mail
+
 from django.conf import settings
+from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from typing import Optional
-from app.utils.logging_utils import mask_email
 
+from app.utils.logging_utils import mask_email
 
 logger = logging.getLogger("app")
 
@@ -20,7 +20,6 @@ class EmailService:
         username: str,
         verification_url: str,
         expiration_hours: int = 24,
-        from_email: Optional[str] = None,
     ) -> bool:
         """
         メール確認メールを送信
@@ -29,22 +28,20 @@ class EmailService:
             to_email: 送信先メールアドレス
             username: ユーザー名
             verification_url: 確認用URL
-            from_email: 送信元メールアドレス（設定ファイルから取得）
 
         Returns:
             bool: 送信成功時True、失敗時False
         """
         try:
-            if from_email is None:
-                from_email = getattr(
-                    settings, "DEFAULT_FROM_EMAIL", "noreply@example.com"
-                )
+            from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@example.com")
 
             subject = "【TypeAndBet】メールアドレスの確認をお願いします"
 
             # HTMLメールの内容
             html_message = cls._render_verification_email_html(
-                username=username, verification_url=verification_url, expiration_hours=expiration_hours
+                username=username,
+                verification_url=verification_url,
+                expiration_hours=expiration_hours,
             )
 
             # プレーンテキストメールの内容
@@ -84,25 +81,19 @@ class EmailService:
         return render_to_string("email/verification.html", context)
 
     @classmethod
-    def send_welcome_email(
-        cls, to_email: str, username: str, from_email: Optional[str] = None
-    ) -> bool:
+    def send_welcome_email(cls, to_email: str, username: str) -> bool:
         """
         ウェルカムメールを送信
 
         Args:
             to_email: 送信先メールアドレス
             username: ユーザー名
-            from_email: 送信元メールアドレス
 
         Returns:
             bool: 送信成功時True、失敗時False
         """
         try:
-            if from_email is None:
-                from_email = getattr(
-                    settings, "DEFAULT_FROM_EMAIL", "noreply@example.com"
-                )
+            from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@example.com")
 
             subject = "【TypeAndBet】アカウント登録完了"
 
@@ -148,16 +139,14 @@ class EmailService:
         username: str,
         reset_url: str,
         expiration_minutes: int = 60,
-        from_email: Optional[str] = None,
     ) -> bool:
         """パスワードリセットメールを送信"""
         try:
-            if from_email is None:
-                from_email = (
-                    getattr(settings, "DEFAULT_FROM_EMAIL", "")
-                    or getattr(settings, "EMAIL_HOST_USER", "")
-                    or "noreply@example.com"
-                )
+            from_email = (
+                getattr(settings, "DEFAULT_FROM_EMAIL", "")
+                or getattr(settings, "EMAIL_HOST_USER", "")
+                or "noreply@example.com"
+            )
 
             subject = "【TypeAndBet】パスワード再設定のご案内"
 

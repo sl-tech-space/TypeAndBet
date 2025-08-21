@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}TypeAndBet{% endblock %}</title>
+    <style>
+      /* メールテンプレート共通スタイル */
+
+      /* 基本レイアウト */
+      body {
+        font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN",
+          "Hiragino Sans", Meiryo, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+
+      .container {
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      /* ヘッダー */
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .logo {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      .title {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #1f2937;
+      }
+
+      /* 色スキーム */
+      .logo.blue {
+        color: #2563eb;
+      }
+
+      .logo.green {
+        color: #059669;
+      }
+
+      /* コンテンツ */
+      .content {
+        margin-bottom: 30px;
+      }
+
+      .greeting {
+        margin-bottom: 20px;
+      }
+
+      .description {
+        margin-bottom: 20px;
+        color: #6b7280;
+      }
+
+      /* ボタン */
+      .button {
+        display: inline-block;
+        color: #ffffff !important;
+        padding: 12px 24px;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: bold;
+        margin: 20px 0;
+      }
+
+      .button.blue {
+        background-color: #2563eb;
+      }
+
+      .button.blue:hover {
+        background-color: #1d4ed8;
+      }
+
+      .button.green {
+        background-color: #059669;
+      }
+
+      .button.green:hover {
+        background-color: #047857;
+      }
+
+      /* アラート・通知 */
+      .warning {
+        background-color: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 6px;
+        padding: 15px;
+        margin: 20px 0;
+        color: #92400e;
+      }
+
+      .success {
+        background-color: #d1fae5;
+        border: 1px solid #10b981;
+        border-radius: 6px;
+        padding: 15px;
+        margin: 20px 0;
+        color: #065f46;
+      }
+
+      /* フッター */
+      .footer {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #e5e7eb;
+        font-size: 14px;
+        color: #9ca3af;
+      }
+
+      /* ユーティリティ */
+      .text-center {
+        text-align: center;
+      }
+
+      .word-break {
+        word-break: break-all;
+      }
+
+      .link-blue {
+        color: #2563eb;
+      }
+    </style>
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="logo {% block logo_color %}blue{% endblock %}">
+          TypeAndBet
+        </div>
+        <div class="title">{% block page_title %}{% endblock %}</div>
+      </div>
+
+      {% block content %}{% endblock %}
+
+      <div class="footer">
+        <p>このメールは自動送信されています。返信はできません。</p>
+        {% block footer_content %}{% endblock %}
+      </div>
+    </div>
+  </body>
+</html>

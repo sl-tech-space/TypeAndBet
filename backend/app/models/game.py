@@ -59,15 +59,20 @@ class Game(models.Model):
 class TextPair(models.Model):
     """漢字文章とひらがな文章のペアモデル"""
 
-    id = models.AutoField(primary_key=True)
-    kanji = models.TextField(null=False)
-    hiragana = models.TextField(null=True, blank=True)
-    is_converted = models.BooleanField(default=False)
+    kanji = models.TextField(verbose_name="漢字文章")
+    hiragana = models.TextField(blank=True, null=True, verbose_name="ひらがな文章")
+    is_converted = models.BooleanField(default=False, verbose_name="ひらがな変換フラグ")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = "text_pairs"
+        verbose_name = "文章ペア"
+        verbose_name_plural = "文章ペア"
+        indexes = [
+            models.Index(fields=["is_converted"], name="idx_textpair_converted"),
+            models.Index(fields=["created_at"], name="idx_textpair_created"),
+        ]
 
     def __str__(self):
-        return (
-            f"TextPair {self.id}: {self.kanji[: ModelConstants.TEXT_PREVIEW_LENGTH]}..."
-        )
+        return f"TextPair {self.id}: {self.kanji[:20]}..."
