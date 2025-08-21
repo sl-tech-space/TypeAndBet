@@ -1,103 +1,130 @@
-import logging
 import uuid
 
-from django.contrib.auth.base_user import AbstractBaseUser
-from django.contrib.auth.models import PermissionsMixin
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from .managers import UserManager
-from .ranking import Ranking
-
-logger = logging.getLogger("app")
+from app.utils.constants import ModelConstants, RankingConstants
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=15, unique=True, null=False)
-    email = models.EmailField(max_length=254, unique=True, null=False)
-    icon = models.CharField(max_length=255, null=False, default="default.png")
-    gold = models.IntegerField(default=1000, null=True)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["name"]
-
-    objects = UserManager()
-
-    def __str__(self):
-        return self.name
-
-    def save(self, *args, **kwargs):
-        is_new = self._state.adding
-
-        # 既存ユーザーの場合、変更前の値を保存
-        if not is_new:
-            try:
-                old_instance = User.objects.get(pk=self.pk)
-                self._old_gold = old_instance.gold
-                self._old_is_active = old_instance.is_active
-            except User.DoesNotExist:
-                pass
-
-        super().save(*args, **kwargs)
-
-        if is_new and self.is_active:
-            # 新規アクティブユーザーの場合、ランキングを作成
-            Ranking.objects.create(user=self, ranking=1)
-        elif not is_new:
-            # 既存ユーザーの場合、以下の条件でランキングを更新
-            should_update_rankings = False
-
-            # ゴールドが変更された場合
-            if hasattr(self, "_old_gold") and self._old_gold != self.gold:
-                should_update_rankings = True
-                logger.info(
-                    f"ユーザー {self.id} のゴールドが変更: {self._old_gold} → {self.gold}"
-                )
-
-            # is_activeが変更された場合
-            if (
-                hasattr(self, "_old_is_active")
-                and self._old_is_active != self.is_active
-            ):
-                should_update_rankings = True
-                logger.info(
-                    f"ユーザー {self.id} のis_activeが変更: {self._old_is_active} → {self.is_active}"
-                )
-
-            # ランキング更新が必要な場合
-            if should_update_rankings:
-                logger.info(f"ユーザー {self.id} の変更によりランキングを更新")
-                User.update_rankings()
-
-    @classmethod
-    def update_rankings(cls):
-        """アクティブユーザーのランキングを更新"""
-        users = cls.objects.filter(is_active=True).order_by("-gold")
-        for index, user in enumerate(users):
-            Ranking.objects.filter(user=user).update(ranking=index + 1)
-
-    def delete(self, *args, **kwargs):
-        """ユーザー削除時にランキングを再計算"""
-        logger.info(f"ユーザー {self.id} を削除し、ランキングを更新")
-        super().delete(*args, **kwargs)
-        # 削除後にランキングを再計算
-        User.update_rankings()
+    name = models.CharField(
+        max_length=ModelConstants.MAX_NAME_LENGTH, unique=True, null=False
+    )
+    email = models.EmailField(
+        max_length=ModelConstants.MAX_EMAIL_LENGTH, unique=True, null=False
+    )
+    icon = models.CharField(
+        max_length=ModelConstants.MAX_ICON_LENGTH,
+        null=False,
+        default=ModelConstants.DEFAULT_ICON,
+    )
+    gold = models.IntegerField(default=ModelConstants.DEFAULT_GOLD, null=True)
 
     class Meta:
         db_table = "users"
-        ordering = ["id"]
         constraints = [
-            models.UniqueConstraint(
-                fields=["email"],
-                condition=models.Q(is_active=True),
-                name="unique_active_email",
-            ),
             models.CheckConstraint(
-                check=models.Q(gold__gte=0),
+                check=models.Q(gold__gte=ModelConstants.MIN_GOLD),
                 name="gold_non_negative",
             ),
         ]
+
+    def __str__(self):
+        return f"User {self.id}: {self.name}"
+
+    @classmethod
+    def update_rankings(cls):
+        """
+        全ユーザーのランキングを一括更新する
+        この処理は重いため、定期的なバッチ処理での実行を推奨
+        """
+        from app.models.ranking import Ranking
+
+        # アクティブユーザーのみを対象とする
+        active_users = cls.objects.filter(is_active=True).order_by("-gold")
+
+        # ランキングを一括更新
+        for index, user in enumerate(
+            active_users, start=RankingConstants.RANKING_START
+        ):
+            ranking, created = Ranking.objects.get_or_create(user=user)
+            ranking.ranking = index
+            ranking.save()
+
+    @classmethod
+    def update_user_ranking(cls, user):
+        """
+        特定ユーザーのランキングを更新する
+        ユーザーのゴールドが変更された際に呼び出される
+        """
+        from app.models.ranking import Ranking
+
+        # 1回のクエリで適切なランキングを計算
+        new_ranking = (
+            cls.objects.filter(is_active=True, gold__gt=user.gold).count()
+            + RankingConstants.RANKING_START
+        )
+
+        # 既存のランキングレコードを確認（1回のクエリで判定）
+        try:
+            current_ranking = Ranking.objects.get(user=user)
+            old_ranking = current_ranking.ranking
+
+            if old_ranking != new_ranking:
+                # 上位に移動した場合、下位のユーザーのランキングを1つずつ下げる
+                cls._shift_rankings_down(
+                    new_ranking + RankingConstants.RANKING_INCREMENT
+                )
+                # 下位に移動した場合、上位のユーザーのランキングを1つずつ上げる
+                cls._shift_rankings_up(
+                    old_ranking, new_ranking - RankingConstants.RANKING_DECREMENT
+                )
+                # 現在のユーザーのランキングを更新
+                current_ranking.ranking = new_ranking
+                current_ranking.save()
+
+        except Ranking.DoesNotExist:
+            # ランキングレコードが存在しない場合は新規作成
+            (
+                cls.objects.filter(is_active=True, gold__gt=user.gold).count()
+                + RankingConstants.RANKING_START
+            )
+            # 上位に移動した場合、下位のユーザーのランキングを1つずつ下げる
+            cls._shift_rankings_down(new_ranking + RankingConstants.RANKING_INCREMENT)
+            # 下位に移動した場合、上位のユーザーのランキングを1つずつ上げる
+            cls._shift_rankings_up(
+                old_ranking, new_ranking - RankingConstants.RANKING_DECREMENT
+            )
+            # 新しいランキングレコードを作成
+            Ranking.objects.create(user=user, ranking=new_ranking)
+
+    @classmethod
+    def _shift_rankings_down(cls, start_ranking):
+        """指定された範囲のランキングを1つずつ下げる"""
+        from app.models.ranking import Ranking
+
+        # 指定されたランキング以上のユーザーを取得
+        rankings_to_shift = Ranking.objects.filter(ranking__gte=start_ranking).order_by(
+            "ranking"
+        )
+
+        # ランキングを1つずつ下げる
+        for ranking in rankings_to_shift:
+            ranking.ranking += RankingConstants.RANKING_INCREMENT
+            ranking.save()
+
+    @classmethod
+    def _shift_rankings_up(cls, start_ranking, end_ranking):
+        """指定された範囲のランキングを1つずつ上げる"""
+        from app.models.ranking import Ranking
+
+        # 指定された範囲のユーザーを取得
+        rankings_to_shift = Ranking.objects.filter(
+            ranking__gte=start_ranking, ranking__lte=end_ranking
+        ).order_by("-ranking")
+
+        # ランキングを1つずつ上げる
+        for ranking in rankings_to_shift:
+            ranking.ranking -= RankingConstants.RANKING_DECREMENT
+            ranking.save()

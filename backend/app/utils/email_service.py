@@ -19,6 +19,7 @@ class EmailService:
         to_email: str,
         username: str,
         verification_url: str,
+        expiration_hours: int = 24,
         from_email: Optional[str] = None,
     ) -> bool:
         """
@@ -43,7 +44,7 @@ class EmailService:
 
             # HTMLメールの内容
             html_message = cls._render_verification_email_html(
-                username=username, verification_url=verification_url
+                username=username, verification_url=verification_url, expiration_hours=expiration_hours
             )
 
             # プレーンテキストメールの内容
@@ -71,13 +72,13 @@ class EmailService:
 
     @classmethod
     def _render_verification_email_html(
-        cls, username: str, verification_url: str
+        cls, username: str, verification_url: str, expiration_hours: int
     ) -> str:
         """メール確認メールのHTMLテンプレートをレンダリング"""
         context = {
             "username": username,
             "verification_url": verification_url,
-            "expiration_hours": 24,
+            "expiration_hours": expiration_hours,
         }
 
         return render_to_string("email/verification.html", context)

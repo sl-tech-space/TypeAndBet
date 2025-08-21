@@ -10,6 +10,7 @@ from django.db import transaction
 from app.models.game import TextPair
 from app.utils.constants import TextGeneratorErrorMessages
 from app.utils.errors import BaseError
+from app.utils.graphql_throttling import get_user_identifier, graphql_throttle
 
 logger = logging.getLogger("app")
 
@@ -146,6 +147,7 @@ class GenerateText(graphene.Mutation):
     error = graphene.String()
 
     @classmethod
+    @graphql_throttle("5/m", get_user_identifier)
     def mutate(cls, root, info):
         logger.info("テキスト生成ミューテーション開始")
         try:

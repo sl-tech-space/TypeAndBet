@@ -2,6 +2,7 @@ import logging
 import uuid
 
 import graphene
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.conf import settings
 from graphene_django.types import DjangoObjectType
@@ -12,6 +13,7 @@ from app.utils.errors import BaseError, ErrorHandler
 from app.utils.validators import UserValidator, ValidationError
 from app.utils.sanitizer import sanitize_email, sanitize_password, sanitize_string
 from app.utils.logging_utils import mask_email
+from app.utils.graphql_throttling import graphql_throttle, get_user_identifier
 
 logger = logging.getLogger("app")
 
@@ -54,6 +56,7 @@ class RegisterUser(graphene.Mutation):
 
     @classmethod
     @transaction.atomic
+    @graphql_throttle('5/m', get_user_identifier)
     def mutate(cls, root, info, name, email, password, password_confirm):
         try:
             # サニタイジング
@@ -182,6 +185,7 @@ class RegisterUser(graphene.Mutation):
                 to_email=user.email,
                 username=user.name,
                 verification_url=verification_url,
+                expiration_hours=24,
             )
 
             if not email_sent:

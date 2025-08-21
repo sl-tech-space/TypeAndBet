@@ -1,23 +1,24 @@
 import logging
 import secrets
-from django.conf import settings
 from datetime import datetime, timedelta
 
 import graphene
 import jwt
+from django.conf import settings
 from django.contrib.auth import authenticate
 from graphene_django.types import DjangoObjectType
 
 from app.models.user import User
 from app.utils.constants import AuthErrorMessages
 from app.utils.errors import BaseError, ErrorHandler
-from app.utils.validators import ValidationError
+from app.utils.graphql_throttling import get_user_identifier, graphql_throttle
 from app.utils.logging_utils import mask_email
 from app.utils.sanitizer import sanitize_email, sanitize_password
+from app.utils.validators import ValidationError
 
 logger = logging.getLogger("app")
 
-ACCESS_TOKEN_EXPIRE_DAYS = 14  # フロントエンド側のセッション戦略に合わせて14日間に変更
+ACCESS_TOKEN_EXPIRE_DAYS = 14
 REFRESH_TOKEN_EXPIRE_DAYS = 30
 
 
@@ -113,6 +114,7 @@ class LoginUser(graphene.Mutation):
     tokens = graphene.Field(TokenType)
 
     @classmethod
+    @graphql_throttle("5/m", get_user_identifier)
     def mutate(cls, root, info, email: str, password: str):
         try:
             # サニタイジング

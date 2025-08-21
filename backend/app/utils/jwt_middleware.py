@@ -1,20 +1,29 @@
 import logging
-from django.conf import settings
 
 import jwt
-from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 
 logger = logging.getLogger("app")
 
-User = get_user_model()
+
+# 遅延インポートで循環インポートを回避
+def get_user_model_lazy():
+    from django.contrib.auth import get_user_model
+
+    return get_user_model()
 
 
 class JWTAuthenticationMiddleware:
     """JWT認証に対応したGraphQLミドルウェア"""
 
     def __init__(self):
-        self.user_model = User
+        # 初期化時にはUserモデルを設定しない
+        pass
+
+    def _get_user_model(self):
+        """遅延的にUserモデルを取得"""
+        return get_user_model_lazy()
 
     def resolve(self, next, root, info, **args):
         """GraphQLリゾルバーでJWTトークンからユーザーを取得"""
@@ -41,7 +50,8 @@ class JWTAuthenticationMiddleware:
 
                     if user_id and payload.get("type") == "access":
                         # ユーザーを取得
-                        user = self.user_model.objects.get(id=user_id)
+                        user_model = self._get_user_model()
+                        user = user_model.objects.get(id=user_id)
                         request.user = user
                         # 認証済みフラグを設定
                         request._jwt_authenticated = True
@@ -59,7 +69,7 @@ class JWTAuthenticationMiddleware:
                     request.user = AnonymousUser()
                     request._jwt_authenticated = True
                     logger.warning("無効なJWTトークン")
-                except self.user_model.DoesNotExist:
+                except self._get_user_model().DoesNotExist:
                     request.user = AnonymousUser()
                     request._jwt_authenticated = True
                     logger.warning(f"ユーザーが存在しません: user_id={user_id}")

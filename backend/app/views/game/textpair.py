@@ -7,6 +7,7 @@ from django.db import transaction
 from django.db.models import Min, Max
 
 from app.models.game import TextPair
+from app.utils.graphql_throttling import graphql_throttle, get_user_identifier
 
 logger = logging.getLogger("app")
 
@@ -83,6 +84,7 @@ class GetRandomTextPair(graphene.Mutation):
     success = graphene.Boolean()
 
     @classmethod
+    @graphql_throttle('30/m', get_user_identifier)
     def mutate(cls, root, info):
         logger.info("ランダムTextPairペア30件取得開始")
         try:
@@ -139,6 +141,8 @@ class ConvertToHiragana(graphene.Mutation):
         return hiragana_text
 
     @classmethod
+    @transaction.atomic
+    @graphql_throttle('10/m', get_user_identifier)
     def mutate(cls, root, info):
         logger.info("ひらがな変換開始")
         try:
