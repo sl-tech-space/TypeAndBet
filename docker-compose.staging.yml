@@ -1,10 +1,11 @@
 services:
   nginx:
-    image: nginx:alpine
+    build:
+      context: ./web/staging
+      dockerfile: Dockerfile.staging
     container_name: tab-nginx-staging
     volumes:
-      - ./web/staging:/etc/nginx/templates
-      - ./web/docker-entrypoint.sh:/docker-entrypoint.sh
+      - ./web/logs:/var/log/nginx
     ports:
       - "${HTTP_PORT}:${HTTP_PORT}"
       - "${HTTPS_PORT}:${HTTPS_PORT}"
@@ -14,7 +15,9 @@ services:
       - SERVER_NAME=${SERVER_NAME}
       - HTTP_PORT=${HTTP_PORT}
       - HTTPS_PORT=${HTTPS_PORT}
-    entrypoint: ["/docker-entrypoint.sh"]
+      - WORKER_CONNECTIONS=${WORKER_CONNECTIONS}
+      - TIMEOUT=${TIMEOUT}
+      - TZ=${TIMEZONE:-Asia/Tokyo}
     depends_on:
       frontend:
         condition: service_healthy
@@ -30,10 +33,17 @@ services:
     deploy:
       resources:
         limits:
-          memory: 128M
-          cpus: "0.5"
+          memory: 256M
+          cpus: "0.75"
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:${HTTP_PORT}/health"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "-qO-",
+          "http://localhost:${HTTP_PORT}/health",
+          "--header=User-Agent: HealthCheck/1.0",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -42,8 +52,11 @@ services:
       - no-new-privileges:true
     logging:
       options:
-        max-size: "10m"
-        max-file: "3"
+        max-size: "20m"
+        max-file: "5"
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
 
   frontend:
     build:
@@ -220,6 +233,8 @@ services:
 
 volumes:
   tab_postgres_data_staging:
+    driver: local
+  nginx_logs:
     driver: local
 
 networks:

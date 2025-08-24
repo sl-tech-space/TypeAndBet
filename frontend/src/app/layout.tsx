@@ -5,7 +5,12 @@ import { type ReactNode } from "react";
 
 import { Footer, Header } from "@/components/layouts";
 import { Background } from "@/components/ui";
-import { META_DESCRIPTION, META_KEYWORDS, META_TITLE } from "@/constants";
+import {
+  META_DESCRIPTION,
+  META_KEYWORDS,
+  META_TITLE,
+  NODE_ENV,
+} from "@/constants";
 import { createMetadata } from "@/utils";
 import "./globals.css";
 
@@ -28,6 +33,7 @@ export default async function RootLayout({
 }>): Promise<React.ReactElement> {
   const headersList = await headers();
   const nonce = headersList.get("x-content-security-policy-nonce");
+  const isDevelopment = process.env.NODE_ENV === NODE_ENV.DEVELOPMENT;
 
   return (
     <html lang="ja">
@@ -36,7 +42,7 @@ export default async function RootLayout({
         <Header />
         <main>{children}</main>
         <Footer />
-        <Script nonce={nonce ?? undefined} />
+        {isDevelopment && <Script nonce={nonce ?? undefined} />}
       </body>
     </html>
   );

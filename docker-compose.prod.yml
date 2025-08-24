@@ -1,12 +1,13 @@
 services:
   nginx:
-    image: nginx:alpine
+    build:
+      context: ./web/production
+      dockerfile: Dockerfile.prod
     container_name: tab-nginx-prod
     volumes:
-      - ./web/production:/etc/nginx/templates
-      - ./web/docker-entrypoint.sh:/docker-entrypoint.sh
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
+      - ./web/certbot/conf:/etc/letsencrypt
+      - ./web/certbot/www:/var/www/certbot
+      - ./web/logs:/var/log/nginx
     ports:
       - "${HTTP_PORT}:${HTTP_PORT}"
       - "${HTTPS_PORT}:${HTTPS_PORT}"
@@ -16,21 +17,30 @@ services:
       - SERVER_NAME=${SERVER_NAME}
       - HTTP_PORT=${HTTP_PORT}
       - HTTPS_PORT=${HTTPS_PORT}
+      - WORKER_CONNECTIONS=${WORKER_CONNECTIONS}
+      - TIMEOUT=${TIMEOUT}
+      - TZ=${TIMEZONE:-Asia/Tokyo}
       - SSL_CERTIFICATE_PATH=/etc/letsencrypt/live/${SERVER_NAME}/fullchain.pem
       - SSL_CERTIFICATE_KEY_PATH=/etc/letsencrypt/live/${SERVER_NAME}/privkey.pem
-    entrypoint: ["/docker-entrypoint.sh"]
     depends_on:
-      - frontend
-      - backend
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_started
+      db:
+        condition: service_healthy
+      cron-jobs:
+        condition: service_started
     networks:
-      - app-network
+      - frontend-net
+      - backend-net
     deploy:
       resources:
         limits:
           memory: 128M
           cpus: "0.5"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${HTTP_PORT}"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:${HTTP_PORT}/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -70,13 +80,19 @@ services:
           cpus: "0.25"
     restart: unless-stopped
     networks:
-      - app-network
+      - frontend-net
     logging:
       options:
         max-size: "10m"
         max-file: "3"
     security_opt:
       - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://0.0.0.0:${FRONTEND_PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
 
   backend:
     build:
@@ -114,7 +130,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
     networks:
-      - app-network
+      - backend-net
     deploy:
       resources:
         limits:
@@ -150,7 +166,7 @@ services:
       start_period: 10s
     restart: unless-stopped
     networks:
-      - app-network
+      - backend-net
     deploy:
       resources:
         limits:
@@ -198,7 +214,7 @@ services:
         condition: service_started
     restart: unless-stopped
     networks:
-      - app-network
+      - backend-net
     command:
       [
         "/bin/bash",
@@ -211,8 +227,7 @@ volumes:
     driver: local
 
 networks:
-  app-network:
+  frontend-net:
     driver: bridge
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16
+  backend-net:
+    driver: bridge

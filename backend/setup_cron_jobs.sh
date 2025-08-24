@@ -4,10 +4,19 @@
 # このスクリプトはDockerコンテナ内で実行されることを想定
 
 DJANGO_PROJECT_DIR="/app"
-PYTHON_PATH="/opt/venv/bin/python"
+
+# 環境に応じてPythonパスを設定
+if [ "$DJANGO_ENV" = "production" ]; then
+    PYTHON_PATH="/opt/venv/bin/python"
+else
+    PYTHON_PATH="/usr/local/bin/python"
+fi
+
 MANAGE_PY="$DJANGO_PROJECT_DIR/manage.py"
 
 echo "cronジョブを設定します..."
+echo "環境: $DJANGO_ENV"
+echo "Pythonパス: $PYTHON_PATH"
 
 # 既存のcronジョブをクリア
 crontab -r 2>/dev/null || true
@@ -67,7 +76,7 @@ if [ -w /var/run/crond.pid ]; then
 else
     echo "PIDファイルに書き込み権限がありません。権限を修正します..."
     sudo chown $USER:$USER /var/run/crond.pid 2>/dev/null || true
-    sudo chmod 644 /var/run/crond.pid 2>/dev/null || true
+    sudo chmod 755 /var/run/crond.pid 2>/dev/null || true
     cron
 fi
 

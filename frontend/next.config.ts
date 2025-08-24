@@ -6,30 +6,36 @@ const nextConfig: NextConfig = {
   reactStrictMode: true, // 副作用検出＆安全性向上
   poweredByHeader: false, // "X-Powered-By" ヘッダー削除
 
-  // Next.js Standaloneモード
-  output: "standalone",
+  // Next.js Standaloneモード（本番環境のみ）
+  ...(isProduction && { output: "standalone" }),
 
   // メモリ最適化設定
   experimental: {
     // メモリ使用量削減のための最適化
     optimizePackageImports: ["@/components", "@/features", "@/utils"],
-    // Next.js Standaloneモードでミドルウェアを有効化
-    // @ts-ignore - canary版での型定義の問題を回避
-    nodeMiddleware: true,
+    // 開発環境ではnodeMiddlewareを無効化
+    ...(isProduction && { nodeMiddleware: true }),
+    // 開発環境でのメモリ効率化
+    ...(!isProduction && {
+      esmExternals: false,
+      forceSwcTransforms: false, // SWC変換を無効化してメモリ消費を削減
+    }),
   },
 
   // キャッシュディレクトリの設定
   distDir: ".next",
 
-  // Turbopack設定（experimental.turboから移動）
-  turbopack: {
-    rules: {
-      "*.scss": {
-        loaders: ["sass-loader"],
-        as: "*.css",
+  // Turbopack設定（開発環境では無効化してメモリ消費を削減）
+  ...(isProduction && {
+    turbopack: {
+      rules: {
+        "*.scss": {
+          loaders: ["sass-loader"],
+          as: "*.css",
+        },
       },
     },
-  },
+  }),
 
   // ビルド最適化
   compiler: {
@@ -45,20 +51,29 @@ const nextConfig: NextConfig = {
   // Webpack最適化
   webpack: (config, { dev }) => {
     if (dev) {
-      // 開発時のメモリ最適化
+      // 開発時のファイル監視最適化
       config.watchOptions = {
         poll: 1000,
         aggregateTimeout: 300,
         ignored: /node_modules/,
       };
 
-      // キャッシュ設定でメモリ使用量削減
+      // 開発環境でのメモリ効率化
+      config.parallelism = 1; // 並列処理数を制限
+
+      // メモリ使用量を削減
+      config.optimization = {
+        ...config.optimization,
+        removeAvailableModules: false,
+        removeEmptyChunks: false,
+        splitChunks: false,
+      };
+    } else {
+      // 本番環境での最適化
       config.cache = {
         type: "memory",
         maxGenerations: 1,
       };
-
-      // 並列処理数を制限してメモリ使用量を抑制
       config.parallelism = 1;
     }
 
@@ -85,8 +100,12 @@ const nextConfig: NextConfig = {
 
   // ヘッダーの設定
   async headers() {
-    if (!isProduction) return [];
+    if (!isProduction) {
+      // 開発環境ではCSP制限を緩和（React RefreshとWebpack HMR用）
+      return [];
+    }
 
+    // 本番環境用は厳格なCSP設定
     return [
       {
         source: "/(.*)",

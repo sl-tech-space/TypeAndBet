@@ -3,7 +3,7 @@ import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 
 import { auth } from "@/auth";
-import { ONE_SECOND_MS, ROUTE } from "@/constants";
+import { NODE_ENV, ONE_SECOND_MS, ROUTE } from "@/constants";
 import { refreshToken } from "@/lib";
 import { isAuthPage, isProtectedRoute } from "@/utils";
 
@@ -16,14 +16,18 @@ export const config = {
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   const response = NextResponse.next();
   const pathname: string = request.nextUrl.pathname;
+  const isDevelopment = process.env.NODE_ENV === NODE_ENV.DEVELOPMENT;
 
-  // リクエストごとに nonce を生成
-  const nonce = crypto.randomBytes(16).toString("base64");
+  // nonce をレスポンスヘッダーに追加してフロントで参照できるようにする
+  // 開発環境ではnonceを無効化してReact Refreshを有効化
+  if (!isDevelopment) {
+    // リクエストごとに nonce を生成
+    const nonce = crypto.randomBytes(16).toString("base64");
 
-  // CSP ヘッダーに nonce を埋め込む
-  response.headers.set(
-    "Content-Security-Policy",
-    `
+    // CSP ヘッダーに nonce を埋め込む
+    response.headers.set(
+      "Content-Security-Policy",
+      `
       default-src 'self';
       script-src 'self' 'nonce-${nonce}';
       style-src 'self' 'unsafe-inline';
@@ -31,10 +35,10 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       font-src 'self';
       connect-src 'self';
     `.replace(/\n\s+/g, " ")
-  );
+    );
 
-  // nonce をレスポンスヘッダーに追加してフロントで参照できるようにする
-  response.headers.set("X-Content-Security-Policy-Nonce", nonce);
+    response.headers.set("X-Content-Security-Policy-Nonce", nonce);
+  }
 
   // セッションチェック
   const session: Session | null = await auth();
