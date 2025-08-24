@@ -228,7 +228,7 @@ services:
       [
         "/bin/bash",
         "-c",
-        "python manage.py migrate --noinput && ./setup_cron_jobs.sh",
+        "python manage.py migrate --noinput && ./setup_cron_jobs_prod.sh",
       ]
 
 volumes:

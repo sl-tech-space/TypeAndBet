@@ -1,24 +1,25 @@
-# シェルスクリプトは常にLF改行コードを使用
+# 改行コードの統一設定
+* text=auto
+
+# 特定のファイルタイプで改行コードを強制
 *.sh text eol=lf
-
-# PythonファイルもLF改行コードを使用
 *.py text eol=lf
-
-# その他のテキストファイル
-*.md text eol=lf
-*.txt text eol=lf
+*.js text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.json text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
-*.json text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
 *.html text eol=lf
 *.css text eol=lf
 *.scss text eol=lf
-*.ts text eol=lf
-*.tsx text eol=lf
-*.js text eol=lf
-*.jsx text eol=lf
+*.sql text eol=lf
+*.conf text eol=lf
+*.template text eol=lf
 
-# バイナリファイルは変換しない
+# バイナリファイルは改行コード変換しない
 *.png binary
 *.jpg binary
 *.jpeg binary
@@ -26,5 +27,13 @@
 *.ico binary
 *.pdf binary
 *.zip binary
-*.tar binary
-*.gz binary
+*.tar.gz binary
+*.exe binary
+*.dll binary
+*.so binary
+*.dylib binary
+
+# Docker関連ファイル
+Dockerfile* text eol=lf
+docker-compose*.yml text eol=lf
+.dockerignore text eol=lf
