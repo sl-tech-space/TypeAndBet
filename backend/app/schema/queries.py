@@ -3,7 +3,6 @@ from graphene_django.types import DjangoObjectType
 
 from app.models import Game, User
 from app.views.game.result import GameResult, GameResultType
-
 from app.views.ranking.overall import RankingType
 
 

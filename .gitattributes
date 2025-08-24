@@ -1,0 +1,30 @@
+# シェルスクリプトは常にLF改行コードを使用
+*.sh text eol=lf
+
+# PythonファイルもLF改行コードを使用
+*.py text eol=lf
+
+# その他のテキストファイル
+*.md text eol=lf
+*.txt text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+
+# バイナリファイルは変換しない
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.tar binary
+*.gz binary
