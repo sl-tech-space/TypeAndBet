@@ -57,5 +57,10 @@ if ! nginx -t > /dev/null 2>&1; then
     exit 1
 fi
 
+# Cronデーモンを起動
+echo "Starting cron daemon..."
+crond
+
 # Nginxを起動
+echo "Starting Nginx..."
 exec nginx -g "daemon off;"

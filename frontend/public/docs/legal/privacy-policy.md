@@ -63,5 +63,5 @@
 
 本ポリシーに関するお問い合わせは、下記の窓口までお願いいたします。
 
-- **Eメールアドレス**: type-and-bet.support@san-tou.com
-- **開発チーム**: Santou
+- **Eメールアドレス**: san-tou.support@san-tou.com
+- **開発チーム**: 三灯

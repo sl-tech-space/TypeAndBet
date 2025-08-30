@@ -37,10 +37,10 @@ services:
     deploy:
       resources:
         limits:
-          memory: 128M
+          memory: 256M
           cpus: "0.5"
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:${HTTP_PORT}/health"]
+      test: ["CMD", "curl", "-f", "-s", "http://localhost/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -51,6 +51,7 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+    restart: unless-stopped
 
   frontend:
     build:
@@ -73,10 +74,10 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1G
-          cpus: "1.0"
+          memory: 512M
+          cpus: "0.5"
         reservations:
-          memory: 256M
+          memory: 128M
           cpus: "0.25"
     restart: unless-stopped
     networks:
@@ -134,11 +135,11 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1.5G
-          cpus: "1.0"
+          memory: 1G
+          cpus: "0.75"
         reservations:
-          memory: 512M
-          cpus: "0.5"
+          memory: 256M
+          cpus: "0.25"
     logging:
       options:
         max-size: "10m"
@@ -170,11 +171,11 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1G
-          cpus: "1.0"
-        reservations:
-          memory: 256M
+          memory: 512M
           cpus: "0.5"
+        reservations:
+          memory: 128M
+          cpus: "0.25"
     logging:
       options:
         max-size: "10m"
@@ -215,6 +216,11 @@ services:
     restart: unless-stopped
     networks:
       - backend-net
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.25"
     command:
       [
         "/bin/bash",
