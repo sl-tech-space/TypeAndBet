@@ -30,7 +30,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # cronジョブ設定スクリプトに実行権限を付与
-RUN chmod +x setup_cron_jobs.sh
+RUN chmod +x setup_cron_jobs_prod.sh
 
 # ログディレクトリを作成
 RUN mkdir -p /var/log

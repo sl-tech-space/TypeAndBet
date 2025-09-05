@@ -29,9 +29,11 @@ RUN yarn build
 FROM node:20-alpine AS runner
 WORKDIR /app
 
-# 非rootユーザー作成
+
+# 非rootユーザー作成とwgetインストール
 RUN addgroup --system --gid 1001 nodejs \
-    && adduser --system --uid 1001 nextjs
+    && adduser --system --uid 1001 nextjs \
+    && apk add --no-cache wget
 
 # Next.js Standaloneモードの出力ファイルをコピー
 COPY --from=builder /app/.next/standalone ./
