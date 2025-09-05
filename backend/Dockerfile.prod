@@ -76,6 +76,9 @@ RUN mkdir -p /app/logs /app/media /app/tmp /var/log /var/run && \
 # アプリケーションコードのコピー
 COPY --chown=$USER:$USER . .
 
+# cronジョブ設定スクリプトに実行権限を付与
+RUN chmod +x setup_cron_jobs_prod.sh
+
 # ポート公開
 EXPOSE 8000
 
