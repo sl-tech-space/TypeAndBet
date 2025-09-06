@@ -7,7 +7,7 @@ DJANGO_PROJECT_DIR="/app"
 
 # 環境に応じてPythonパスを設定
 if [ "$DJANGO_ENV" = "production" ]; then
-    PYTHON_PATH="/opt/venv/bin/python"
+    PYTHON_PATH="/usr/local/bin/python"
 else
     PYTHON_PATH="/usr/local/bin/python"
 fi
