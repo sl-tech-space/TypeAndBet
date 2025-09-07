@@ -142,6 +142,8 @@ services:
     restart: unless-stopped
     networks:
       - backend-net
+    volumes:
+      - shared_data:/shared
     deploy:
       resources:
         limits:
@@ -196,10 +198,8 @@ services:
   cron-jobs:
     build:
       context: ./backend
-      dockerfile: Dockerfile.prod # Dockerfileは本番環境と同じ
+      dockerfile: Dockerfile.cron-prod
     container_name: tab-cron-jobs-staging
-    expose:
-      - "8000" # 内部ポート
     environment:
       - DJANGO_ENV=production
       - DEBUG=True
@@ -228,17 +228,19 @@ services:
     restart: unless-stopped
     networks:
       - backend-net
-    command:
-      [
-        "/bin/bash",
-        "-c",
-        "python manage.py migrate --noinput && ./setup_cron_jobs_prod.sh",
-      ]
+    volumes:
+      - shared_data:/shared
+      - cron_logs:/var/log
+    user: "0:0"
 
 volumes:
   tab_postgres_data_staging:
     driver: local
   nginx_logs_staging:
+    driver: local
+  shared_data:
+    driver: local
+  cron_logs:
     driver: local
 
 networks:

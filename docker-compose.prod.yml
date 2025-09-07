@@ -130,13 +130,14 @@ services:
       - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
       - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL}
       - DJANGO_SECURE_SSL_REDIRECT=${DJANGO_SECURE_SSL_REDIRECT}
-      - DJANGO_SECURE_SSL_REDIRECT=${DJANGO_SECURE_SSL_REDIRECT}
     depends_on:
       db:
         condition: service_healthy
     restart: unless-stopped
     networks:
       - backend-net
+    volumes:
+      - shared_data:/shared
     deploy:
       resources:
         limits:
@@ -191,7 +192,7 @@ services:
   cron-jobs:
     build:
       context: ./backend
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile.cron-prod
     container_name: tab-cron-jobs-prod
     environment:
       - DJANGO_ENV=production
@@ -221,22 +222,24 @@ services:
     restart: unless-stopped
     networks:
       - backend-net
+    volumes:
+      - shared_data:/shared
+      - cron_logs:/var/log
+    user: "0:0"
     deploy:
       resources:
         limits:
           memory: 256M
           cpus: "0.25"
-    command:
-      [
-        "/bin/bash",
-        "-c",
-        "python manage.py migrate --noinput && ./setup_cron_jobs_prod.sh",
-      ]
 
 volumes:
   tab_postgres_data_prod:
     driver: local
   nginx_logs_prod:
+    driver: local
+  shared_data:
+    driver: local
+  cron_logs:
     driver: local
 
 networks:
