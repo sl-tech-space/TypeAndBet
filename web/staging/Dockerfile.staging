@@ -19,6 +19,8 @@ RUN mkdir -p \
     /var/run \
     /tmp/nginx \
     /tmp/nginx-config \
+    && touch /var/log/nginx/error.log \
+    && touch /var/log/nginx/access.log \
     && chown -R nginx:nginx \
         /var/log/nginx \
         /var/cache/nginx \
@@ -37,6 +39,7 @@ RUN mkdir -p \
         /etc/nginx \
         /etc/nginx/conf.d \
         /etc/nginx/templates \
+    && chmod 644 /var/log/nginx/*.log \
     && chmod 777 /tmp/nginx
 
 # 設定ファイルのコピー（rootユーザーで実行）

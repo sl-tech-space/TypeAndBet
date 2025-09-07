@@ -43,6 +43,12 @@ const nextConfig: NextConfig = {
     removeConsole: isProduction,
   },
 
+  // 本番環境での最適化
+  ...(isProduction && {
+    // 静的ファイルの最適化
+    assetPrefix: "",
+  }),
+
   // ESLint & 型チェック設定
   eslint: {
     ignoreDuringBuilds: !isProduction, // 本番はLintエラーでビルド中断

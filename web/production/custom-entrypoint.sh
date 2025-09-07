@@ -18,6 +18,8 @@ mkdir -p /var/log/nginx/modsec_debug 2>/dev/null || true
 # ログファイルを作成と権限設定（サイレント実行）
 touch /var/log/nginx/modsec_audit.log 2>/dev/null || true
 touch /var/log/nginx/modsec_debug.log 2>/dev/null || true
+touch /var/log/nginx/error.log 2>/dev/null || true
+touch /var/log/nginx/access.log 2>/dev/null || true
 
 # 権限の最終調整（サイレント実行）
 chown -R nginx:nginx /var/log/nginx 2>/dev/null || true

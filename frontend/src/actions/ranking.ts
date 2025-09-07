@@ -18,7 +18,7 @@ export async function getRankings(): Promise<Ranking[]> {
   const { data } = await RankingService.getRankings(client, limit, offset);
 
   const rankings: Ranking[] = data.rankings;
-  if (!rankings || rankings.length === 0) {
+  if (!rankings) {
     throw new Error("ランキングの取得に失敗しました");
   }
 

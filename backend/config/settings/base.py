@@ -44,7 +44,7 @@ CSRF_TRUSTED_ORIGINS = os.environ.get(
 
 # 許可するホスト
 ALLOWED_HOSTS = os.environ.get(
-    "DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,backend"
+    "DJANGO_ALLOWED_HOSTS", "frontend,localhost,127.0.0.1,backend"
 ).split(",")
 
 

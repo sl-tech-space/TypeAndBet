@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile.staging
     container_name: tab-nginx-staging
     volumes:
-      - ./web/logs:/var/log/nginx
+      - nginx_logs_staging:/var/log/nginx
     ports:
       - "${HTTP_PORT}:${HTTP_PORT}"
       - "${HTTPS_PORT}:${HTTPS_PORT}"
@@ -76,6 +76,8 @@ services:
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - NEXT_TELEMETRY_DISABLED=1
+      - GRAPHQL_ENDPOINT=${GRAPHQL_ENDPOINT}
+      - NEXT_PUBLIC_GRAPHQL_ENDPOINT=${NEXT_PUBLIC_GRAPHQL_ENDPOINT}
     deploy:
       resources:
         limits:
@@ -87,6 +89,7 @@ services:
     restart: unless-stopped
     networks:
       - frontend-net
+      - backend-net
     logging:
       options:
         max-size: "10m"
@@ -132,6 +135,7 @@ services:
       - EMAIL_HOST_USER=${EMAIL_HOST_USER}
       - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
       - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL}
+      - DJANGO_SECURE_SSL_REDIRECT=${DJANGO_SECURE_SSL_REDIRECT}
     depends_on:
       db:
         condition: service_healthy
@@ -234,7 +238,7 @@ services:
 volumes:
   tab_postgres_data_staging:
     driver: local
-  nginx_logs:
+  nginx_logs_staging:
     driver: local
 
 networks:

@@ -2,6 +2,8 @@ import { GraphQLClient } from "graphql-request";
 import { cookies } from "next/headers";
 import { getToken } from "next-auth/jwt";
 
+import { NODE_ENV } from "@/constants";
+
 const GRAPHQL_ENDPOINT =
   process.env.GRAPHQL_ENDPOINT || "http://backend:8000/graphql/";
 
@@ -16,6 +18,8 @@ export async function getAuthorizedServerClient(): Promise<GraphQLClient> {
     "Content-Type": "application/json",
     Accept: "application/json",
     "X-Requested-With": "XMLHttpRequest",
+    Host:
+      process.env.NODE_ENV === NODE_ENV.PRODUCTION ? "frontend" : "localhost", // 明示的にHostヘッダーを設定
     Cookie: cookieStore.toString(),
   };
 
