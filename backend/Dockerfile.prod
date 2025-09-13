@@ -43,6 +43,8 @@ RUN apt-get update && \
     gettext-base \
     tzdata \
     gzip \
+    mecab \
+    mecab-ipadic-utf8 \
     && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
     echo $TZ > /etc/timezone \
     && rm -rf /var/lib/apt/lists/* \
@@ -80,6 +82,9 @@ COPY --chown=$USER:$USER . .
 
 # cronジョブ設定スクリプトに実行権限を付与
 RUN chmod +x setup_cron_jobs_prod.sh
+
+# MeCab設定ファイルのシンボリックリンクを作成
+RUN mkdir -p /usr/local/etc && ln -sf /etc/mecabrc /usr/local/etc/mecabrc
 
 # ポート公開
 EXPOSE 8000

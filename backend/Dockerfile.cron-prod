@@ -46,7 +46,6 @@ RUN groupadd -r django && \
 # MeCab設定ファイルの作成
 RUN echo "dicdir = /var/lib/mecab/dic/ipadic-utf8" > /etc/mecabrc && \
     echo "userdic =" >> /etc/mecabrc && \
-    echo "output-format-type = wakati" >> /etc/mecabrc && \
     echo "input-buffer-size = 8192" >> /etc/mecabrc && \
     echo "node-format = %m\t%f[7]\t%f[6]\t%F-[0,1,2,3]\t%f[4]\t%f[5]\n" >> /etc/mecabrc && \
     echo "eos-format = EOS\n" >> /etc/mecabrc && \

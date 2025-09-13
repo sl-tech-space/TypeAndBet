@@ -171,6 +171,11 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_INITDB_ARGS=--encoding=UTF8
+      - TZ=${TIMEZONE}
+    command: >
+      postgres
+      -c timezone=${TIMEZONE}
+      -c log_timezone=${TIMEZONE}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 10s
