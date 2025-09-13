@@ -18,6 +18,12 @@ server {
     listen ${HTTP_PORT};
     server_name ${SERVER_NAME};
 
+    # ModSecurity基本設定
+    modsecurity on;
+    modsecurity_rules_file /etc/custom-modsecurity.d/modsecurity.conf;
+    modsecurity_rules_file /etc/custom-modsecurity.d/exclusions.conf;
+    modsecurity_rules_file /etc/custom-modsecurity.d/rules.conf;
+
     # レート制限適用（ステージング環境は緩め）
     limit_req zone=general burst=30 nodelay;
     limit_conn conn_limit 15;

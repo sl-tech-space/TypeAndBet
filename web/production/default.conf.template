@@ -97,6 +97,12 @@ server {
     ssl_stapling on;
     ssl_stapling_verify on;
 
+    # ModSecurity基本設定
+    modsecurity on;
+    modsecurity_rules_file /etc/custom-modsecurity.d/modsecurity.conf;
+    modsecurity_rules_file /etc/custom-modsecurity.d/exclusions.conf;
+    modsecurity_rules_file /etc/custom-modsecurity.d/rules.conf;
+
     # レート制限適用
     limit_conn_zone $binary_remote_addr zone=perip:10m rate=10r/s;
     limit_conn perip 40;
