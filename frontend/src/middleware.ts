@@ -50,7 +50,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       try {
         const redirectUrl = new URL(ROUTE.LOGIN, request.url);
         return NextResponse.redirect(redirectUrl);
-      } catch (error) {
+      } catch {
         // フォールバック: 相対パスでリダイレクト
         return NextResponse.redirect(ROUTE.LOGIN);
       }
@@ -61,7 +61,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       try {
         const redirectUrl = new URL(ROUTE.LOGIN, request.url);
         return NextResponse.redirect(redirectUrl);
-      } catch (error) {
+      } catch {
         return NextResponse.redirect(ROUTE.LOGIN);
       }
     }
@@ -76,7 +76,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
         try {
           const redirectUrl = new URL(ROUTE.LOGIN, request.url);
           return NextResponse.redirect(redirectUrl);
-        } catch (error) {
+        } catch {
           return NextResponse.redirect(ROUTE.LOGIN);
         }
       }
@@ -88,7 +88,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     try {
       const redirectUrl = new URL(ROUTE.HOME, request.url);
       return NextResponse.redirect(redirectUrl);
-    } catch (error) {
+    } catch {
       return NextResponse.redirect(ROUTE.HOME);
     }
   }

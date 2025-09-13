@@ -2,7 +2,7 @@
 
 import { ApolloError } from "@apollo/client";
 import { cookies } from "next/headers";
-import { getToken, encode } from "next-auth/jwt";
+import { encode, getToken } from "next-auth/jwt";
 
 import { ERROR_MESSAGE, NODE_ENV } from "@/constants";
 import { BettingService, GraphQLServerClient } from "@/graphql";
@@ -22,7 +22,7 @@ export async function createBet(
     const cookieStore = await cookies();
     const currentToken = await getToken({
       req: { headers: { cookie: cookieStore.toString() } },
-      secret: process.env.NEXTAUTH_SECRET,
+      secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
     });
 
     if (!currentToken) {
@@ -55,10 +55,11 @@ export async function createBet(
     };
 
     // JWT 再発行
+    const secret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET!;
     const encoded = await encode({
       token: updatedToken,
-      secret: process.env.NEXTAUTH_SECRET!,
-      salt: process.env.NEXTAUTH_SECRET!,
+      secret,
+      salt: secret,
     });
 
     const cookieName = "next-auth.session-token";

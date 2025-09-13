@@ -11,7 +11,7 @@ export async function getAuthorizedServerClient(): Promise<GraphQLClient> {
   const cookieStore = await cookies();
   const token = await getToken({
     req: { headers: { cookie: cookieStore.toString() } },
-    secret: process.env.NEXTAUTH_SECRET,
+    secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
   });
 
   const headers: Record<string, string> = {
