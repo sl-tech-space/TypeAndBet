@@ -1,0 +1,212 @@
+.keyboardLayout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: auto;
+  max-width: $breakpoint-pc-medium;
+  margin: 0 auto;
+}
+
+.keyboard {
+  border: 2px solid $keyboard-border;
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow:
+    0 0 20px $keyboard-shadow,
+    0 0 5px $keyboard-glow;
+  width: 100%;
+  max-width: 1000px;
+  background-color: $keyboard-background;
+  backdrop-filter: blur(5px);
+}
+
+.keyboardRow {
+  display: flex;
+  justify-content: center;
+  margin: 2px 0;
+}
+
+.key {
+  border: 1px solid $keyboard-key-border;
+  border-radius: 4px;
+  margin: 1px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: $keyboard-transition;
+  background-color: $keyboard-key-bg;
+  color: $keyboard-key-text;
+  box-shadow: 0 2px 4px $keyboard-shadow;
+  position: relative;
+  overflow: hidden;
+  width: 30px;
+  height: 30px;
+  font-size: 11px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding: 0 2px;
+
+  &.keyWide {
+    width: 54px;
+  }
+
+  &.keyExtraWide {
+    width: 120px;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      45deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent
+    );
+    transform: translateX(-100%);
+    transition: $keyboard-transition;
+  }
+
+  &:hover {
+    transform: $keyboard-key-hover;
+    border-color: $keyboard-border;
+    box-shadow: 0 0 10px $keyboard-glow;
+
+    &::before {
+      transform: translateX(100%);
+    }
+  }
+
+  &.keyCorrect {
+    color: white !important;
+    border-color: $keyboard-correct !important;
+    box-shadow:
+      0 0 10px $keyboard-correct,
+      0 0 20px $keyboard-glow !important;
+    background-color: rgba($keyboard-correct, 0.8) !important;
+    transform: scale(1.15) !important;
+    z-index: 10 !important;
+    transition: all 0.12s ease-in-out !important;
+    animation: pulseCorrect 0.25s;
+  }
+
+  &.keyIncorrect {
+    color: white !important;
+    border-color: $keyboard-incorrect !important;
+    box-shadow:
+      0 0 10px $keyboard-incorrect,
+      0 0 20px $keyboard-glow !important;
+    background-color: rgba($keyboard-incorrect, 0.8) !important;
+    transform: scale(1.15) !important;
+    z-index: 10 !important;
+    transition: all 0.12s ease-in-out !important;
+    animation: pulseIncorrect 0.25s;
+  }
+}
+
+@keyframes pulseCorrect {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1.15);
+  }
+}
+
+@keyframes pulseIncorrect {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.15);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  75% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1.15);
+  }
+}
+
+@media (max-width: $breakpoint-pc-medium) {
+  .keyboardLayout {
+    .key {
+      width: 28px;
+      height: 28px;
+      font-size: 10px;
+
+      &.keyWide {
+        width: 50px;
+      }
+
+      &.keyExtraWide {
+        width: 110px;
+      }
+    }
+  }
+}
+
+@media (max-width: $breakpoint-pc-small) {
+  .keyboardLayout {
+    .key {
+      width: 25px;
+      height: 25px;
+      font-size: 9px;
+
+      &.keyWide {
+        width: 45px;
+      }
+
+      &.keyExtraWide {
+        width: 100px;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .keyboardLayout {
+    .key {
+      width: 22px;
+      height: 22px;
+      font-size: 8px;
+
+      &.keyWide {
+        width: 40px;
+      }
+
+      &.keyExtraWide {
+        width: 90px;
+      }
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .keyboardLayout {
+    .key {
+      width: 20px;
+      height: 20px;
+      font-size: 7px;
+
+      &.keyWide {
+        width: 36px;
+      }
+
+      &.keyExtraWide {
+        width: 80px;
+      }
+    }
+  }
+}

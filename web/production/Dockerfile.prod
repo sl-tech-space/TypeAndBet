@@ -1,0 +1,93 @@
+# ModSecurity対応のNginxイメージを使用（本番環境用）
+FROM owasp/modsecurity:nginx-alpine
+
+# 必要なパッケージのインストール
+RUN apk add --no-cache --quiet \
+    curl \
+    wget \
+    bash \
+    logrotate \
+    tzdata \
+    dcron \
+    certbot \
+    && rm -rf /var/cache/apk/*
+
+# デフォルトタイムゾーンの設定
+ENV TZ=Asia/Tokyo
+
+# 必要なディレクトリの作成と権限設定
+RUN mkdir -p \
+    /var/log/nginx/modsec_audit \
+    /var/log/nginx/modsec_debug \
+    /var/cache/nginx \
+    /var/run \
+    /tmp/nginx \
+    /tmp/nginx-config \
+    /var/www/certbot \
+    /etc/logrotate.d \
+    /etc/letsencrypt \
+    && touch /var/log/nginx/error.log \
+    && touch /var/log/nginx/access.log \
+    && chown -R nginx:nginx \
+        /var/log/nginx \
+        /var/cache/nginx \
+        /var/run \
+        /tmp/nginx \
+        /tmp/nginx-config \
+        /var/www/certbot \
+        /etc/nginx/conf.d \
+        /etc/nginx/templates \
+        /etc/nginx \
+    && chmod -R 755 \
+        /var/log/nginx \
+        /var/cache/nginx \
+        /var/run \
+        /tmp/nginx \
+        /tmp/nginx-config \
+        /var/www/certbot \
+        /etc/nginx \
+        /etc/nginx/conf.d \
+        /etc/nginx/templates \
+    && chmod 644 /var/log/nginx/*.log \
+    && chmod 777 /tmp/nginx
+
+# 証明書更新用のスクリプトを作成
+RUN echo '#!/bin/bash\n\
+echo "$(date): Starting certificate renewal check..." >> /var/log/nginx/certbot.log\n\
+# 証明書の有効期限をチェック（30日以内なら更新）\n\
+if certbot certificates | grep -q "VALID: 30 days"; then\n\
+    echo "$(date): Certificate expires within 30 days, attempting renewal" >> /var/log/nginx/certbot.log\n\
+    certbot renew --quiet --deploy-hook "nginx -s reload"\n\
+    echo "$(date): Certificate renewal completed" >> /var/log/nginx/certbot.log\n\
+else\n\
+    echo "$(date): Certificate is still valid, skipping renewal" >> /var/log/nginx/certbot.log\n\
+fi\n\
+' > /usr/local/bin/renew-certs.sh && \
+    chmod +x /usr/local/bin/renew-certs.sh
+
+# Cronジョブを設定（毎月1日の午前2時に実行）
+RUN echo '0 2 1 * * /usr/local/bin/renew-certs.sh' | crontab -
+
+# 設定ファイルのコピー
+COPY --chown=nginx:nginx nginx.conf.template /etc/nginx/templates/
+COPY --chown=nginx:nginx default.conf.template /etc/nginx/templates/
+COPY --chown=nginx:nginx custom-entrypoint.sh /usr/local/bin/
+COPY --chown=nginx:nginx modsecurity.d/ /etc/custom-modsecurity.d/
+COPY --chown=root:root logrotate.conf /etc/logrotate.d/nginx
+COPY --chown=root:root setup-logrotate.sh /usr/local/bin/
+
+# エントリーポイントスクリプトに実行権限を付与
+RUN chmod +x /usr/local/bin/custom-entrypoint.sh
+
+# Nginxユーザーに変更
+USER nginx
+
+# ポートの公開（HTTP + HTTPS）
+EXPOSE 80 443
+
+# ヘルスチェック
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f -s http://localhost/health > /dev/null || exit 1
+
+# カスタムエントリーポイントを使用
+ENTRYPOINT ["/usr/local/bin/custom-entrypoint.sh"]

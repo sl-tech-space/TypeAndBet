@@ -1,0 +1,101 @@
+/**
+ * ルートの型定義
+ */
+export type RouteKey =
+  | "HOME"
+  | "SIMULATE"
+  | "PLAY"
+  | "LOGIN"
+  | "SIGNUP"
+  | "SIGNUP_EMAIL_SENT"
+  | "PASSWORD_FORGET"
+  | "PASSWORD_RESET"
+  | "LOGOUT"
+  | "TERMS"
+  | "PRIVACY"
+  | "NOT_FOUND"
+  | "SERVER_ERROR"
+  | "RESULT";
+
+export type Routes = {
+  [key in RouteKey]: string;
+};
+
+/**
+ * ルート
+ */
+export const ROUTE: Routes = {
+  HOME: "/",
+  SIMULATE: "/simulate",
+  PLAY: "/play",
+  LOGIN: "/auth/login",
+  SIGNUP: "/auth/signup",
+  SIGNUP_EMAIL_SENT: "/auth/signup/email-sent",
+  PASSWORD_FORGET: "/auth/password-forget",
+  PASSWORD_RESET: "/reset-password",
+  LOGOUT: "/auth/logout",
+  TERMS: "/legal/terms-of-service",
+  PRIVACY: "/legal/privacy-policy",
+  NOT_FOUND: "/error/404",
+  SERVER_ERROR: "/error/500",
+  RESULT: "/result",
+};
+
+/**
+ * ルート名の型定義
+ */
+export type RouteNameKey = Exclude<
+  RouteKey,
+  "PASSWORD_FORGET" | "PASSWORD_RESET" | "SIGNUP_EMAIL_SENT"
+>;
+
+export type RouteNames = {
+  [key in RouteNameKey]: string;
+};
+
+/**
+ * ルート名
+ */
+export const ROUTE_NAME: RouteNames = {
+  HOME: "ホーム",
+  SIMULATE: "シミュレーション",
+  PLAY: "Type&Bet",
+  LOGIN: "ログイン",
+  SIGNUP: "新規登録",
+  LOGOUT: "ログアウト",
+  TERMS: "利用規約",
+  PRIVACY: "プライバシーポリシー",
+  NOT_FOUND: "ページが見つかりません",
+  SERVER_ERROR: "サーバーエラー",
+  RESULT: "結果",
+};
+
+/**
+ * ホームバックボタンの型定義
+ */
+export type HomeBackButtonKey = "TEXT" | "ROUTE";
+
+export type HomeBackButton = {
+  [key in HomeBackButtonKey]: string;
+};
+
+export const HOME_BACK_BUTTON: HomeBackButton = {
+  TEXT: "ホームに戻る",
+  ROUTE: "/",
+};
+
+export type RevalidateRouteKey = "HOME" | "SIMULATE" | "PLAY" | "RESULT";
+
+export type RevalidateRoute = {
+  [key in RevalidateRouteKey]: string;
+};
+
+/**
+ * ユーザのデータを更新した際に再検証するルート
+ */
+export const REVALIDATE_ROUTES: RevalidateRoute = {
+  HOME: ROUTE.HOME,
+  SIMULATE: ROUTE.SIMULATE,
+  PLAY: ROUTE.PLAY,
+  RESULT: ROUTE.RESULT,
+};

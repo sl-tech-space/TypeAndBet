@@ -1,0 +1,194 @@
+# マルチステージビルド - ビルドステージ
+FROM python:3.11-slim as builder
+
+WORKDIR /app
+
+# ビルド依存関係のインストール
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Python仮想環境の作成
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# 依存関係のインストール
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# 本番環境ステージ
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# セキュリティ設定
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    TZ=Asia/Tokyo \
+    # 非rootユーザー設定（動的UID/GID）
+    USER=django
+
+# システム依存関係のインストール
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    libpq5 \
+    cron \
+    gosu \
+    gettext-base \
+    tzdata \
+    gzip \
+    mecab \
+    mecab-ipadic-utf8 \
+    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+    echo $TZ > /etc/timezone \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# 仮想環境のコピー
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# 非rootユーザーの作成（動的UID/GID）
+RUN groupadd -r $USER && \
+    useradd -r -g $USER $USER
+
+# cronジョブ用の設定
+RUN mkdir -p /etc/cron.d && \
+    chown -R $USER:$USER /etc/cron.d && \
+    chmod 755 /etc/cron.d
+
+# 必要なディレクトリの作成と権限設定
+RUN mkdir -p /app/logs /app/media /app/tmp /var/log /var/run /shared && \
+    chown -R $USER:$USER /app && \
+    chown -R $USER:$USER /var/log && \
+    chown -R $USER:$USER /var/run && \
+    chown -R $USER:$USER /shared && \
+    chmod 755 /app && \
+    chmod 755 /app/logs && \
+    chmod 755 /app/media && \
+    chmod 700 /app/tmp && \
+    chmod 755 /var/log && \
+    chmod 755 /var/run && \
+    chmod 755 /shared
+
+# アプリケーションコードのコピー
+COPY --chown=$USER:$USER . .
+
+# cronジョブ設定スクリプトに実行権限を付与
+RUN chmod +x setup_cron_jobs_prod.sh
+
+# MeCab設定ファイルのシンボリックリンクを作成
+RUN mkdir -p /usr/local/etc && ln -sf /etc/mecabrc /usr/local/etc/mecabrc
+
+# ポート公開
+EXPOSE 8000
+
+# 起動スクリプトの作成
+RUN echo '#!/bin/bash\n\
+set -euo pipefail\n\
+\n\
+# ログ関数\n\
+log() {\n\
+    echo "[$(date +"%Y-%m-%d %H:%M:%S")] $1"\n\
+}\n\
+\n\
+# エラーハンドリング\n\
+error_exit() {\n\
+    log "ERROR: $1"\n\
+    exit 1\n\
+}\n\
+\n\
+# データベース接続確認\n\
+log "Checking database connection..."\n\
+for i in {1..60}; do\n\
+    if python manage.py check --database default >/dev/null 2>&1; then\n\
+        log "Database connection established"\n\
+        break\n\
+    fi\n\
+    if [ $i -eq 60 ]; then\n\
+        error_exit "Database connection failed after 60 attempts"\n\
+    fi\n\
+    log "Waiting for database... (attempt $i/60)"\n\
+    sleep 1\n\
+done\n\
+\n\
+# マイグレーション実行\n\
+log "Running migrations..."\n\
+if ! python manage.py migrate --noinput; then\n\
+    error_exit "Migration failed"\n\
+fi\n\
+log "Migrations completed successfully"\n\
+\n\
+# Gunicorn起動\n\
+log "Starting Gunicorn..."\n\
+exec gunicorn config.wsgi:application \\\n\
+    --bind 0.0.0.0:8000 \\\n\
+    --workers $(( $(nproc) * 2 + 1 )) \\\n\
+    --worker-class sync \\\n\
+    --worker-connections 1000 \\\n\
+    --max-requests 1000 \\\n\
+    --max-requests-jitter 100 \\\n\
+    --timeout 30 \\\n\
+    --keep-alive 2 \\\n\
+    --access-logfile /app/logs/access.log \\\n\
+    --error-logfile /app/logs/error.log \\\n\
+    --log-level info \\\n\
+    --preload \\\n\
+    --capture-output \\\n\
+    --enable-stdio-inheritance\n\
+' > /usr/local/bin/start.sh && \
+    chmod +x /usr/local/bin/start.sh
+
+# cron-jobs専用の起動スクリプトの作成
+RUN echo '#!/bin/bash\n\
+set -euo pipefail\n\
+\n\
+# ログ関数\n\
+log() {\n\
+    echo "[$(date +"%Y-%m-%d %H:%M:%S")] $1"\n\
+}\n\
+\n\
+# エラーハンドリング\n\
+error_exit() {\n\
+    log "ERROR: $1"\n\
+    exit 1\n\
+}\n\
+\n\
+# データベース接続確認\n\
+log "Checking database connection..."\n\
+for i in {1..60}; do\n\
+    if python manage.py check --database default >/dev/null 2>&1; then\n\
+        log "Database connection established"\n\
+        break\n\
+    fi\n\
+    if [ $i -eq 60 ]; then\n\
+        error_exit "Database connection failed after 60 attempts"\n\
+    fi\n\
+    log "Waiting for database... (attempt $i/60)"\n\
+    sleep 1\n\
+done\n\
+\n\
+# マイグレーション実行\n\
+log "Running migrations..."\n\
+if ! python manage.py migrate --noinput; then\n\
+    error_exit "Migration failed"\n\
+fi\n\
+log "Migrations completed successfully"\n\
+\n\
+# cronジョブ設定スクリプトを実行\n\
+log "Setting up cron jobs..."\n\
+exec ./setup_cron_jobs_prod.sh\n\
+' > /usr/local/bin/start-cron.sh && \
+    chmod +x /usr/local/bin/start-cron.sh
+
+# 非rootユーザーに切り替え
+USER $USER
+
+# 起動コマンド
+CMD ["/usr/local/bin/start.sh"]

@@ -1,0 +1,254 @@
+services:
+  nginx:
+    build:
+      context: ./web/production
+      dockerfile: Dockerfile.prod
+    container_name: tab-nginx-prod
+    volumes:
+      - ./web/certbot/conf:/etc/letsencrypt
+      - ./web/certbot/www:/var/www/certbot
+      - nginx_logs_prod:/var/log/nginx
+    ports:
+      - "${HTTP_PORT}:${HTTP_PORT}"
+      - "${HTTPS_PORT}:${HTTPS_PORT}"
+    environment:
+      - BACKEND=${BACKEND_PROXY}
+      - FRONTEND=${FRONTEND_PROXY}
+      - SERVER_NAME=${SERVER_NAME}
+      - HTTP_PORT=${HTTP_PORT}
+      - HTTPS_PORT=${HTTPS_PORT}
+      - WORKER_CONNECTIONS=${WORKER_CONNECTIONS}
+      - TIMEOUT=${TIMEOUT}
+      - TZ=${TIMEZONE:-Asia/Tokyo}
+      - SSL_CERTIFICATE_PATH=/etc/letsencrypt/live/${SERVER_NAME}/fullchain.pem
+      - SSL_CERTIFICATE_KEY_PATH=/etc/letsencrypt/live/${SERVER_NAME}/privkey.pem
+    depends_on:
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_started
+      db:
+        condition: service_healthy
+      cron-jobs:
+        condition: service_started
+    networks:
+      - frontend-net
+      - backend-net
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.5"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-s", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    container_name: tab-frontend-prod
+    expose:
+      - "3000" # 内部ポート
+    environment:
+      - NODE_ENV=production
+      - TZ=${TIMEZONE:-Asia/Tokyo}
+      - APP_URL=${APP_URL}
+      - FRONTEND_PORT=${FRONTEND_PORT}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - AUTH_SECRET=${AUTH_SECRET}
+      - NEXTAUTH_SALT=${NEXTAUTH_SALT}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - NEXT_TELEMETRY_DISABLED=1
+      - GRAPHQL_ENDPOINT=${GRAPHQL_ENDPOINT}
+      - NEXT_PUBLIC_GRAPHQL_ENDPOINT=${NEXT_PUBLIC_GRAPHQL_ENDPOINT}
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+        reservations:
+          memory: 128M
+          cpus: "0.25"
+    restart: unless-stopped
+    networks:
+      - frontend-net
+      - backend-net
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://0.0.0.0:${FRONTEND_PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    container_name: tab-backend-prod
+    expose:
+      - "8000" # 内部ポート
+    environment:
+      - DJANGO_ENV=production
+      - DEBUG=False
+      - FRONTEND_PORT=${FRONTEND_PORT}
+      - SECRET_KEY=${SECRET_KEY}
+      - TZ=${TIMEZONE:-Asia/Tokyo}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - JWT_SECRET=${JWT_SECRET}
+      - PYTHONIOENCODING=${PYTHONIOENCODING}
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+      - DJANGO_CORS_ALLOWED_ORIGINS=${DJANGO_CORS_ALLOWED_ORIGINS}
+      - DJANGO_CSRF_TRUSTED_ORIGINS=${DJANGO_CSRF_TRUSTED_ORIGINS}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_MODEL=${GEMINI_MODEL}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_USE_TLS=${EMAIL_USE_TLS}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+      - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL}
+      - DJANGO_SECURE_SSL_REDIRECT=${DJANGO_SECURE_SSL_REDIRECT}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - backend-net
+    volumes:
+      - shared_data:/shared
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "0.75"
+        reservations:
+          memory: 256M
+          cpus: "0.25"
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    security_opt:
+      - no-new-privileges:true
+
+  db:
+    image: postgres:15-alpine
+    container_name: tab-db-prod
+    volumes:
+      - tab_postgres_data_prod:/var/lib/postgresql/data
+    expose:
+      - "5432" # 内部ポート
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_INITDB_ARGS=--encoding=UTF8
+      - TZ=${TIMEZONE}
+    command: >
+      postgres
+      -c timezone=${TIMEZONE}
+      -c log_timezone=${TIMEZONE}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - backend-net
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+        reservations:
+          memory: 128M
+          cpus: "0.25"
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    security_opt:
+      - no-new-privileges:true
+
+  cron-jobs:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.cron-prod
+    container_name: tab-cron-jobs-prod
+    environment:
+      - DJANGO_ENV=production
+      - DEBUG=False
+      - SECRET_KEY=${SECRET_KEY}
+      - TZ=${TIMEZONE:-Asia/Tokyo}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - JWT_SECRET=${JWT_SECRET}
+      - PYTHONIOENCODING=${PYTHONIOENCODING}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_MODEL=${GEMINI_MODEL}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_USE_TLS=${EMAIL_USE_TLS}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+      - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL}
+    depends_on:
+      db:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - backend-net
+    volumes:
+      - shared_data:/shared
+      - cron_logs:/var/log
+    user: "0:0"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.25"
+
+volumes:
+  tab_postgres_data_prod:
+    driver: local
+  nginx_logs_prod:
+    driver: local
+  shared_data:
+    driver: local
+  cron_logs:
+    driver: local
+
+networks:
+  frontend-net:
+    driver: bridge
+  backend-net:
+    driver: bridge

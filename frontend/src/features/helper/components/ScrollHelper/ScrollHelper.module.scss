@@ -1,0 +1,18 @@
+.scroll-helper {
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  transition: opacity 0.5s ease-in-out;
+  z-index: 10;
+  @include animate(bounce, 1.5s, ease-in-out, 0s, infinite);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .scroll-helper {
+    bottom: 1.5rem;
+  }
+}

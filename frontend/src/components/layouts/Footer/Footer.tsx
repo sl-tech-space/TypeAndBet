@@ -1,0 +1,34 @@
+import Link from "next/link";
+
+import { ROUTE, ROUTE_NAME } from "@/constants";
+
+import styles from "./Footer.module.scss";
+
+/**
+ * サーバコンポーネント
+ * フッターコンポーネント
+ * @returns フッターコンポーネント
+ */
+export const Footer = (): React.ReactNode => {
+  const currentYear = new Date().getFullYear();
+
+  return (
+    <footer className={styles.footer}>
+      <div className={styles.container}>
+        <div className={styles.copyright}>
+          &copy; {currentYear} Type And Bet. All Rights Reserved.
+        </div>
+        <nav className={styles.links}>
+          <Link href={ROUTE.TERMS} className={styles.link}>
+            {ROUTE_NAME.TERMS}
+          </Link>
+          <Link href={ROUTE.PRIVACY} className={styles.link}>
+            {ROUTE_NAME.PRIVACY}
+          </Link>
+        </nav>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;

@@ -1,0 +1,35 @@
+{% extends "email/base.html" %} {% block title %}メールアドレスの確認{% endblock
+%} {% block page_title %}メールアドレスの確認{% endblock %} {% block logo_color
+%}blue{% endblock %} {% block content %}
+<div class="content">
+  <div class="greeting">{{ username }} 様</div>
+
+  <div class="description">
+    TypeAndBetへのご登録ありがとうございます。<br />
+    アカウントを有効化するために、以下のボタンをクリックしてメールアドレスの確認を完了してください。
+  </div>
+
+  <div class="text-center">
+    <a href="{{ verification_url }}" class="button blue">
+      メールアドレスを確認する
+    </a>
+  </div>
+
+  <div class="warning">
+    <strong>注意:</strong>
+    このリンクは{{expiration_hours}}時間後に期限切れになります。
+    期限が切れた場合は、再度登録を行ってください。
+  </div>
+
+  <div class="description">
+    ボタンがクリックできない場合は、以下のURLをコピーしてブラウザに貼り付けてください：<br />
+    <a href="{{ verification_url }}" class="word-break link-blue">
+      {{ verification_url }}
+    </a>
+  </div>
+</div>
+{% endblock %} {% block footer_content %}
+<p>
+  TypeAndBetに関するお問い合わせは、アプリ内のサポート機能をご利用ください。
+</p>
+{% endblock %}

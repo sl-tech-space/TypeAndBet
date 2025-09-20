@@ -1,0 +1,37 @@
+.label {
+  display: inline-block;
+  font-size: 1rem;
+  font-weight: 500;
+
+  &.required::after {
+    content: "*";
+    color: $color-accent;
+  }
+}
+
+// カラーバリエーション
+.primary {
+  color: $color-primary;
+}
+
+.secondary {
+  color: $color-secondary;
+}
+
+.tertiary {
+  color: $color-tertiary;
+}
+
+.accent {
+  color: $color-accent;
+}
+
+.gold {
+  color: $color-gold;
+}
+
+@media only screen and (max-width: 768px) {
+  .label {
+    font-size: 0.875rem;
+  }
+}

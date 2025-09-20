@@ -1,0 +1,210 @@
+// フォームコンテンツ
+.form-content {
+  transform: translateY(10px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+
+  // 情報ボックス
+  &__info-box {
+    background-color: rgba($color-tertiary, 0.5);
+    border: 1px solid rgba($color-gold, 0.2);
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  &__info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__info-label {
+    color: rgba($color-gold, 0.8);
+    font-size: 0.95rem;
+  }
+
+  &__info-value {
+    color: $color-gold;
+    font-weight: bold;
+    font-size: 1rem;
+  }
+
+  // ベット額セレクター
+  &__amount-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__label {
+    font-size: 1rem;
+    color: rgba($color-gold, 0.8);
+    font-weight: 500;
+  }
+
+  // スライダーコンテナ
+  &__slider-container {
+    position: relative;
+    width: 100%;
+    height: 30px;
+    display: flex;
+    align-items: center;
+  }
+
+  // スライダー
+  &__slider {
+    width: 100%;
+    height: 8px;
+    background: rgba($color-tertiary, 0.8);
+    border-radius: 4px;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      transform: translateY(-50%);
+      background: linear-gradient(
+        to right,
+        rgba($color-gold, 0.4),
+        rgba($color-gold, 0.8),
+        rgba($color-gold, 0.4)
+      );
+      box-shadow: 0 0 8px rgba($color-gold, 0.4);
+      z-index: 0;
+      pointer-events: none;
+      border-radius: 2px;
+    }
+
+    // 中央のメモリ線
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 2px;
+      height: 16px;
+      background: rgba($color-gold, 0.8);
+      box-shadow: 0 0 6px rgba($color-gold, 0.6);
+      border-radius: 1px;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: $color-gold;
+      box-shadow: 0 0 8px rgba($color-gold, 0.6);
+      cursor: pointer;
+      position: relative;
+      z-index: 2;
+    }
+
+    &::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: $color-gold;
+      box-shadow: 0 0 8px rgba($color-gold, 0.6);
+      cursor: pointer;
+      border: none;
+      position: relative;
+      z-index: 2;
+    }
+  }
+
+  // 左端のメモリ線
+  &__slider-mark {
+    position: absolute;
+    top: 50%;
+    width: 2px;
+    height: 12px;
+    background: rgba($color-gold, 0.7);
+    box-shadow: 0 0 6px rgba($color-gold, 0.5);
+    border-radius: 1px;
+    z-index: 2;
+    pointer-events: none;
+    transform: translateY(-50%);
+
+    &--left {
+      left: 0;
+    }
+
+    &--right {
+      right: 0;
+    }
+  }
+
+  // スライダーの最小値と最大値を表示
+  &__range {
+    display: flex;
+    justify-content: space-between;
+    color: rgba($color-gold, 0.6);
+    font-size: 0.875rem;
+    padding: 0 2px;
+  }
+
+  // エラーメッセージ
+  &__error {
+    color: $color-accent;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  // アクションボタン
+  &__actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    position: relative;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: -0.75rem;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(
+        to right,
+        transparent,
+        rgba($color-gold, 0.3),
+        rgba($color-gold, 0.7),
+        rgba($color-gold, 0.3),
+        transparent
+      );
+      box-shadow: 0 0 8px rgba($color-gold, 0.4);
+    }
+  }
+}
+
+// レスポンシブ対応
+@media (max-width: 640px) {
+  .form-content {
+    gap: 1.25rem;
+
+    &__actions {
+      flex-direction: column;
+    }
+  }
+}

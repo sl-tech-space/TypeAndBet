@@ -1,0 +1,100 @@
+/* バリアント別スタイル */
+.h1 {
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.h2 {
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.h3 {
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.h4 {
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.h5 {
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.h6 {
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.p {
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* サイズ別スタイル */
+.small {
+  font-size: 0.875rem; /* 14px */
+}
+
+.medium {
+  font-size: 1rem; /* 16px */
+}
+
+.large {
+  font-size: 1.25rem; /* 20px */
+}
+
+.xlarge {
+  font-size: 1.5rem; /* 24px */
+}
+
+.xxlarge {
+  font-size: 2rem; /* 32px */
+}
+
+/* カラー別スタイル */
+.primary {
+  color: $color-primary;
+}
+
+.secondary {
+  color: $color-secondary;
+}
+
+.tertiary {
+  color: $color-tertiary;
+}
+
+.accent {
+  color: $color-accent;
+}
+
+.gold {
+  color: $color-gold;
+}
+
+/* レスポンシブ対応 */
+@media only screen and (max-width: 768px) {
+  .small {
+    font-size: 0.75rem; /* 12px */
+  }
+
+  .medium {
+    font-size: 0.875rem; /* 14px */
+  }
+
+  .large {
+    font-size: 1.125rem; /* 18px */
+  }
+
+  .xlarge {
+    font-size: 1.25rem; /* 20px */
+  }
+
+  .xxlarge {
+    font-size: 1.5rem; /* 24px */
+  }
+}

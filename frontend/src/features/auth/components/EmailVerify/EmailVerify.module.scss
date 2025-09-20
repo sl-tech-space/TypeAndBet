@@ -1,0 +1,184 @@
+.email-verify {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+
+  &__container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    text-align: center;
+    padding: 3rem 2rem;
+    max-width: 500px;
+    width: 100%;
+    background-color: $color-tertiary;
+    border-radius: 16px;
+    border: 1px solid #30363d;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(
+        90deg,
+        $color-primary,
+        $color-gold,
+        $color-primary
+      );
+    }
+  }
+
+  &__icon {
+    margin-bottom: 1rem;
+  }
+
+  &__error-icon {
+    font-size: 4rem;
+    line-height: 1;
+  }
+
+  &__title {
+    margin-bottom: 1rem;
+    font-weight: 700;
+  }
+
+  &__message {
+    max-width: 400px;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    background-color: rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+  }
+
+  &__countdown {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, $color-primary, $color-gold);
+    box-shadow: 0 0 20px rgba($color-gold, 0.4);
+    animation: pulse 1s ease-in-out infinite;
+    margin: 1rem 0;
+
+    .text {
+      font-weight: 900;
+      font-size: 2rem;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  &__description {
+    color: #8b949e;
+    max-width: 350px;
+    line-height: 1.5;
+  }
+
+  &__progress {
+    width: 100%;
+    max-width: 300px;
+    height: 4px;
+    background-color: #21262d;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 1rem;
+  }
+
+  &__progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, $color-primary, $color-gold);
+    border-radius: 2px;
+    animation: progress 2s ease-in-out infinite;
+  }
+
+  // レスポンシブ対応
+  @media (max-width: 768px) {
+    padding: 1rem 0.5rem;
+
+    &__container {
+      padding: 2rem 1.5rem;
+    }
+
+    &__error-icon {
+      font-size: 3rem;
+    }
+
+    &__title {
+      font-size: 1.5rem;
+    }
+
+    &__message {
+      padding: 0.75rem;
+    }
+
+    &__countdown {
+      width: 70px;
+      height: 70px;
+
+      .text {
+        font-size: 1.75rem;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    &__container {
+      padding: 1.5rem 1rem;
+    }
+
+    &__error-icon {
+      font-size: 2.5rem;
+    }
+
+    &__title {
+      font-size: 1.25rem;
+    }
+
+    &__countdown {
+      width: 60px;
+      height: 60px;
+
+      .text {
+        font-size: 1.5rem;
+      }
+    }
+  }
+}
+
+// プログレスバーのアニメーション
+@keyframes progress {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+// カウントダウンのパルスアニメーション
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba($color-gold, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba($color-gold, 0.6);
+  }
+}

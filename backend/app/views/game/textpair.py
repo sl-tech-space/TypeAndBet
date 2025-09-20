@@ -1,0 +1,245 @@
+import logging
+import random
+
+import graphene
+import MeCab
+from django.db import transaction
+from django.db.models import Min, Max
+
+from app.models.game import TextPair
+from app.utils.graphql_throttling import graphql_throttle, get_user_identifier
+
+logger = logging.getLogger("app")
+
+
+def _get_random_converted_text_pairs(count=30):
+    """変換済みTextPairから指定された数の完全ランダムなペアを取得する。
+    ORDER BY ? を避け、IDレンジベースのランダム選択で効率的に取得。
+    """
+    # 変換済みレコードの総数を取得
+    total_count = TextPair.objects.filter(is_converted=True).count()
+    if total_count == 0:
+        return []
+
+    if total_count <= count:
+        # 総数が要求数以下の場合は全件返す
+        return list(TextPair.objects.filter(is_converted=True))
+
+    # IDレンジを取得
+    agg = TextPair.objects.filter(is_converted=True).aggregate(
+        min_id=Min("id"), max_id=Max("id")
+    )
+    min_id = agg.get("min_id")
+    max_id = agg.get("max_id")
+
+    if min_id is None or max_id is None:
+        return []
+
+    # 重複を避けてランダムなIDを生成
+    selected_ids = set()
+    attempts = 0
+    max_attempts = count * 10  # 無限ループ防止
+
+    while len(selected_ids) < count and attempts < max_attempts:
+        candidate_id = random.randint(min_id, max_id)
+        # そのIDが実際に存在するかチェック
+        if TextPair.objects.filter(id=candidate_id, is_converted=True).exists():
+            selected_ids.add(candidate_id)
+        attempts += 1
+
+    # 選択されたIDのTextPairを取得
+    text_pairs = list(
+        TextPair.objects.filter(id__in=selected_ids, is_converted=True).order_by("id")
+    )
+
+    # 要求数に満たない場合は追加取得
+    if len(text_pairs) < count:
+        remaining = count - len(text_pairs)
+        # まだ選択されていないIDから追加取得
+        remaining_pairs = list(
+            TextPair.objects.filter(is_converted=True)
+            .exclude(id__in=selected_ids)
+            .order_by("?")[:remaining]
+        )
+        text_pairs.extend(remaining_pairs)
+
+    return text_pairs[:count]
+
+
+class TextPairType(graphene.ObjectType):
+    """TextPairのGraphQL型定義"""
+
+    id = graphene.Int()
+    kanji = graphene.String()
+    hiragana = graphene.String()
+
+
+class GetRandomTextPair(graphene.Mutation):
+    """変換フラグがtrueであるレコードをランダムに選出し、30個のkanji、hiraganaのペアを取得するミューテーション"""
+
+    class Arguments:
+        pass  # 引数なし
+
+    text_pairs = graphene.List(TextPairType)
+    success = graphene.Boolean()
+
+    @classmethod
+    @graphql_throttle('30/m', get_user_identifier)
+    def mutate(cls, root, info):
+        logger.info("ランダムTextPairペア30件取得開始")
+        try:
+            # 変換済み（is_converted=True）のレコードからランダムに30件選出（高効率）
+            text_pairs = _get_random_converted_text_pairs(count=30)
+
+            if not text_pairs:
+                logger.warning("変換済みのTextPairが見つかりませんでした")
+                return GetRandomTextPair(
+                    text_pairs=[],
+                    success=False,
+                )
+
+            logger.info(f"ランダムTextPairペア30件取得完了: count={len(text_pairs)}")
+            return GetRandomTextPair(
+                text_pairs=[
+                    TextPairType(
+                        id=text_pair.id,
+                        kanji=text_pair.kanji,
+                        hiragana=text_pair.hiragana,
+                    )
+                    for text_pair in text_pairs
+                ],
+                success=True,
+            )
+
+        except Exception as e:
+            logger.error(f"ランダムTextPairペア30件取得エラー: {str(e)}", exc_info=True)
+            return GetRandomTextPair(
+                text_pairs=[],
+                success=False,
+            )
+
+
+class ConvertToHiragana(graphene.Mutation):
+    """未変換の漢字文章をひらがなに変換するミューテーション"""
+
+    class Arguments:
+        pass
+
+    success = graphene.Boolean()
+    converted_count = graphene.Int()
+
+    @classmethod
+    def _katakana_to_hiragana(cls, katakana_text):
+        """カタカナをひらがなに変換するヘルパーメソッド"""
+        hiragana_text = ""
+        for char in katakana_text:
+            if "ァ" <= char <= "ヶ":
+                # カタカナをひらがなに変換
+                hiragana_text += chr(ord(char) - ord("ァ") + ord("ぁ"))
+            else:
+                hiragana_text += char
+        return hiragana_text
+
+    @classmethod
+    @transaction.atomic
+    @graphql_throttle('10/m', get_user_identifier)
+    def mutate(cls, root, info):
+        logger.info("ひらがな変換開始")
+        try:
+            # MeCabの初期化（複数の設定を試行）
+            mecab = None
+            mecab_available = False
+
+            for tagger_option in [
+                "",
+                "-Owakati",
+                "-d /usr/lib/mecab/dic/ipadic",
+                "-d /var/lib/mecab/dic/ipadic",
+            ]:
+                try:
+                    logger.info(f"MeCab初期化試行: {tagger_option or 'デフォルト'}")
+                    mecab = MeCab.Tagger(tagger_option)
+                    mecab_available = True
+                    logger.info(f"MeCab初期化成功: {tagger_option or 'デフォルト'}")
+                    break
+                except RuntimeError as e:
+                    logger.warning(
+                        f"MeCab初期化失敗: {tagger_option or 'デフォルト'} - {str(e)}"
+                    )
+                    continue
+
+            if not mecab_available:
+                logger.error("MeCabの初期化に失敗しました。")
+                return ConvertToHiragana(
+                    success=False,
+                    converted_count=0,
+                )
+
+            # 未変換の文章を取得
+            unconverted_pairs = TextPair.objects.filter(is_converted=False)
+            converted_count = 0
+
+            with transaction.atomic():
+                for text_pair in unconverted_pairs:
+                    try:
+                        # MeCabで形態素解析
+                        parsed = mecab.parse(text_pair.kanji)
+                        lines = parsed.strip().split("\n")
+
+                        # ひらがな部分を抽出
+                        hiragana_parts = []
+                        for line in lines:
+                            if line == "EOS" or not line.strip():
+                                break
+                            parts = line.split("\t")
+                            if len(parts) >= 2:
+                                # 表層形（単語）
+                                surface = parts[0]
+                                # 品詞情報をカンマで分割
+                                features = parts[1].split(",")
+
+                                # 読み仮名はカンマ区切りの8番目（インデックス7）
+                                if len(features) >= 8 and features[7] != "*":
+                                    # カタカナをひらがなに変換
+                                    katakana_reading = features[7]
+                                    hiragana_reading = cls._katakana_to_hiragana(
+                                        katakana_reading
+                                    )
+                                    hiragana_parts.append(hiragana_reading)
+                                else:
+                                    # 読み仮名がない場合は表層形をそのまま使用
+                                    hiragana_parts.append(surface)
+
+                        # ひらがな文章を作成
+                        hiragana_text = "".join(hiragana_parts)
+
+                        # データベースを更新
+                        text_pair.hiragana = hiragana_text
+                        text_pair.is_converted = True
+                        text_pair.save()
+
+                        converted_count += 1
+
+                    except Exception as e:
+                        logger.error(f"個別変換エラー (ID: {text_pair.id}): {str(e)}")
+                        continue
+
+            logger.info(f"ひらがな変換完了: {converted_count}件変換")
+            return ConvertToHiragana(
+                success=True,
+                converted_count=converted_count,
+            )
+
+        except Exception as e:
+            logger.error(f"ひらがな変換エラー: {str(e)}", exc_info=True)
+            return ConvertToHiragana(
+                success=False,
+                converted_count=0,
+            )
+
+
+class GetRandomTextPairsMutationType(graphene.ObjectType):
+    """ランダムTextPair30件取得結果を表すGraphQL型定義（ミューテーション用）"""
+
+    text_pairs = graphene.List(TextPairType)
+    success = graphene.Boolean()

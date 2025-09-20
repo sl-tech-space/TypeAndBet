@@ -1,0 +1,168 @@
+import { gql } from "@apollo/client";
+
+/**
+ * ログイン
+ * @param email メールアドレス
+ * @param password パスワード
+ * @returns ユーザーとトークン
+ */
+export const LOGIN = gql`
+  mutation Login($email: String!, $password: String!) {
+    loginUser(email: $email, password: $password) {
+      success
+      errors
+      user {
+        id
+        name
+        email
+        icon
+        gold
+      }
+      tokens {
+        accessToken
+        refreshToken
+        expiresAt
+      }
+    }
+  }
+`;
+
+/**
+ * 新規登録
+ * @param name 名前
+ * @param email メールアドレス
+ * @param password パスワード
+ * @param passwordConfirm パスワード確認
+ * @returns 成功フラグとエラーとユーザー情報
+ */
+export const SIGNUP = gql`
+  mutation RegisterUser(
+    $name: String!
+    $email: String!
+    $password: String!
+    $passwordConfirm: String!
+  ) {
+    registerUser(
+      name: $name
+      email: $email
+      password: $password
+      passwordConfirm: $passwordConfirm
+    ) {
+      success
+      errors
+    }
+  }
+`;
+
+/**
+ * メールアドレスの確認
+ * @param token トークン
+ * @returns 成功フラグとエラー
+ */
+export const VERIFY_EMAIL = gql`
+  mutation VerifyEmail($token: String!) {
+    verifyEmail(token: $token) {
+      success
+      message
+      errors
+    }
+  }
+`;
+
+/**
+ * メール確認メールを再送信
+ * @param email メールアドレス
+ * @returns 成功フラグとエラー
+ */
+export const RESEND_VERIFICATION_EMAIL = gql`
+  mutation ResendVerificationEmail($email: String!) {
+    resendVerificationEmail(email: $email) {
+      success
+      errors
+    }
+  }
+`;
+
+/**
+ * パスワードリセット要求
+ * @param email メールアドレス
+ * @returns 成功フラグとエラー
+ */
+export const REQUEST_PASSWORD_RESET = gql`
+  mutation RequestPasswordReset($email: String!) {
+    requestPasswordReset(email: $email) {
+      success
+      message
+      errors
+    }
+  }
+`;
+
+/**
+ * パスワードリセット
+ * @param token トークン
+ * @param password パスワード
+ * @returns 成功フラグとエラー
+ */
+export const RESET_PASSWORD = gql`
+  mutation ResetPassword(
+    $token: String!
+    $password: String!
+    $passwordConfirm: String!
+  ) {
+    resetPassword(
+      token: $token
+      password: $password
+      passwordConfirm: $passwordConfirm
+    ) {
+      success
+      message
+      errors
+    }
+  }
+`;
+
+/**
+ * Google認証
+ * @param email メールアドレス
+ * @param name 名前
+ * @param icon アイコン（オプショナル）
+ * @returns ユーザーとトークン
+ */
+export const GOOGLE_AUTH = gql`
+  mutation GoogleAuth($email: String!, $name: String!, $icon: String) {
+    googleAuth(email: $email, name: $name, icon: $icon) {
+      user {
+        id
+        name
+        email
+        icon
+        gold
+      }
+      tokens {
+        accessToken
+        refreshToken
+        expiresAt
+      }
+    }
+  }
+`;
+
+/**
+ * トークンの更新
+ * @param refreshToken リフレッシュトークン
+ * @returns トークン
+ */
+export const REFRESH_TOKEN = gql`
+  mutation RefreshToken($refreshToken: String!) {
+    refreshToken(refreshToken: $refreshToken) {
+      success
+      errors
+      tokens {
+        accessToken
+        refreshToken
+        expiresAt
+      }
+    }
+  }
+`;

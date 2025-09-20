@@ -1,0 +1,176 @@
+// 入力フィールドの基本スタイル
+.input {
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  font-weight: 500;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba($color-gold, 0.25);
+    filter: brightness(1.02);
+  }
+
+  &:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba($color-gold, 0.25);
+    filter: brightness(1.05);
+  }
+
+  &:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 3px rgba($color-gold, 0.15);
+    transition: all 0.1s ease;
+  }
+
+  &::placeholder {
+    opacity: 0.7;
+  }
+}
+
+// サイズバリエーション
+.small {
+  @extend .input;
+  padding: 8px 16px;
+  min-width: 100px;
+  height: 40px;
+  font-size: 0.9rem;
+}
+
+.medium {
+  @extend .input;
+  padding: 12px 24px;
+  min-width: 160px;
+  height: 50px;
+  font-size: 1rem;
+}
+
+.large {
+  @extend .input;
+  padding: 16px 32px;
+  min-width: 250px;
+  height: 80px;
+  font-size: 1.25rem;
+}
+
+// テキストカラー
+.primary-text {
+  color: $color-primary;
+}
+
+.secondary-text {
+  color: $color-secondary;
+}
+
+.tertiary-text {
+  color: $color-tertiary;
+}
+
+.accent-text {
+  color: $color-accent;
+}
+
+.gold-text {
+  color: $color-gold;
+}
+
+// 背景色
+.primary-background {
+  background-color: $color-primary;
+}
+
+.secondary-background {
+  background-color: $color-secondary;
+}
+
+.tertiary-background {
+  background-color: $color-tertiary;
+}
+
+.accent-background {
+  background-color: $color-accent;
+}
+
+.gold-background {
+  background-color: $color-gold;
+}
+
+// 枠線色
+.primary-border {
+  border-color: $color-primary;
+}
+
+.secondary-border {
+  border-color: $color-secondary;
+}
+
+.tertiary-border {
+  border-color: $color-tertiary;
+}
+
+.accent-border {
+  border-color: $color-accent;
+}
+
+.gold-border {
+  border-color: $color-gold;
+}
+
+// 特殊状態
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+
+  &:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+.round {
+  border-radius: 50px;
+}
+
+/* 拡大率150%以上 */
+@media only screen and (min-resolution: 1.5dppx) {
+  .large {
+    height: 60px;
+    font-size: 1rem;
+  }
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5),
+  only screen and (min-resolution: 144dpi) {
+  .large {
+    height: 60px;
+    font-size: 1rem;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .small {
+    min-width: auto;
+    padding: 6px 12px;
+    font-size: 0.9rem;
+  }
+
+  .medium {
+    min-width: auto;
+    padding: 8px 16px;
+    height: 45px;
+    font-size: 0.95rem;
+  }
+
+  .large {
+    min-width: auto;
+    padding: 12px 24px;
+    height: 50px;
+    font-size: 1rem;
+  }
+}

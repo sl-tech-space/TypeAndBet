@@ -1,0 +1,19 @@
+[
+  {
+    "key": "ctrl+shift+t",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Test with Coverage"
+  },
+  {
+    "key": "ctrl+shift+c",
+    "command": "coverage-gutters.displayCoverage"
+  },
+  {
+    "key": "ctrl+shift+x",
+    "command": "coverage-gutters.removeCoverage"
+  },
+  {
+    "key": "ctrl+shift+w",
+    "command": "coverage-gutters.watchCoverageAndVisibleEditors"
+  }
+]

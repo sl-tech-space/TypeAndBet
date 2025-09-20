@@ -1,0 +1,28 @@
+# Git関連
+.git
+.gitignore
+
+# ログファイル
+*.log
+
+# 一時ファイル
+*.tmp
+*.temp
+
+# 環境設定ファイル
+.env*
+
+# ドキュメント
+*.md
+README*
+
+# テストファイル
+__tests__/
+*.test.*
+*.spec.*
+
+# 開発用ファイル
+.vscode/
+.idea/
+*.swp
+*.swo
