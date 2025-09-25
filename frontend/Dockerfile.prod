@@ -1,15 +1,33 @@
 # ===== 依存関係ステージ =====
 FROM node:20-alpine AS deps
 WORKDIR /app
+
+# tmpディレクトリの容量制限を回避するため、アプリケーションディレクトリ内にキャッシュを作成
+ENV YARN_CACHE_FOLDER=/app/.yarn-cache
+ENV TMPDIR=/app/tmp
+
+# キャッシュとtmpディレクトリをアプリケーションディレクトリ内に作成
+RUN mkdir -p /app/.yarn-cache /app/tmp && chmod -R 777 /app/.yarn-cache /app/tmp
+
 COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile --production=false
+RUN yarn install --frozen-lockfile --production=false --cache-folder /app/.yarn-cache
 
 # ===== ビルドステージ =====
 FROM node:20-alpine AS builder
 WORKDIR /app
 
+# tmpディレクトリの容量制限を回避するため、アプリケーションディレクトリ内にキャッシュを作成
+ENV YARN_CACHE_FOLDER=/app/.yarn-cache
+ENV TMPDIR=/app/tmp
+
+# キャッシュとtmpディレクトリをアプリケーションディレクトリ内に作成
+RUN mkdir -p /app/.yarn-cache /app/tmp && chmod -R 777 /app/.yarn-cache /app/tmp
+
 # deps の node_modules をコピー
 COPY --from=deps /app/node_modules ./node_modules
+
+# cross-envを追加
+RUN yarn add cross-env --dev --cache-folder /app/.yarn-cache
 
 # ソースコピー
 COPY . .
@@ -23,6 +41,9 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 # Next.js Standalone ビルド
 RUN yarn build
+
+# ビルド後にキャッシュをクリーンアップしてイメージサイズを最適化
+RUN rm -rf /app/.yarn-cache /app/tmp /app/node_modules/.cache
 
 # ===== 本番ステージ =====
 FROM node:20-alpine AS runner
