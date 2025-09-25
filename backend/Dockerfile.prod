@@ -14,10 +14,10 @@ RUN apt-get update && \
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-# 依存関係のインストール
+# 依存関係のインストール（キャッシュを無効化）
 COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir --no-deps -r requirements.txt
 
 # 本番環境ステージ
 FROM python:3.11-slim
@@ -34,7 +34,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     # 非rootユーザー設定（動的UID/GID）
     USER=django
 
-# システム依存関係のインストール
+# システム依存関係のインストール（容量制限を回避するため分割）
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     libpq5 \
@@ -43,10 +43,16 @@ RUN apt-get update && \
     gettext-base \
     tzdata \
     gzip \
-    mecab \
-    mecab-ipadic-utf8 \
     && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
     echo $TZ > /etc/timezone \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# MeCabを別途インストール（容量制限を回避）
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    mecab \
+    mecab-ipadic-utf8 \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
