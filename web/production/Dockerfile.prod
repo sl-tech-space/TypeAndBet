@@ -1,5 +1,5 @@
 # ModSecurity対応のNginxイメージを使用（本番環境用）
-FROM owasp/modsecurity:nginx-alpine
+FROM docker.io/owasp/modsecurity:nginx-alpine
 
 # 必要なパッケージのインストール（容量制限を回避するため分割）
 RUN apk add --no-cache --quiet \
