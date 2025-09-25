@@ -3,7 +3,6 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # キャッシュを無効化して容量使用量を削減
-ENV YARN_CACHE_FOLDER=/dev/null
 ENV YARN_DISABLE_CACHE=1
 
 # package.jsonとyarn.lockをコピー
