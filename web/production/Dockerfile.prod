@@ -1,13 +1,17 @@
 # ModSecurity対応のNginxイメージを使用（本番環境用）
 FROM owasp/modsecurity:nginx-alpine
 
-# 必要なパッケージのインストール
+# 必要なパッケージのインストール（容量制限を回避するため分割）
 RUN apk add --no-cache --quiet \
     curl \
     wget \
     bash \
-    logrotate \
     tzdata \
+    && rm -rf /var/cache/apk/*
+
+# 追加パッケージを別途インストール
+RUN apk add --no-cache --quiet \
+    logrotate \
     dcron \
     certbot \
     && rm -rf /var/cache/apk/*
