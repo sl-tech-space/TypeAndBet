@@ -95,109 +95,13 @@ RUN mkdir -p /usr/local/etc && ln -sf /etc/mecabrc /usr/local/etc/mecabrc
 # ポート公開
 EXPOSE 8000
 
-# 起動スクリプトの作成
-RUN echo '#!/bin/bash\n\
-set -euo pipefail\n\
-\n\
-# ログ関数\n\
-log() {\n\
-    echo "[$(date +"%Y-%m-%d %H:%M:%S")] $1"\n\
-}\n\
-\n\
-# エラーハンドリング\n\
-error_exit() {\n\
-    log "ERROR: $1"\n\
-    exit 1\n\
-}\n\
-\n\
-# データベース接続確認\n\
-log "Checking database connection..."\n\
-for i in {1..60}; do\n\
-    if python manage.py check --database default; then\n\
-        log "Database connection established"\n\
-        break\n\
-    fi\n\
-    if [ $i -eq 60 ]; then\n\
-        log "Database connection failed after 60 attempts"\n\
-        log "Environment variables:"\n\
-        log "DB_HOST: $DB_HOST"\n\
-        log "DB_PORT: $DB_PORT"\n\
-        log "DB_USER: $DB_USER"\n\
-        log "DB_NAME: $DB_NAME"\n\
-        error_exit "Database connection failed after 60 attempts"\n\
-    fi\n\
-    log "Waiting for database... (attempt $i/60)"\n\
-    sleep 1\n\
-done\n\
-\n\
-# マイグレーション実行\n\
-log "Running migrations..."\n\
-if ! python manage.py migrate --noinput; then\n\
-    error_exit "Migration failed"\n\
-fi\n\
-log "Migrations completed successfully"\n\
-\n\
-# Gunicorn起動\n\
-log "Starting Gunicorn..."\n\
-exec gunicorn config.wsgi:application \\\n\
-    --bind 0.0.0.0:8000 \\\n\
-    --workers $(( $(nproc) * 2 + 1 )) \\\n\
-    --worker-class sync \\\n\
-    --worker-connections 1000 \\\n\
-    --max-requests 1000 \\\n\
-    --max-requests-jitter 100 \\\n\
-    --timeout 30 \\\n\
-    --keep-alive 2 \\\n\
-    --access-logfile /app/logs/access.log \\\n\
-    --error-logfile /app/logs/error.log \\\n\
-    --log-level info \\\n\
-    --preload \\\n\
-    --capture-output \\\n\
-    --enable-stdio-inheritance\n\
-' > /usr/local/bin/start.sh && \
-    chmod +x /usr/local/bin/start.sh
+# 起動スクリプトをコピー
+COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
 
-# cron-jobs専用の起動スクリプトの作成
-RUN echo '#!/bin/bash\n\
-set -euo pipefail\n\
-\n\
-# ログ関数\n\
-log() {\n\
-    echo "[$(date +"%Y-%m-%d %H:%M:%S")] $1"\n\
-}\n\
-\n\
-# エラーハンドリング\n\
-error_exit() {\n\
-    log "ERROR: $1"\n\
-    exit 1\n\
-}\n\
-\n\
-# データベース接続確認\n\
-log "Checking database connection..."\n\
-for i in {1..60}; do\n\
-    if python manage.py check --database default >/dev/null 2>&1; then\n\
-        log "Database connection established"\n\
-        break\n\
-    fi\n\
-    if [ $i -eq 60 ]; then\n\
-        error_exit "Database connection failed after 60 attempts"\n\
-    fi\n\
-    log "Waiting for database... (attempt $i/60)"\n\
-    sleep 1\n\
-done\n\
-\n\
-# マイグレーション実行\n\
-log "Running migrations..."\n\
-if ! python manage.py migrate --noinput; then\n\
-    error_exit "Migration failed"\n\
-fi\n\
-log "Migrations completed successfully"\n\
-\n\
-# cronジョブ設定スクリプトを実行\n\
-log "Setting up cron jobs..."\n\
-exec ./setup_cron_jobs_prod.sh\n\
-' > /usr/local/bin/start-cron.sh && \
-    chmod +x /usr/local/bin/start-cron.sh
+# cron-jobs専用の起動スクリプトをコピー
+COPY start-cron.sh /usr/local/bin/start-cron.sh
+RUN chmod +x /usr/local/bin/start-cron.sh
 
 # 非rootユーザーに切り替え
 USER $USER
