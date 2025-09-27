@@ -5,6 +5,9 @@
 
 set -euo pipefail
 
+# ループ防止フラグ
+CRON_SETUP_COMPLETED=false
+
 # ログ関数
 log() {
     echo "[$(date +"%Y-%m-%d %H:%M:%S")] $1"
@@ -12,6 +15,13 @@ log() {
 
 log "cronジョブスケジューラーを開始します..."
 log "環境: $DJANGO_ENV"
+
+# ループ防止チェック
+if [ "$CRON_SETUP_COMPLETED" = "true" ]; then
+    log "cron設定は既に完了しています。ログ監視を開始します..."
+    tail -f /app/logs/generate_text_job.log /app/logs/convert_hiragana_job.log /app/logs/partition_textpairs.log
+    exit 0
+fi
 
 # 環境変数ファイルを作成
 cat > /tmp/django_env << EOF
@@ -67,43 +77,35 @@ chmod 644 /etc/cron.d/typeandbet
 # RHEL/CentOS対応: crondサービスを起動
 log "crondサービスを起動中..."
 
-# システムサービスとしてcrondを起動（RHEL/CentOS対応）
-if command -v systemctl >/dev/null 2>&1; then
-    # systemctlが利用可能な場合（systemd環境）
-    log "systemctlを使用してcrondを起動します"
-    systemctl start crond
-    systemctl enable crond
-    sleep 2
-    if systemctl is-active --quiet crond; then
-        log "crondサービスが正常に起動しました"
-    else
-        log "ERROR: crondサービスの起動に失敗しました"
-        systemctl status crond
-        exit 1
-    fi
-else
-    # systemctlが利用できない場合（Dockerコンテナなど）
-    log "直接crondプロセスを起動します"
-    # RHEL系ではcrondコマンドを使用
-    if command -v crond >/dev/null 2>&1; then
-        crond -f -d 8 &
-        CRON_CMD="crond"
-    else
-        # フォールバック: cronコマンドを使用
-        cron &
-        CRON_CMD="cron"
-    fi
+# Dockerコンテナ内ではsystemctlが利用できないため、直接プロセス起動
+log "Dockerコンテナ環境を検出しました。直接crondプロセスを起動します"
 
-    sleep 2
-    if pgrep $CRON_CMD > /dev/null; then
-        log "$CRON_CMDプロセスが正常に起動しました (PID: $(pgrep $CRON_CMD))"
-    else
-        log "ERROR: $CRON_CMDプロセスの起動に失敗しました"
-        exit 1
-    fi
+# RHEL系ではcrondコマンドを使用
+if command -v crond >/dev/null 2>&1; then
+    log "crondコマンドを使用してプロセスを起動します"
+    crond -f -d 8 &
+    CRON_CMD="crond"
+else
+    # フォールバック: cronコマンドを使用
+    log "cronコマンドを使用してプロセスを起動します"
+    cron &
+    CRON_CMD="cron"
+fi
+
+sleep 3
+if pgrep $CRON_CMD > /dev/null; then
+    log "$CRON_CMDプロセスが正常に起動しました (PID: $(pgrep $CRON_CMD))"
+else
+    log "ERROR: $CRON_CMDプロセスの起動に失敗しました"
+    log "利用可能なcronコマンドを確認します..."
+    which cron crond
+    exit 1
 fi
 
 log "cronジョブ設定完了"
+
+# ループ防止フラグを設定
+CRON_SETUP_COMPLETED=true
 
 # RHEL環境でのcronログ確認
 log "cron設定とプロセス状況を確認します..."
