@@ -92,7 +92,8 @@ services:
     security_opt:
       - no-new-privileges:true
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://0.0.0.0:${FRONTEND_PORT}/health"]
+      test:
+        ["CMD", "wget", "-qO-", "http://0.0.0.0:${FRONTEND_PORT}/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
