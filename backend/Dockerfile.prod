@@ -17,7 +17,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 # 依存関係のインストール（キャッシュを無効化）
 COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir --no-deps -r requirements.txt
+    pip install --no-cache-dir -r requirements.txt
 
 # 本番環境ステージ
 FROM python:3.11-slim
