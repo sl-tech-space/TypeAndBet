@@ -66,25 +66,8 @@ chmod 644 /etc/cron.d/typeandbet
 
 # cronプロセスをバックグラウンドで起動
 log "cronプロセスを起動中..."
-# セッション管理の問題を回避するため、nohupを使用
-nohup cron -f > /app/logs/cron.log 2>&1 &
-
-# cronプロセスが起動したか確認
-sleep 3
-if pgrep cron > /dev/null; then
-    log "cronプロセスが正常に起動しました (PID: $(pgrep cron))"
-    # cron設定を再読み込み
-    log "cron設定を再読み込み中..."
-    kill -HUP $(pgrep cron) 2>/dev/null || true
-else
-    log "ERROR: cronプロセスの起動に失敗しました"
-    log "cronプロセス一覧:"
-    ps aux | grep cron || true
-    exit 1
-fi
+# セッション管理の問題を回避するため、直接cronを起動
+cron
 
 log "cronジョブ設定完了"
-
-# ログ監視
-log "ログ監視を開始します..."
-tail -f /app/logs/generate_text_job.log /app/logs/convert_hiragana_job.log /app/logs/partition_textpairs.log
+log "cronプロセスをフォアグラウンドで起動します..."
