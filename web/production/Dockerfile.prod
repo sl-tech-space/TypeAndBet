@@ -81,7 +81,7 @@ COPY --chown=root:root logrotate.conf /etc/logrotate.d/nginx
 COPY --chown=root:root setup-logrotate.sh /usr/local/bin/
 
 # エントリーポイントスクリプトに実行権限を付与
-RUN chmod +x /usr/local/bin/custom-entrypoint.sh
+RUN chmod +x /usr/local/bin/custom-entrypoint.sh /usr/local/bin/setup-logrotate.sh
 
 # Nginxユーザーに変更
 USER nginx
