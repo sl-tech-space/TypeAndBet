@@ -25,7 +25,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN yarn build
 
 # ビルド後に不要なファイルをクリーンアップしてイメージサイズを最適化
-RUN rm -rf /app/node_modules /app/src /app/public /tmp/* /var/tmp/*
+RUN rm -rf /app/node_modules /app/src /tmp/* /var/tmp/*
 
 # ===== 本番ステージ =====
 FROM node:20-alpine AS runner
