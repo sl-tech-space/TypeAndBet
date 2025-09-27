@@ -15,7 +15,7 @@ error_exit() {
 # データベース接続確認
 log "Checking database connection..."
 for i in {1..60}; do
-    if python manage.py check --database default; then
+    if /opt/venv/bin/python /app/manage.py check --database default; then
         log "Database connection established"
         break
     fi
@@ -34,11 +34,11 @@ done
 
 # マイグレーション実行
 log "Running migrations..."
-if ! python manage.py migrate --noinput; then
+if ! /opt/venv/bin/python /app/manage.py migrate --noinput; then
     error_exit "Migration failed"
 fi
 log "Migrations completed successfully"
 
 # cronジョブ設定スクリプトを実行
-log "Setting up cron jobs..."
+log "Starting cron jobs with prod script..."
 exec ./setup_cron_jobs_prod.sh
