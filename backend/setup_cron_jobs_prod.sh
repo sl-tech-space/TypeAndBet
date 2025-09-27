@@ -64,17 +64,34 @@ chmod 755 /var/spool/cron
 chmod 755 /var/spool/cron/crontabs
 chmod 644 /etc/cron.d/typeandbet
 
+# デバッグ情報を出力
+log "=== デバッグ情報 ==="
+log "現在のユーザー: $(whoami)"
+log "現在のUID: $(id -u)"
+log "現在のGID: $(id -g)"
+log "cron設定ファイルの内容:"
+cat /etc/cron.d/typeandbet
+log "cron設定ファイルの権限: $(ls -la /etc/cron.d/typeandbet)"
+log "cronディレクトリの権限: $(ls -la /var/spool/cron/)"
+log "cronプロセスの状態: $(ps aux | grep cron | grep -v grep || echo 'cronプロセスなし')"
+log "=================="
+
 # cronプロセスをバックグラウンドで起動
 log "cronプロセスを起動中..."
 # セッション管理の問題を回避するため、バックグラウンドで起動
 cron &
 
 # cronプロセスが起動したか確認
-sleep 2
+sleep 3
 if pgrep cron > /dev/null; then
     log "cronプロセスが正常に起動しました (PID: $(pgrep cron))"
+    log "cronプロセスの詳細: $(ps aux | grep cron | grep -v grep)"
 else
     log "ERROR: cronプロセスの起動に失敗しました"
+    log "システムログを確認:"
+    tail -n 20 /var/log/syslog 2>/dev/null || echo "syslogが見つかりません"
+    log "cronログを確認:"
+    tail -n 20 /var/log/cron 2>/dev/null || echo "cronログが見つかりません"
     exit 1
 fi
 
