@@ -64,7 +64,11 @@ RUN mkdir -p /app/logs /app/media /app/tmp /var/log /var/run /shared && \
     chmod 700 /app/tmp && \
     chmod 755 /var/log && \
     chmod 755 /var/run && \
-    chmod 755 /shared
+    chmod 755 /shared && \
+    # cron用のディレクトリと権限設定
+    mkdir -p /var/spool/cron/crontabs && \
+    chmod 755 /var/spool/cron && \
+    chmod 755 /var/spool/cron/crontabs
 
 # アプリケーションコードのコピー（djangoユーザー所有）
 COPY --chown=django:django . .

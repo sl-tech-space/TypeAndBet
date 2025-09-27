@@ -57,15 +57,26 @@ log "cronサービスを開始します..."
 # 環境変数を設定
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
+# cronディレクトリの権限を確認・修正
+chmod 755 /var/spool/cron
+chmod 755 /var/spool/cron/crontabs
+chmod 644 /etc/cron.d/typeandbet
+
 # cronプロセスをバックグラウンドで起動
-cron &
+log "cronプロセスを起動中..."
+cron -f &
 
 # cronプロセスが起動したか確認
-sleep 2
+sleep 3
 if pgrep cron > /dev/null; then
-    log "cronプロセスが正常に起動しました"
+    log "cronプロセスが正常に起動しました (PID: $(pgrep cron))"
+    # cron設定を再読み込み
+    log "cron設定を再読み込み中..."
+    kill -HUP $(pgrep cron) 2>/dev/null || true
 else
     log "ERROR: cronプロセスの起動に失敗しました"
+    log "cronプロセス一覧:"
+    ps aux | grep cron || true
     exit 1
 fi
 
