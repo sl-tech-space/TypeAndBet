@@ -40,7 +40,14 @@ services:
           memory: 256M
           cpus: "0.5"
     healthcheck:
-      test: ["CMD", "curl", "-f", "-s", "http://localhost/health"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "-qO-",
+          "http://localhost:${HTTP_PORT}/health",
+          "--header=User-Agent: HealthCheck/1.0",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -51,7 +58,9 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
 
   frontend:
     build:

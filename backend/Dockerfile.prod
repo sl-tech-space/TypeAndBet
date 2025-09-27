@@ -113,11 +113,17 @@ error_exit() {\n\
 # データベース接続確認\n\
 log "Checking database connection..."\n\
 for i in {1..60}; do\n\
-    if python manage.py check --database default >/dev/null 2>&1; then\n\
+    if python manage.py check --database default; then\n\
         log "Database connection established"\n\
         break\n\
     fi\n\
     if [ $i -eq 60 ]; then\n\
+        log "Database connection failed after 60 attempts"\n\
+        log "Environment variables:"\n\
+        log "DB_HOST: $DB_HOST"\n\
+        log "DB_PORT: $DB_PORT"\n\
+        log "DB_USER: $DB_USER"\n\
+        log "DB_NAME: $DB_NAME"\n\
         error_exit "Database connection failed after 60 attempts"\n\
     fi\n\
     log "Waiting for database... (attempt $i/60)"\n\
