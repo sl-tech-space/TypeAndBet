@@ -68,7 +68,9 @@ sleep 2
 touch /app/logs/generate_text_job.log
 touch /app/logs/convert_hiragana_job.log
 touch /app/logs/partition_textpairs.log
-chown django:django /app/logs/*.log
+# rootユーザーでcronジョブを実行するため、ログファイルの所有者をrootに設定
+chown root:root /app/logs/*.log
+chmod 644 /app/logs/*.log
 
 log "cronジョブの設定が完了しました"
 
