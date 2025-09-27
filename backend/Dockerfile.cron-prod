@@ -76,47 +76,9 @@ RUN chmod +x setup_cron_jobs_prod.sh
 RUN mkdir -p /etc/cron.d && \
     chmod 755 /etc/cron.d
 
-# 起動スクリプトの作成
-RUN echo '#!/bin/bash\n\
-set -euo pipefail\n\
-\n\
-# ログ関数\n\
-log() {\n\
-    echo "[$(date +"%Y-%m-%d %H:%M:%S")] $1"\n\
-}\n\
-\n\
-# エラーハンドリング\n\
-error_exit() {\n\
-    log "ERROR: $1"\n\
-    exit 1\n\
-}\n\
-\n\
-# データベース接続確認\n\
-log "Checking database connection..."\n\
-for i in {1..60}; do\n\
-    if /opt/venv/bin/python /app/manage.py check --database default >/dev/null 2>&1; then\n\
-        log "Database connection established"\n\
-        break\n\
-    fi\n\
-    if [ $i -eq 60 ]; then\n\
-        error_exit "Database connection failed after 60 attempts"\n\
-    fi\n\
-    log "Waiting for database... (attempt $i/60)"\n\
-    sleep 1\n\
-done\n\
-\n\
-# マイグレーション実行\n\
-log "Running migrations..."\n\
-if ! /opt/venv/bin/python /app/manage.py migrate --noinput; then\n\
-    error_exit "Migration failed"\n\
-fi\n\
-log "Migrations completed successfully"\n\
-\n\
-# prodスクリプトを実行\n\
-log "Starting cron jobs with prod script..."\n\
-exec ./setup_cron_jobs_prod.sh\n\
-' > /usr/local/bin/start-cron.sh && \
-    chmod +x /usr/local/bin/start-cron.sh
+# 起動スクリプトをコピー
+COPY start-cron.sh /usr/local/bin/start-cron.sh
+RUN chmod +x /usr/local/bin/start-cron.sh
 
 # rootユーザーのまま実行（cronプロセス用）
 CMD ["/usr/local/bin/start-cron.sh"]
