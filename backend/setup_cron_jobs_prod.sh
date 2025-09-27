@@ -35,6 +35,8 @@ EOF
 log "cronジョブを設定します..."
 cat > /etc/cron.d/typeandbet << EOF
 # TypeAndBet Django Jobs
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 0,10,20,30,40,50 * * * * root . /tmp/django_env && cd /app && /opt/venv/bin/python /app/manage.py generate_text_job >> /app/logs/generate_text_job.log 2>&1
 5,15,25,35,45,55 * * * * root . /tmp/django_env && cd /app && /opt/venv/bin/python /app/manage.py convert_hiragana_job >> /app/logs/convert_hiragana_job.log 2>&1
 0 2 * * * root . /tmp/django_env && cd /app && /opt/venv/bin/python /app/manage.py partition_textpairs --all >> /app/logs/partition_textpairs.log 2>&1
@@ -64,7 +66,8 @@ chmod 644 /etc/cron.d/typeandbet
 
 # cronプロセスをバックグラウンドで起動
 log "cronプロセスを起動中..."
-cron -f &
+# セッション管理の問題を回避するため、nohupを使用
+nohup cron -f > /app/logs/cron.log 2>&1 &
 
 # cronプロセスが起動したか確認
 sleep 3
