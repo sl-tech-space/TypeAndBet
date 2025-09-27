@@ -39,6 +39,11 @@ if ! python manage.py migrate --noinput; then
 fi
 log "Migrations completed successfully"
 
+# Pythonスケジューラーをバックグラウンドで起動
+log "Starting Python scheduler..."
+python scheduler.py &
+SCHEDULER_PID=$!
+
 # Gunicorn起動
 log "Starting Gunicorn..."
 exec gunicorn config.wsgi:application \
