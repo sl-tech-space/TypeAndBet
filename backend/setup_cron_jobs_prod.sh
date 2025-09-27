@@ -41,21 +41,21 @@ export GEMINI_MODEL=$GEMINI_MODEL
 export PATH="/opt/venv/bin:$PATH"
 EOF
 
-# cron設定ファイルを作成
+# cron設定をrootユーザーのcrontabに直接設定
 log "cronジョブを設定します..."
-cat > /etc/cron.d/typeandbet << EOF
+cat > /tmp/crontab_config << EOF
 # TypeAndBet Django Jobs
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-0,10,20,30,40,50 * * * * root . /tmp/django_env && cd /app && /opt/venv/bin/python /app/manage.py generate_text_job >> /app/logs/generate_text_job.log 2>&1
-5,15,25,35,45,55 * * * * root . /tmp/django_env && cd /app && /opt/venv/bin/python /app/manage.py convert_hiragana_job >> /app/logs/convert_hiragana_job.log 2>&1
-0 2 * * * root . /tmp/django_env && cd /app && /opt/venv/bin/python /app/manage.py partition_textpairs --all >> /app/logs/partition_textpairs.log 2>&1
-
+0,10,20,30,40,50 * * * * . /tmp/django_env && cd /app && /opt/venv/bin/python /app/manage.py generate_text_job >> /app/logs/generate_text_job.log 2>&1
+5,15,25,35,45,55 * * * * . /tmp/django_env && cd /app && /opt/venv/bin/python /app/manage.py convert_hiragana_job >> /app/logs/convert_hiragana_job.log 2>&1
+0 2 * * * . /tmp/django_env && cd /app && /opt/venv/bin/python /app/manage.py partition_textpairs --all >> /app/logs/partition_textpairs.log 2>&1
 EOF
 
-# cron設定ファイルの権限を設定
-chmod 0644 /etc/cron.d/typeandbet
+# crontabに設定を適用
+crontab /tmp/crontab_config
+log "crontab設定を適用しました"
 
 # cronデーモンを再起動して設定をリロード
 log "cronデーモンを再起動して設定をリロードします..."
@@ -81,7 +81,6 @@ export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 # cronディレクトリの権限を確認・修正
 chmod 755 /var/spool/cron
 chmod 755 /var/spool/cron/crontabs
-chmod 644 /etc/cron.d/typeandbet
 
 # RHEL/CentOS対応: crondサービスを起動
 log "crondサービスを起動中..."
@@ -116,10 +115,10 @@ log "cronジョブ設定完了"
 # ループ防止フラグを設定
 CRON_SETUP_COMPLETED=true
 
-# RHEL環境でのcronログ確認
+# cron設定の確認
 log "cron設定とプロセス状況を確認します..."
-log "cron設定ファイルの内容:"
-cat /etc/cron.d/typeandbet
+log "crontab設定の内容:"
+crontab -l
 
 log "実行中のcronプロセス:"
 ps aux | grep -E "(cron|crond)" | grep -v grep
