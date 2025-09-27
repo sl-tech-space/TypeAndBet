@@ -78,7 +78,7 @@ COPY --chown=nginx:nginx default.conf.template /etc/nginx/templates/
 COPY --chown=nginx:nginx custom-entrypoint.sh /usr/local/bin/
 COPY --chown=nginx:nginx modsecurity.d/ /etc/custom-modsecurity.d/
 COPY --chown=root:root logrotate.conf /etc/logrotate.d/nginx
-COPY --chown=root:root setup-logrotate.sh /usr/local/bin/
+COPY --chown=nginx:nginx setup-logrotate.sh /usr/local/bin/
 
 # エントリーポイントスクリプトに実行権限を付与
 RUN chmod +x /usr/local/bin/custom-entrypoint.sh /usr/local/bin/setup-logrotate.sh
