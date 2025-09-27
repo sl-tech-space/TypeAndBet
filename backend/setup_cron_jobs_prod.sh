@@ -64,38 +64,62 @@ chmod 755 /var/spool/cron
 chmod 755 /var/spool/cron/crontabs
 chmod 644 /etc/cron.d/typeandbet
 
-# デバッグ情報を出力
-log "=== デバッグ情報 ==="
-log "現在のユーザー: $(whoami)"
-log "現在のUID: $(id -u)"
-log "現在のGID: $(id -g)"
-log "cron設定ファイルの内容:"
-cat /etc/cron.d/typeandbet
-log "cron設定ファイルの権限: $(ls -la /etc/cron.d/typeandbet)"
-log "cronディレクトリの権限: $(ls -la /var/spool/cron/)"
-log "cronプロセスの状態: $(ps aux | grep cron | grep -v grep || echo 'cronプロセスなし')"
-log "=================="
+# RHEL/CentOS対応: crondサービスを起動
+log "crondサービスを起動中..."
 
-# cronプロセスをバックグラウンドで起動
-log "cronプロセスを起動中..."
-# セッション管理の問題を回避するため、バックグラウンドで起動
-cron &
-
-# cronプロセスが起動したか確認
-sleep 3
-if pgrep cron > /dev/null; then
-    log "cronプロセスが正常に起動しました (PID: $(pgrep cron))"
-    log "cronプロセスの詳細: $(ps aux | grep cron | grep -v grep)"
+# システムサービスとしてcrondを起動（RHEL/CentOS対応）
+if command -v systemctl >/dev/null 2>&1; then
+    # systemctlが利用可能な場合（systemd環境）
+    log "systemctlを使用してcrondを起動します"
+    systemctl start crond
+    systemctl enable crond
+    sleep 2
+    if systemctl is-active --quiet crond; then
+        log "crondサービスが正常に起動しました"
+    else
+        log "ERROR: crondサービスの起動に失敗しました"
+        systemctl status crond
+        exit 1
+    fi
 else
-    log "ERROR: cronプロセスの起動に失敗しました"
-    log "システムログを確認:"
-    tail -n 20 /var/log/syslog 2>/dev/null || echo "syslogが見つかりません"
-    log "cronログを確認:"
-    tail -n 20 /var/log/cron 2>/dev/null || echo "cronログが見つかりません"
-    exit 1
+    # systemctlが利用できない場合（Dockerコンテナなど）
+    log "直接crondプロセスを起動します"
+    # RHEL系ではcrondコマンドを使用
+    if command -v crond >/dev/null 2>&1; then
+        crond -f -d 8 &
+        CRON_CMD="crond"
+    else
+        # フォールバック: cronコマンドを使用
+        cron &
+        CRON_CMD="cron"
+    fi
+
+    sleep 2
+    if pgrep $CRON_CMD > /dev/null; then
+        log "$CRON_CMDプロセスが正常に起動しました (PID: $(pgrep $CRON_CMD))"
+    else
+        log "ERROR: $CRON_CMDプロセスの起動に失敗しました"
+        exit 1
+    fi
 fi
 
 log "cronジョブ設定完了"
+
+# RHEL環境でのcronログ確認
+log "cron設定とプロセス状況を確認します..."
+log "cron設定ファイルの内容:"
+cat /etc/cron.d/typeandbet
+
+log "実行中のcronプロセス:"
+ps aux | grep -E "(cron|crond)" | grep -v grep
+
+# RHEL系のcronログがあるか確認
+if [ -f /var/log/cron ]; then
+    log "RHEL系cronログを確認します:"
+    tail -5 /var/log/cron
+else
+    log "RHEL系cronログファイルが見つかりません"
+fi
 
 # ログ監視
 log "ログ監視を開始します..."
