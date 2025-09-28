@@ -14,6 +14,7 @@ RUN apk add --no-cache --quiet \
     logrotate \
     dcron \
     certbot \
+    su-exec \
     && rm -rf /var/cache/apk/*
 
 # デフォルトタイムゾーンの設定
@@ -82,9 +83,6 @@ COPY --chown=nginx:nginx setup-logrotate.sh /usr/local/bin/
 
 # エントリーポイントスクリプトに実行権限を付与
 RUN chmod +x /usr/local/bin/custom-entrypoint.sh /usr/local/bin/setup-logrotate.sh
-
-# Nginxユーザーに変更
-USER nginx
 
 # ポートの公開（HTTP + HTTPS）
 EXPOSE 80 443

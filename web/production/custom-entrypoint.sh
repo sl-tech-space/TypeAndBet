@@ -67,10 +67,10 @@ if ! nginx -t > /dev/null 2>&1; then
     exit 1
 fi
 
-# Cronデーモンを起動
+# Cronデーモンをrootで起動（バックグラウンド）
 echo "Starting cron daemon..."
-crond
+crond &
 
-# Nginxを起動
+# nginxユーザーに変更してNginxを起動
 echo "Starting Nginx..."
-exec nginx -g "daemon off;"
+exec su-exec nginx nginx -g "daemon off;"
