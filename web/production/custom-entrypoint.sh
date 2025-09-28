@@ -37,6 +37,14 @@ chmod 755 /etc/nginx/templates 2>/dev/null || true
 # certbotディレクトリの権限調整（サイレント実行）
 chmod 755 /var/www/certbot 2>/dev/null || true
 
+# SSL証明書ディレクトリの権限調整（マウント後の権限変更）
+if [ -d /etc/letsencrypt ]; then
+    chown -R nginx:nginx /etc/letsencrypt 2>/dev/null || true
+    chmod -R 755 /etc/letsencrypt 2>/dev/null || true
+    # 証明書ファイルの権限を適切に設定
+    find /etc/letsencrypt -name "*.pem" -exec chmod 644 {} \; 2>/dev/null || true
+fi
+
 # ログローテーション設定（サイレント実行）
 if [ -f /usr/local/bin/setup-logrotate.sh ]; then
     chmod +x /usr/local/bin/setup-logrotate.sh
