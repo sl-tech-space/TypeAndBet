@@ -39,6 +39,11 @@ chmod 755 /etc/nginx/templates 2>/dev/null || true
 # certbotディレクトリの権限調整（サイレント実行）
 chmod 755 /var/www/certbot 2>/dev/null || true
 
+# certbotチャレンジディレクトリの作成と権限設定
+mkdir -p /var/www/certbot/.well-known/acme-challenge 2>/dev/null || true
+chown -R root:root /var/www/certbot 2>/dev/null || true
+chmod -R 755 /var/www/certbot 2>/dev/null || true
+
 # SSL証明書ディレクトリの権限調整（マウント後の権限変更）
 if [ -d /etc/letsencrypt ]; then
     chown -R root:root /etc/letsencrypt 2>/dev/null || true
