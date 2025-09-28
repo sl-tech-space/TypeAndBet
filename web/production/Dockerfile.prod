@@ -85,8 +85,8 @@ COPY --chown=nginx:nginx setup-logrotate.sh /usr/local/bin/
 # エントリーポイントスクリプトに実行権限を付与
 RUN chmod +x /usr/local/bin/custom-entrypoint.sh /usr/local/bin/setup-logrotate.sh
 
-# nginxユーザーにNET_BIND_SERVICE権限を付与
-RUN setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx
+# nginxユーザーにNET_BIND_SERVICE権限を付与（ポート80/443にバインド可能）
+RUN which nginx && ls -la /usr/sbin/nginx && setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx
 
 # ポートの公開（HTTP + HTTPS）
 EXPOSE 80 443
