@@ -206,6 +206,7 @@ services:
   certbot:
     image: certbot/certbot
     container_name: tab-certbot-prod
+    user: "1000:1000"
     volumes:
       - ./web/certbot/conf:/etc/letsencrypt
       - ./web/certbot/www:/var/www/certbot
