@@ -43,6 +43,7 @@ chmod 755 /var/www/certbot 2>/dev/null || true
 mkdir -p /var/www/certbot/.well-known/acme-challenge 2>/dev/null || true
 chown -R root:root /var/www/certbot 2>/dev/null || true
 chmod -R 755 /var/www/certbot 2>/dev/null || true
+chmod 777 /var/www/certbot/.well-known/acme-challenge 2>/dev/null || true
 
 # SSL証明書ディレクトリの権限調整（マウント後の権限変更）
 if [ -d /etc/letsencrypt ]; then
