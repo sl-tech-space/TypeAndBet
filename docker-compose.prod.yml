@@ -216,7 +216,7 @@ services:
     command:
       [
         "-c",
-        "mkdir -p /var/www/certbot/.well-known/acme-challenge && chown -R root:root /var/www/certbot && chmod -R 755 /var/www/certbot && certbot certonly --webroot -w /var/www/certbot --config-dir /tmp/certbot-config --work-dir /tmp/certbot-work --logs-dir /tmp/certbot-logs --non-interactive --agree-tos --email ${CERTBOT_EMAIL} -d ${SERVER_NAME} -d www.${SERVER_NAME}",
+        "mkdir -p /var/www/certbot/.well-known/acme-challenge && certbot certonly --webroot -w /var/www/certbot --config-dir /tmp/certbot-config --work-dir /tmp/certbot-work --logs-dir /tmp/certbot-logs --non-interactive --agree-tos --email ${CERTBOT_EMAIL} -d ${SERVER_NAME} -d www.${SERVER_NAME}",
       ]
     depends_on:
       - nginx
