@@ -210,7 +210,8 @@ services:
     volumes:
       - ./web/certbot/conf:/etc/letsencrypt
       - ./web/certbot/www:/var/www/certbot
-    command: certonly --webroot -w /var/www/certbot -d type-and-bet.san-tou.com -d www.type-and-bet.san-tou.com
+      - ./web/certbot/logs:/var/log/letsencrypt
+    command: certonly --webroot -w /var/www/certbot --logs-dir /var/log/letsencrypt -d type-and-bet.san-tou.com -d www.type-and-bet.san-tou.com
     depends_on:
       - nginx
     networks:
