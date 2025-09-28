@@ -25,8 +25,6 @@ services:
         condition: service_started
       db:
         condition: service_healthy
-      cron-jobs:
-        condition: service_started
     networks:
       - frontend-net
       - backend-net
@@ -200,43 +198,6 @@ services:
     security_opt:
       - no-new-privileges:true
 
-  cron-jobs:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.cron-prod
-    container_name: tab-cron-jobs-staging
-    environment:
-      - DJANGO_ENV=production
-      - DEBUG=True
-      - SECRET_KEY=${SECRET_KEY}
-      - TZ=${TIMEZONE:-Asia/Tokyo}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
-      - JWT_SECRET=${JWT_SECRET}
-      - PYTHONIOENCODING=${PYTHONIOENCODING}
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - GEMINI_MODEL=${GEMINI_MODEL}
-      - EMAIL_HOST=${EMAIL_HOST}
-      - EMAIL_PORT=${EMAIL_PORT}
-      - EMAIL_USE_TLS=${EMAIL_USE_TLS}
-      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
-      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
-      - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL}
-    depends_on:
-      db:
-        condition: service_healthy
-      backend:
-        condition: service_started
-    restart: unless-stopped
-    networks:
-      - backend-net
-    volumes:
-      - shared_data:/shared
-      - cron_logs:/var/log
-    user: "0:0"
 
 volumes:
   tab_postgres_data_staging:
@@ -244,8 +205,6 @@ volumes:
   nginx_logs_staging:
     driver: local
   shared_data:
-    driver: local
-  cron_logs:
     driver: local
 
 networks:

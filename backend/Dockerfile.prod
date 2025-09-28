@@ -64,10 +64,9 @@ ENV PATH="/opt/venv/bin:$PATH"
 RUN groupadd -r $USER && \
     useradd -r -g $USER $USER
 
-# cronジョブ用の設定
-RUN mkdir -p /etc/cron.d && \
-    chown -R $USER:$USER /etc/cron.d && \
-    chmod 755 /etc/cron.d
+# スケジューラー用の設定
+RUN mkdir -p /app/logs && \
+    chown -R $USER:$USER /app/logs
 
 # 必要なディレクトリの作成と権限設定
 RUN mkdir -p /app/logs /app/media /app/tmp /var/log /var/run /shared && \
@@ -86,8 +85,8 @@ RUN mkdir -p /app/logs /app/media /app/tmp /var/log /var/run /shared && \
 # アプリケーションコードのコピー
 COPY --chown=$USER:$USER . .
 
-# cronジョブ設定スクリプトに実行権限を付与
-RUN chmod +x setup_cron_jobs_prod.sh
+# スケジューラースクリプトに実行権限を付与
+RUN chmod +x scheduler.py
 
 # MeCab設定ファイルのシンボリックリンクを作成
 RUN mkdir -p /usr/local/etc && ln -sf /etc/mecabrc /usr/local/etc/mecabrc
@@ -99,9 +98,6 @@ EXPOSE 8000
 COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
 
-# cron-jobs専用の起動スクリプトをコピー
-COPY start-cron.sh /usr/local/bin/start-cron.sh
-RUN chmod +x /usr/local/bin/start-cron.sh
 
 # 非rootユーザーに切り替え
 USER $USER
