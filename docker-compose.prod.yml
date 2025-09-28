@@ -203,6 +203,18 @@ services:
     security_opt:
       - no-new-privileges:true
 
+  certbot:
+    image: certbot/certbot
+    container_name: tab-certbot-prod
+    volumes:
+      - ./web/certbot/conf:/etc/letsencrypt
+      - ./web/certbot/www:/var/www/certbot
+    command: certonly --webroot -w /var/www/certbot -d type-and-bet.san-tou.com -d www.type-and-bet.san-tou.com
+    depends_on:
+      - nginx
+    networks:
+      - frontend-net
+
 volumes:
   tab_postgres_data_prod:
     driver: local
