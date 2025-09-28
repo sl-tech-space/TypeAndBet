@@ -41,10 +41,15 @@ chmod 755 /var/www/certbot 2>/dev/null || true
 
 # SSL証明書ディレクトリの権限調整（マウント後の権限変更）
 if [ -d /etc/letsencrypt ]; then
-    chown -R nginx:nginx /etc/letsencrypt 2>/dev/null || true
+    chown -R root:root /etc/letsencrypt 2>/dev/null || true
     chmod -R 755 /etc/letsencrypt 2>/dev/null || true
     # 証明書ファイルの権限を適切に設定
     find /etc/letsencrypt -name "*.pem" -exec chmod 644 {} \; 2>/dev/null || true
+    # certbot用のディレクトリを作成
+    mkdir -p /etc/letsencrypt/renewal 2>/dev/null || true
+    mkdir -p /etc/letsencrypt/live 2>/dev/null || true
+    mkdir -p /etc/letsencrypt/archive 2>/dev/null || true
+    chown -R root:root /etc/letsencrypt/renewal /etc/letsencrypt/live /etc/letsencrypt/archive 2>/dev/null || true
 fi
 
 # ログローテーション設定（サイレント実行）
