@@ -15,6 +15,7 @@ RUN apk add --no-cache --quiet \
     dcron \
     certbot \
     su-exec \
+    libcap \
     && rm -rf /var/cache/apk/*
 
 # デフォルトタイムゾーンの設定
