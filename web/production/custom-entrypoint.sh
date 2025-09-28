@@ -73,15 +73,6 @@ fi
 echo "Starting cron daemon..."
 crond &
 
-# nginxバイナリの権限を確認・設定
-echo "Checking nginx binary permissions..."
-which nginx
-ls -la /usr/sbin/nginx
-setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx 2>/dev/null || echo "setcap failed, trying alternative path"
-if [ -f /usr/bin/nginx ]; then
-    setcap 'cap_net_bind_service=+ep' /usr/bin/nginx 2>/dev/null || echo "setcap on /usr/bin/nginx failed"
-fi
-
-# nginxユーザーに変更してNginxを起動
+# Nginxをrootで起動
 echo "Starting Nginx..."
-exec su-exec nginx nginx -g "daemon off;"
+exec nginx -g "daemon off;"

@@ -14,8 +14,6 @@ RUN apk add --no-cache --quiet \
     logrotate \
     dcron \
     certbot \
-    su-exec \
-    libcap \
     && rm -rf /var/cache/apk/*
 
 # デフォルトタイムゾーンの設定
@@ -74,19 +72,16 @@ fi\n\
 # Cronジョブを設定（毎月1日の午前2時に実行）
 RUN echo '0 2 1 * * /usr/local/bin/renew-certs.sh' | crontab -
 
-# 設定ファイルのコピー
-COPY --chown=nginx:nginx nginx.conf.template /etc/nginx/templates/
-COPY --chown=nginx:nginx default.conf.template /etc/nginx/templates/
-COPY --chown=nginx:nginx custom-entrypoint.sh /usr/local/bin/
-COPY --chown=nginx:nginx modsecurity.d/ /etc/custom-modsecurity.d/
+# 設定ファイルのコピー（rootで実行するためroot:rootに変更）
+COPY --chown=root:root nginx.conf.template /etc/nginx/templates/
+COPY --chown=root:root default.conf.template /etc/nginx/templates/
+COPY --chown=root:root custom-entrypoint.sh /usr/local/bin/
+COPY --chown=root:root modsecurity.d/ /etc/custom-modsecurity.d/
 COPY --chown=root:root logrotate.conf /etc/logrotate.d/nginx
-COPY --chown=nginx:nginx setup-logrotate.sh /usr/local/bin/
+COPY --chown=root:root setup-logrotate.sh /usr/local/bin/
 
 # エントリーポイントスクリプトに実行権限を付与
 RUN chmod +x /usr/local/bin/custom-entrypoint.sh /usr/local/bin/setup-logrotate.sh
-
-# nginxユーザーにNET_BIND_SERVICE権限を付与（ポート80/443にバインド可能）
-RUN which nginx && ls -la /usr/sbin/nginx && setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx
 
 # ポートの公開（HTTP + HTTPS）
 EXPOSE 80 443
