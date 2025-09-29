@@ -36,19 +36,27 @@ chmod 755 /etc/nginx 2>/dev/null || true
 chmod 755 /etc/nginx/conf.d 2>/dev/null || true
 chmod 755 /etc/nginx/templates 2>/dev/null || true
 
-# certbotディレクトリの権限調整（サイレント実行）
-chmod 755 /var/www/certbot 2>/dev/null || true
+# certbotディレクトリの権限調整（強制的に実行）
+echo "Setting up certbot directory permissions..."
+chmod 755 /var/www/certbot || echo "Failed to chmod /var/www/certbot"
+chown -R root:root /var/www/certbot || echo "Failed to chown /var/www/certbot"
 
 # certbotチャレンジディレクトリの作成と権限設定
-mkdir -p /var/www/certbot/.well-known/acme-challenge 2>/dev/null || true
-chown -R root:root /var/www/certbot 2>/dev/null || true
-chmod -R 755 /var/www/certbot 2>/dev/null || true
-chmod 777 /var/www/certbot/.well-known/acme-challenge 2>/dev/null || true
+echo "Creating acme-challenge directory..."
+mkdir -p /var/www/certbot/.well-known/acme-challenge || echo "Failed to create acme-challenge directory"
+chmod 777 /var/www/certbot/.well-known/acme-challenge || echo "Failed to chmod acme-challenge directory"
+chown -R root:root /var/www/certbot/.well-known/acme-challenge || echo "Failed to chown acme-challenge directory"
 
 # テスト用ファイルを作成（certbotの動作確認用）
-touch /var/www/certbot/.well-known/acme-challenge/test.txt 2>/dev/null || true
-echo "OK" > /var/www/certbot/.well-known/acme-challenge/test.txt 2>/dev/null || true
-chmod 644 /var/www/certbot/.well-known/acme-challenge/test.txt 2>/dev/null || true
+echo "Creating test file..."
+touch /var/www/certbot/.well-known/acme-challenge/test.txt || echo "Failed to create test file"
+echo "OK" > /var/www/certbot/.well-known/acme-challenge/test.txt || echo "Failed to write to test file"
+chmod 644 /var/www/certbot/.well-known/acme-challenge/test.txt || echo "Failed to chmod test file"
+chown root:root /var/www/certbot/.well-known/acme-challenge/test.txt || echo "Failed to chown test file"
+
+# 権限設定の確認
+echo "Verifying permissions..."
+ls -la /var/www/certbot/.well-known/acme-challenge/ || echo "Failed to list acme-challenge directory"
 
 # SSL証明書ディレクトリの権限調整（マウント後の権限変更）
 if [ -d /etc/letsencrypt ]; then
