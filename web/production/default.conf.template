@@ -68,6 +68,9 @@ server {
         access_log /var/log/nginx/acme-challenge-access.log;
         error_log /var/log/nginx/acme-challenge-error.log error;
 
+        # ModSecurityを無効化
+        modsecurity off;
+
         # セキュリティヘッダー
         add_header X-Content-Type-Options nosniff always;
         add_header X-Frame-Options DENY always;
