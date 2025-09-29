@@ -57,6 +57,9 @@ server {
     listen ${HTTP_PORT};
     server_name ${SERVER_NAME};
 
+    # ModSecurityを無効化（certbot用）
+    modsecurity off;
+
     # レート制限適用
     limit_req zone=general burst=20 nodelay;
     limit_conn conn_limit 10;
@@ -67,9 +70,6 @@ server {
         try_files $uri =404;
         access_log /var/log/nginx/acme-challenge-access.log;
         error_log /var/log/nginx/acme-challenge-error.log error;
-
-        # ModSecurityを無効化
-        modsecurity off;
 
         # セキュリティヘッダー
         add_header X-Content-Type-Options nosniff always;
