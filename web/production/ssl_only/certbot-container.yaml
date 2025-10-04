@@ -1,0 +1,18 @@
+# certbot-container.yaml
+# SSL取得時に使用してください。
+# SSL取得後はcommand部分をremoveに変更してください。
+
+certbot:
+  image: certbot/certbot
+  container_name: tab-certbot-prod
+  environment:
+    - SERVER_NAME=${SERVER_NAME}
+    - CERTBOT_EMAIL=${CERTBOT_EMAIL}
+  volumes:
+    - certbot_conf:/etc/letsencrypt
+    - certbot_www:/var/www/certbot
+  command: certonly --webroot -w /var/www/certbot --config-dir /etc/letsencrypt --work-dir /etc/letsencrypt --logs-dir /etc/letsencrypt --non-interactive --agree-tos --email ${CERTBOT_EMAIL} -d ${SERVER_NAME}
+  depends_on:
+    - nginx
+  networks:
+    - frontend-net

@@ -212,7 +212,7 @@ services:
     volumes:
       - certbot_conf:/etc/letsencrypt
       - certbot_www:/var/www/certbot
-    command: certonly --webroot -w /var/www/certbot --config-dir /tmp/certbot-config --work-dir /tmp/certbot-work --logs-dir /tmp/certbot-logs --non-interactive --agree-tos --email ${CERTBOT_EMAIL} -d ${SERVER_NAME}
+    command: certonly --webroot -w /var/www/certbot --config-dir /etc/letsencrypt --work-dir /etc/letsencrypt --logs-dir /etc/letsencrypt --non-interactive --agree-tos --email ${CERTBOT_EMAIL} -d ${SERVER_NAME}
     depends_on:
       - nginx
     networks:
