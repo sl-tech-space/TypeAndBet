@@ -203,9 +203,16 @@ server {
         add_header X-Frame-Options SAMEORIGIN always;
     }
 
+    # サイトマップ
+    location /sitemap.xml {
+        root /etc/nginx/html;
+        add_header Content-Type application/xml;
+        expires 1h;
+    }
+
     # ロボットファイル
     location /robots.txt {
-        return 200 "User-agent: *\nDisallow: /\n";
+        return 200 "User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /admin/\nDisallow: /_next/\nSitemap: https://${SERVER_NAME}/sitemap.xml\n";
         add_header Content-Type text/plain;
     }
 }
