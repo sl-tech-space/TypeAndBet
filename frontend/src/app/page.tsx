@@ -1,6 +1,6 @@
 import { type ReactElement } from "react";
 
-import { MessageProvider, Supporter } from "@/components/common";
+import { IntroCard, MessageProvider, Supporter } from "@/components/common";
 import { ModeSelectorWrapper } from "@/features/games";
 import { RankingCard } from "@/features/ranking";
 
@@ -10,7 +10,9 @@ export default function Home(): ReactElement {
   return (
     <MessageProvider>
       <section className={styles.container}>
-        <div className={styles.container__left}></div>
+        <div className={styles.container__left}>
+          <IntroCard />
+        </div>
         <div className={styles.container__center}>
           <ModeSelectorWrapper />
         </div>
