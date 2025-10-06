@@ -1,0 +1,21 @@
+{
+  "name": "Type&Bet",
+  "short_name": "Type&Bet",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/assets/images/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "theme_color": "#111827",
+  "background_color": "#111827",
+  "display": "standalone",
+  "start_url": "/"
+}

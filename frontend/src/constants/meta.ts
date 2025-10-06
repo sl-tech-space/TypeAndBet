@@ -53,26 +53,28 @@ export const META_TITLE: MetaInfo = {
  * メタ説明
  */
 export const META_DESCRIPTION: MetaInfo = {
-  HOME: "Type&Betへようこそ！ログインや新規登録、シミュレーションをして、Type&Betを楽しんでください。",
+  HOME: "Type&Bet(TypeAndBet)はタイピング×ベットの新感覚ゲーム。練習から本番対戦、ランキングまで、遊びながらタイピングを鍛えられます。",
   SIMULATE:
     "Type&Betのシミュレートページです。自分のタイピング力を試すことができます。",
   LOGIN:
-    "ログインページです。ログインすることで、Type&Betを楽しむことができます。",
+    "Type&Betにログインして本番対戦やランキングに参加。TypeAndBetでも検索される新感覚タイピングゲーム。",
   SIGNUP:
-    "新規登録ページです。新規登録することで、Type&Betを楽しむことができます。",
+    "Type&Bet(TypeAndBet)に無料登録。メール認証で安全に始められるタイピング×ベットゲーム。",
   SIGNUP_EMAIL_SENT:
-    "メール送信完了ページです。メールを確認して、Type&Betを楽しむことができます。",
-  PLAY: "Type&Betの本番です。プレイすることで成績を競うことができます。",
-  RESULT: "Type&Betの結果ページです。プレイした結果を確認することができます。",
-  TERMS: "Type&Betの利用規約ページです。利用規約を確認することができます。",
+    "メール送信完了ページです。メールを確認して、Type&Betを楽しんでください。",
+  PLAY: "Type&Bet(TypeAndBet)の本番対戦。タイピングの速さ・正確さでベットの結果が変わる刺激的なゲーム体験。",
+  RESULT:
+    "Type&Bet(TypeAndBet)の対戦結果とスコアを確認。ベット結果やゴールドの変動、ランクアップ状況も把握。",
+  TERMS:
+    "Type&Bet(TypeAndBet)の利用規約。サービス利用に関する条件を確認できます。",
   PRIVACY:
-    "Type&Betのプライバシーポリシーページです。プライバシーポリシーを確認することができます。",
+    "Type&Bet(TypeAndBet)のプライバシーポリシー。個人情報の取り扱い方針を説明します。",
   VERIFY_EMAIL:
-    "Type&Betのメール認証ページです。メール認証を行うことで、Type&Betを楽しむことができます。",
+    "Type&Bet(TypeAndBet)のメール認証ページ。アカウントを有効化してゲームを開始。",
   PASSWORD_FORGET:
-    "Type&Betのパスワードを忘れたページです。パスワードを忘れた場合はこちらからリセットできます。",
+    "Type&Bet(TypeAndBet)のパスワード再設定手続き。メールで安全にリセット。",
   PASSWORD_RESET:
-    "Type&Betのパスワードをリセットページです。パスワードをリセットすることで、Type&Betを楽しむことができます。",
+    "Type&Bet(TypeAndBet)のパスワード再設定。新しいパスワードでログインし直せます。",
   NOT_FOUND: "ページが見つかりません",
   SERVER_ERROR: "サーバーエラー",
 };
@@ -81,19 +83,22 @@ export const META_DESCRIPTION: MetaInfo = {
  * メタキーワード
  */
 export const META_KEYWORDS: MetaInfo = {
-  HOME: "Type&Bet, ログイン, 新規登録, シミュレーション, ランキング, 競争, 賭け",
+  HOME: "Type&Bet, TypeAndBet, Type And Bet, タイプアンドベット, タイピング ゲーム, タイピング 練習, タイピング 対戦, タイピング ランキング, タイピング eスポーツ, ベット ゲーム, 賭け ゲーム",
   SIMULATE:
     "Type&Bet, シミュレート, タイピング, ゲーム, 賭け, 競争, ランキング",
-  LOGIN: "Type&Bet, ログイン, シミュレーション, ランキング, 競争, 賭け",
-  SIGNUP: "Type&Bet, 新規登録, シミュレーション, ランキング, 競争, 賭け",
-  SIGNUP_EMAIL_SENT: "Type&Bet, メール送信完了, 新規登録, 認証完了",
-  PLAY: "Type&Bet, プレイ, タイピング, ゲーム, 賭け, 競争, ランキング",
-  RESULT: "Type&Bet, 結果, タイピング, ゲーム, 賭け, 競争, ランキング",
-  TERMS: "Type&Bet, 利用規約, プライバシーポリシー",
-  PRIVACY: "Type&Bet, プライバシーポリシー, 利用規約",
-  VERIFY_EMAIL: "Type&Bet, メール認証",
-  PASSWORD_FORGET: "Type&Bet, パスワードを忘れた",
-  PASSWORD_RESET: "Type&Bet, パスワードをリセット",
+  LOGIN:
+    "Type&Bet, TypeAndBet, ログイン, タイピング, タイピング 対戦, ベット ゲーム, 賭け",
+  SIGNUP:
+    "Type&Bet, TypeAndBet, 新規登録, サインアップ, タイピング ゲーム, タイピング 練習, ベット",
+  SIGNUP_EMAIL_SENT: "Type&Bet, TypeAndBet, メール送信完了, 新規登録, 認証完了",
+  PLAY: "Type&Bet, TypeAndBet, タイピング 対戦, タイピング ゲーム, ベット, 賭け, ランキング",
+  RESULT:
+    "Type&Bet, TypeAndBet, 対戦 結果, タイピング スコア, ベット 結果, ランキング",
+  TERMS: "Type&Bet, TypeAndBet, 利用規約, プライバシーポリシー",
+  PRIVACY: "Type&Bet, TypeAndBet, プライバシーポリシー, 利用規約",
+  VERIFY_EMAIL: "Type&Bet, TypeAndBet, メール認証",
+  PASSWORD_FORGET: "Type&Bet, TypeAndBet, パスワードを忘れた",
+  PASSWORD_RESET: "Type&Bet, TypeAndBet, パスワードをリセット",
   NOT_FOUND: "Type&Bet, ページが見つかりません",
   SERVER_ERROR: "Type&Bet, サーバーエラー",
 };

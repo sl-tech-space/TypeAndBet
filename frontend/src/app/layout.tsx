@@ -37,6 +37,29 @@ export default async function RootLayout({
 
   return (
     <html lang="ja">
+      <head>
+        {/* JSON-LD: WebSite/Organization 構造化データ */}
+        <script
+          type="application/ld+json"
+          // nonceはCSP対応（開発時はundefinedでもOK）
+          nonce={nonce ?? undefined}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "Type&Bet",
+              alternateName: [
+                "TypeAndBet",
+                "Type And Bet",
+                "タイプアンドベット",
+                "タイプ & ベット",
+              ],
+              url: process.env.NEXT_PUBLIC_SITE_URL || "https://example.com",
+              logo: "/assets/images/logo.png",
+            }),
+          }}
+        />
+      </head>
       <body>
         <Background />
         <Header />

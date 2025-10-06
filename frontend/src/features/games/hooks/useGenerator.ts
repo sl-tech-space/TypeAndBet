@@ -23,15 +23,22 @@ export const useGenerator = (): {
   const [sentences, setSentences] = useState<Sentence[]>([]);
   const { error, isLoading, withAsyncLoading } = useAsyncState();
 
+  // 漢字検出用（CJK統合漢字）
+  const KANJI_REGEX = /[\u4E00-\u9FFF]/;
+
   const handleGenerate = useCallback(async () => {
     return withAsyncLoading(async () => {
       const data = await generateText();
 
       if (data.success && data.result) {
         const result: GeneratorResult["textPairs"] = data.result;
-        // すべてのペアを文章として設定
-        const newSentences = result.map((pair: TextPair) => {
-          // jp-transliteratorからローマ字パターンを取得
+
+        // ひらがなに漢字が含まれる項目を除外
+        const safePairs = result.filter(
+          (pair: TextPair) => pair.hiragana && !KANJI_REGEX.test(pair.hiragana)
+        );
+
+        const newSentences = safePairs.map((pair: TextPair) => {
           const romajiPatterns = getCharacterPatterns(
             pair.hiragana
           ) as string[][];
@@ -42,6 +49,7 @@ export const useGenerator = (): {
             romaji: romajiPatterns,
           };
         });
+
         setSentences(newSentences);
       }
     })();
