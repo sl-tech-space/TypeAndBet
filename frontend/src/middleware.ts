@@ -60,8 +60,9 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
   // 保護されたルートの場合
   if (isProtectedRoute(pathname)) {
-    // セッションまたはアクセストークンが存在しない場合はログインページにリダイレクト
-    if (!session || !token?.accessToken) {
+    // セッションが存在しない場合はログインページにリダイレクト
+    // NextAuth v5ではセッションベースでチェック
+    if (!session || !session.user) {
       try {
         const redirectUrl = new URL(ROUTE.LOGIN, request.url);
         return NextResponse.redirect(redirectUrl);
@@ -81,9 +82,9 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       }
     }
 
-    // アクセストークンの有効期限チェック
+    // アクセストークンの有効期限チェック（tokenがある場合のみ）
     if (
-      token.expiresAt &&
+      token?.expiresAt &&
       Number(token.expiresAt) * ONE_SECOND_MS < Date.now()
     ) {
       const success = await refreshToken();
@@ -99,7 +100,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   }
 
   // 認証ページにアクセスで、ログイン済みの場合はホームにリダイレクト
-  if (isAuthPage(pathname) && token?.accessToken) {
+  if (isAuthPage(pathname) && session?.user) {
     try {
       const redirectUrl = new URL(ROUTE.HOME, request.url);
       return NextResponse.redirect(redirectUrl);
