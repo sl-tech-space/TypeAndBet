@@ -17,12 +17,13 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     maxAge: 14 * 24 * 60 * 60, // 14 days
   },
   // Cookie設定（本番環境での動作を確実にする）
+  // NextAuth v5では authjs.session-token を使用
   cookies: {
     sessionToken: {
       name:
         process.env.NODE_ENV === "production"
-          ? "__Secure-next-auth.session-token"
-          : "next-auth.session-token",
+          ? "__Secure-authjs.session-token"
+          : "authjs.session-token",
       options: {
         httpOnly: true,
         sameSite: "lax",

@@ -1,7 +1,7 @@
 import crypto from "crypto";
 
-import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { NextRequest, NextResponse } from "next/server";
 
 import { auth } from "@/auth";
 import { NODE_ENV, ONE_SECOND_MS, ROUTE } from "@/constants";
@@ -45,11 +45,11 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   const session: Session | null = await auth();
 
   // トークン情報を取得
-  // NextAuthのCookie名を環境に応じて設定
+  // NextAuth v5のCookie名を環境に応じて設定
   const cookieName =
     process.env.NODE_ENV === NODE_ENV.PRODUCTION
-      ? "__Secure-next-auth.session-token"
-      : "next-auth.session-token";
+      ? "__Secure-authjs.session-token"
+      : "authjs.session-token";
 
   const token = await getToken({
     req: request,

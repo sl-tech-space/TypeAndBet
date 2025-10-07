@@ -1,8 +1,8 @@
 "use server";
 
+import { getToken } from "next-auth/jwt";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-import { getToken } from "next-auth/jwt";
 
 import { signIn } from "@/auth";
 import { NODE_ENV, OAUTH_PROVIDER, ROUTE } from "@/constants";
@@ -28,11 +28,11 @@ export async function refreshToken(): Promise<boolean> {
     // トークン情報を取得（セキュリティのため、クライアント側には公開されていない）
     const cookieStore = await cookies();
 
-    // NextAuthのCookie名を環境に応じて設定
+    // NextAuth v5のCookie名を環境に応じて設定
     const cookieName =
       process.env.NODE_ENV === NODE_ENV.PRODUCTION
-        ? "__Secure-next-auth.session-token"
-        : "next-auth.session-token";
+        ? "__Secure-authjs.session-token"
+        : "authjs.session-token";
 
     const token = await getToken({
       req: { headers: { cookie: cookieStore.toString() } },

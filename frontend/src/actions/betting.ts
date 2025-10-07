@@ -1,8 +1,8 @@
 "use server";
 
 import { ApolloError } from "@apollo/client";
-import { cookies } from "next/headers";
 import { encode, getToken } from "next-auth/jwt";
+import { cookies } from "next/headers";
 
 import { ERROR_MESSAGE, NODE_ENV } from "@/constants";
 import { BettingService, GraphQLServerClient } from "@/graphql";
@@ -21,11 +21,11 @@ export async function createBet(
     // 認証チェック
     const cookieStore = await cookies();
 
-    // NextAuthのCookie名を環境に応じて設定
+    // NextAuth v5のCookie名を環境に応じて設定
     const cookieName =
       process.env.NODE_ENV === NODE_ENV.PRODUCTION
-        ? "__Secure-next-auth.session-token"
-        : "next-auth.session-token";
+        ? "__Secure-authjs.session-token"
+        : "authjs.session-token";
 
     const currentToken = await getToken({
       req: { headers: { cookie: cookieStore.toString() } },
