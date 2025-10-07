@@ -8,6 +8,9 @@ import { ErrorState, useAsyncState } from "@/hooks";
 
 import type { GeneratorResult, Sentence, TextPair } from "./generator.types";
 
+// 漢字検出用（CJK統合漢字）
+const KANJI_REGEX = /[\u4E00-\u9FFF]/;
+
 /**
  * 文章生成のフック
  * 文章を生成する
@@ -22,9 +25,6 @@ export const useGenerator = (): {
 } => {
   const [sentences, setSentences] = useState<Sentence[]>([]);
   const { error, isLoading, withAsyncLoading } = useAsyncState();
-
-  // 漢字検出用（CJK統合漢字）
-  const KANJI_REGEX = /[\u4E00-\u9FFF]/;
 
   const handleGenerate = useCallback(async () => {
     return withAsyncLoading(async () => {

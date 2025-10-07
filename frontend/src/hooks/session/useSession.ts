@@ -10,9 +10,6 @@ export const useSession = (): {
   user: User | undefined;
   isLoading: boolean;
   isAuthenticated: boolean;
-  accessToken: string | undefined;
-  refreshToken: string | undefined;
-  expiresAt: number | undefined;
 } => {
   const { data: session, status } = useNextAuthSession();
 
@@ -29,8 +26,5 @@ export const useSession = (): {
     user,
     isLoading: status === "loading",
     isAuthenticated: status === "authenticated",
-    accessToken: session?.accessToken,
-    refreshToken: session?.refreshToken,
-    expiresAt: session?.expiresAt,
   };
 };

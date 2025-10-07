@@ -18,14 +18,8 @@ import styles from "./HeaderActions.module.scss";
  * @returns ヘッダーアクションコンポーネント
  */
 export const HeaderActionsClient = (): React.ReactNode => {
-  const {
-    persistentUser,
-    isAuthenticated,
-    accessToken,
-    isLoading,
-    isSyncing,
-    syncGold,
-  } = usePersistentSession();
+  const { persistentUser, isAuthenticated, isLoading, isSyncing, syncGold } =
+    usePersistentSession();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { refresh } = useBaseRouter();
@@ -56,8 +50,7 @@ export const HeaderActionsClient = (): React.ReactNode => {
   }, [isLoading, isAuthenticated, persistentUser, syncGold]);
 
   // persistentUserが存在する限り、ログイン済みとして扱う
-  const isLoggedIn =
-    (persistentUser || (isAuthenticated && accessToken)) && !isLoggingOut;
+  const isLoggedIn = (persistentUser || isAuthenticated) && !isLoggingOut;
 
   const handleLogout = async (): Promise<void> => {
     try {

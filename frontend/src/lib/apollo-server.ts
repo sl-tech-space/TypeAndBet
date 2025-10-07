@@ -1,6 +1,6 @@
 import { GraphQLClient } from "graphql-request";
-import { cookies } from "next/headers";
 import { getToken } from "next-auth/jwt";
+import { cookies } from "next/headers";
 
 import { NODE_ENV } from "@/constants";
 
@@ -9,9 +9,17 @@ const GRAPHQL_ENDPOINT =
 
 export async function getAuthorizedServerClient(): Promise<GraphQLClient> {
   const cookieStore = await cookies();
+
+  // NextAuthのCookie名を環境に応じて設定
+  const cookieName =
+    process.env.NODE_ENV === NODE_ENV.PRODUCTION
+      ? "__Secure-next-auth.session-token"
+      : "next-auth.session-token";
+
   const token = await getToken({
     req: { headers: { cookie: cookieStore.toString() } },
     secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
+    cookieName, // 明示的にCookie名を指定
   });
 
   const headers: Record<string, string> = {

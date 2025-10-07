@@ -1,5 +1,6 @@
 import crypto from "crypto";
 
+import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
 import { auth } from "@/auth";
@@ -43,10 +44,23 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   // セッションチェック
   const session: Session | null = await auth();
 
+  // トークン情報を取得
+  // NextAuthのCookie名を環境に応じて設定
+  const cookieName =
+    process.env.NODE_ENV === NODE_ENV.PRODUCTION
+      ? "__Secure-next-auth.session-token"
+      : "next-auth.session-token";
+
+  const token = await getToken({
+    req: request,
+    secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
+    cookieName, // 明示的にCookie名を指定
+  });
+
   // 保護されたルートの場合
   if (isProtectedRoute(pathname)) {
     // セッションまたはアクセストークンが存在しない場合はログインページにリダイレクト
-    if (!session || !session.accessToken) {
+    if (!session || !token?.accessToken) {
       try {
         const redirectUrl = new URL(ROUTE.LOGIN, request.url);
         return NextResponse.redirect(redirectUrl);
@@ -68,8 +82,8 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
     // アクセストークンの有効期限チェック
     if (
-      session.expiresAt &&
-      Number(session.expiresAt) * ONE_SECOND_MS < Date.now()
+      token.expiresAt &&
+      Number(token.expiresAt) * ONE_SECOND_MS < Date.now()
     ) {
       const success = await refreshToken();
       if (!success) {
@@ -84,7 +98,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   }
 
   // 認証ページにアクセスで、ログイン済みの場合はホームにリダイレクト
-  if (isAuthPage(pathname) && session?.accessToken) {
+  if (isAuthPage(pathname) && token?.accessToken) {
     try {
       const redirectUrl = new URL(ROUTE.HOME, request.url);
       return NextResponse.redirect(redirectUrl);

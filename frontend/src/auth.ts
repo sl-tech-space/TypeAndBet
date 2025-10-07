@@ -16,6 +16,21 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     strategy: "jwt",
     maxAge: 14 * 24 * 60 * 60, // 14 days
   },
+  // Cookie設定（本番環境での動作を確実にする）
+  cookies: {
+    sessionToken: {
+      name:
+        process.env.NODE_ENV === "production"
+          ? "__Secure-next-auth.session-token"
+          : "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+  },
   // ページ設定
   pages: {
     signIn: "/auth/login",
@@ -230,9 +245,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           gold: (token.gold as number | undefined) ?? 0,
           icon: (token.icon as string) ?? token.picture ?? undefined,
         },
-        accessToken: token.accessToken as string | undefined,
-        refreshToken: token.refreshToken as string | undefined,
-        expiresAt: token.expiresAt as number | undefined,
         error: token.error as "RefreshAccessTokenError" | undefined,
       };
     },

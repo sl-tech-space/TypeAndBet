@@ -1,9 +1,11 @@
 "use server";
 
+import { getToken } from "next-auth/jwt";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 
-import { auth, signIn } from "@/auth";
-import { OAUTH_PROVIDER, ROUTE } from "@/constants";
+import { signIn } from "@/auth";
+import { NODE_ENV, OAUTH_PROVIDER, ROUTE } from "@/constants";
 import { AuthService, GraphQLServerClient } from "@/graphql";
 import { getAuthorizedServerClient } from "@/lib/apollo-server";
 
@@ -23,15 +25,28 @@ export const signInWithGoogle = async (): Promise<void> => {
  */
 export async function refreshToken(): Promise<boolean> {
   try {
-    const session = await auth();
+    // トークン情報を取得（セキュリティのため、クライアント側には公開されていない）
+    const cookieStore = await cookies();
 
-    if (!session?.refreshToken) return false;
+    // NextAuthのCookie名を環境に応じて設定
+    const cookieName =
+      process.env.NODE_ENV === NODE_ENV.PRODUCTION
+        ? "__Secure-next-auth.session-token"
+        : "next-auth.session-token";
+
+    const token = await getToken({
+      req: { headers: { cookie: cookieStore.toString() } },
+      secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
+      cookieName, // 明示的にCookie名を指定
+    });
+
+    if (!token?.refreshToken) return false;
 
     const rawClient = await getAuthorizedServerClient();
 
     const { data } = await AuthService.refreshToken(
       new GraphQLServerClient(rawClient),
-      session.refreshToken as string
+      token.refreshToken as string
     );
 
     if (data?.refreshToken?.success) {

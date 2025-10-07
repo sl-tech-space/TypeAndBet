@@ -16,11 +16,11 @@ import styles from "./ModeSelector.module.scss";
  * @returns ゲームモードを選択するコンポーネント
  */
 export const ModeSelector = (): ReactElement => {
-  const { isAuthenticated, accessToken } = useSession();
+  const { isAuthenticated } = useSession();
   const { setMessage } = useMessage();
   const { toSimulate, toPlay } = useNavigator();
 
-  const isLoggedIn = isAuthenticated && accessToken;
+  const isLoggedIn = isAuthenticated;
 
   return (
     <div className={styles["select-mode"]}>

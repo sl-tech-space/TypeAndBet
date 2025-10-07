@@ -21,9 +21,8 @@ declare module "next-auth" {
       gold?: number;
       icon?: string;
     };
-    accessToken?: string;
-    refreshToken?: string;
-    expiresAt?: number;
+    // セキュリティのため、トークン情報はクライアント側に公開しない
+    // サーバー側では getToken() を使用してアクセス可能
     error?: "RefreshAccessTokenError";
   }
 

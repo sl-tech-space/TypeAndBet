@@ -15,8 +15,6 @@ export const usePersistentSession = (): {
   persistentUser: User | undefined;
   /** 認証状態 */
   isAuthenticated: boolean;
-  /** アクセストークン */
-  accessToken: string | undefined;
   /** ローディング状態 */
   isLoading: boolean;
   /** ゴールド同期中かどうか */
@@ -147,10 +145,10 @@ export const usePersistentSession = (): {
   return {
     persistentUser,
     isAuthenticated: status === "authenticated",
-    accessToken: session?.accessToken,
     isLoading: status === "loading",
     isSyncing,
     syncGold,
+    // セキュリティのため、トークン情報はクライアント側に公開しない
   };
 };
 
