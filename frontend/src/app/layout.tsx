@@ -1,6 +1,8 @@
 import { Metadata } from "next";
+
 import { headers } from "next/headers";
 import Script from "next/script";
+
 import { type ReactNode } from "react";
 
 import { Footer, Header } from "@/components/layouts";

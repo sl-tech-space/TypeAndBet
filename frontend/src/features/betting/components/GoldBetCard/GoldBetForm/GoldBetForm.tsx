@@ -1,8 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { SessionProvider } from "next-auth/react";
+
 import { type ReactElement } from "react";
+
+import { SessionProvider } from "next-auth/react";
 
 import { Button } from "@/components/ui";
 import { GAME_BET_LIMIT } from "@/constants";

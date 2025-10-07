@@ -1,6 +1,6 @@
-import { SITE_NAME } from "@/constants";
-
 import type { Metadata } from "next";
+
+import { SITE_NAME } from "@/constants";
 
 /**
  * メタデータを生成する

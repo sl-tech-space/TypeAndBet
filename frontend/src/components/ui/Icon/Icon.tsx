@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+
 import { type ReactElement } from "react";
 
 import styles from "./Icon.module.scss";

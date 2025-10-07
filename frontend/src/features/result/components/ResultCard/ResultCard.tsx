@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+
 import { type ReactElement } from "react";
 
 import { Button, Card, Loading, Text } from "@/components/ui";

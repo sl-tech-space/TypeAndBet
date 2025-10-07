@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams, usePathname } from "next/navigation";
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { completePlay, completeSimulate, setGameResult } from "@/actions";

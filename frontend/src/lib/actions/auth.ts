@@ -1,8 +1,9 @@
 "use server";
 
-import { getToken } from "next-auth/jwt";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+
+import { getToken } from "next-auth/jwt";
 
 import { signIn } from "@/auth";
 import { NODE_ENV, OAUTH_PROVIDER, ROUTE } from "@/constants";

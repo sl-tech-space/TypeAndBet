@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+
 import { useEffect, type ReactElement } from "react";
 
 import { Button, Icon, Loading, Text } from "@/components/ui";

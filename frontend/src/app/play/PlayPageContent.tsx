@@ -1,7 +1,8 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useEffect, type ReactElement } from "react";
+
+import { useSession } from "next-auth/react";
 
 import { Loading } from "@/components/ui";
 import { GAME_MODE_ID } from "@/constants";

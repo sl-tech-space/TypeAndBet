@@ -1,8 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
+
 import { useState } from "react";
+
+import { signIn } from "next-auth/react";
 
 import { login as loginAction } from "@/actions/auth";
 import { ROUTE } from "@/constants";

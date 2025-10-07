@@ -1,7 +1,8 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useCallback } from "react";
+
+import { useSession } from "next-auth/react";
 
 import { getUserGold } from "@/actions/userSession";
 

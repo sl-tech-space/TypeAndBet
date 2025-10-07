@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { signOut } from "next-auth/react";
+
 import { useEffect, useRef, useState } from "react";
+
+import { signOut } from "next-auth/react";
 
 import { Button, Icon, Text } from "@/components/ui";
 import { ROUTE, ROUTE_NAME } from "@/constants";

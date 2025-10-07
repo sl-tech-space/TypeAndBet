@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+
 import { type ReactElement, useEffect, useRef } from "react";
 
 import { Button } from "@/components/ui";

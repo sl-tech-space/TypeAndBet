@@ -84,11 +84,27 @@ const eslintConfig = [
             "type",
           ],
           "newlines-between": "always",
-          alphabetize: {
-            order: "asc",
-            caseInsensitive: true,
-          },
           pathGroups: [
+            {
+              pattern: "next",
+              group: "external",
+              position: "before",
+            },
+            {
+              pattern: "next/**",
+              group: "external",
+              position: "before",
+            },
+            {
+              pattern: "next-auth",
+              group: "external",
+              position: "after",
+            },
+            {
+              pattern: "next-auth/**",
+              group: "external",
+              position: "after",
+            },
             {
               pattern: "@/**",
               group: "internal",
@@ -96,7 +112,7 @@ const eslintConfig = [
             },
           ],
           pathGroupsExcludedImportTypes: ["builtin"],
-          distinctGroup: false,
+          warnOnUnassignedImports: false,
         },
       ],
 

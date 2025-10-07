@@ -1,7 +1,8 @@
 "use client";
 
-import { SessionProvider } from "next-auth/react";
 import { type ReactElement } from "react";
+
+import { SessionProvider } from "next-auth/react";
 
 import { ModeSelector } from "./ModeSelector";
 

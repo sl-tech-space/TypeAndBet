@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+
 import { useState, type FormEvent, type ReactElement } from "react";
 
 import { Button, Input, Label } from "@/components/ui";

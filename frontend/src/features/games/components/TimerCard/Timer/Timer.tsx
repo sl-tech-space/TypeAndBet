@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+
 import { type ReactElement, useEffect, useState, useRef } from "react";
 
 import { Text } from "@/components/ui";

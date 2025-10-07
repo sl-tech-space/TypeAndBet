@@ -1,5 +1,6 @@
-import { SessionProvider } from "next-auth/react";
 import { type ReactElement } from "react";
+
+import { SessionProvider } from "next-auth/react";
 
 import { PlayPageContent } from "@/app/play/PlayPageContent";
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+
 import { useCallback, useEffect, useState } from "react";
 
 import { resetPassword } from "@/actions/auth";

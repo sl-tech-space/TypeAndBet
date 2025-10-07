@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+
 import { type ReactElement } from "react";
 
 import { HOME_BACK_BUTTON, ROUTE } from "@/constants";

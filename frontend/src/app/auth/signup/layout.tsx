@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+
 import { type ReactNode } from "react";
 
 import { META_TITLE, META_DESCRIPTION, META_KEYWORDS } from "@/constants";

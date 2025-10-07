@@ -1,12 +1,12 @@
 import NextAuth from "next-auth";
+import type { Session, User } from "next-auth";
+
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 
 import { OAUTH_PROVIDER } from "@/constants";
 import { AuthService, GraphQLServerClient } from "@/graphql";
 import { getAuthorizedServerClient } from "@/lib/apollo-server";
-
-import type { Session, User } from "next-auth";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   // 信頼できるホストを設定

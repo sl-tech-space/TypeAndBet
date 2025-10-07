@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+
 import { type ReactElement } from "react";
 
 import { AUTH_ACTIONS, ROUTE } from "@/constants";

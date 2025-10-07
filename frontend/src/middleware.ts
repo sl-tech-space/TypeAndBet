@@ -1,14 +1,15 @@
 import crypto from "crypto";
 
-import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
+
+import type { Session } from "next-auth";
+
+import { getToken } from "next-auth/jwt";
 
 import { auth } from "@/auth";
 import { NODE_ENV, ONE_SECOND_MS, ROUTE } from "@/constants";
 import { refreshToken } from "@/lib";
 import { isAuthPage, isProtectedRoute } from "@/utils";
-
-import type { Session } from "next-auth";
 
 export const config = {
   runtime: "nodejs",

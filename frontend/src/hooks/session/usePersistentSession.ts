@@ -1,7 +1,8 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useRef, useState } from "react";
+
+import { useSession } from "next-auth/react";
 
 import type { User } from "@/types";
 
