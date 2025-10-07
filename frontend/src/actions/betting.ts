@@ -1,8 +1,8 @@
 "use server";
 
 import { ApolloError } from "@apollo/client";
-import { encode, getToken } from "next-auth/jwt";
 import { cookies } from "next/headers";
+import { encode, getToken } from "next-auth/jwt";
 
 import { ERROR_MESSAGE, NODE_ENV } from "@/constants";
 import { BettingService, GraphQLServerClient } from "@/graphql";

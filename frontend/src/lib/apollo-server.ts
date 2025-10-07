@@ -1,6 +1,6 @@
 import { GraphQLClient } from "graphql-request";
-import { getToken } from "next-auth/jwt";
 import { cookies } from "next/headers";
+import { getToken } from "next-auth/jwt";
 
 import { NODE_ENV } from "@/constants";
 

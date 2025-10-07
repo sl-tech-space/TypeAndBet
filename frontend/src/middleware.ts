@@ -1,7 +1,7 @@
 import crypto from "crypto";
 
-import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
 
 import { auth } from "@/auth";
 import { NODE_ENV, ONE_SECOND_MS, ROUTE } from "@/constants";
