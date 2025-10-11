@@ -6,12 +6,12 @@
   <!-- メインページ（タイピングゲーム トップページ） -->
   <url>
     <loc>https://type-and-bet.san-tou.com/</loc>
-    <lastmod>2025-10-04</lastmod>
+    <lastmod>2025-10-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
       <image:loc>https://type-and-bet.san-tou.com/assets/images/logo.png</image:loc>
-      <image:title>Type&Bet - 無料タイピングゲーム</image:title>
+      <image:title>Type&amp;Bet - 無料タイピングゲーム</image:title>
       <image:caption>タイピング練習と対戦ができる無料オンラインゲーム</image:caption>
     </image:image>
   </url>
@@ -19,7 +19,7 @@
   <!-- タイピング練習ページ（重要ページ） -->
   <url>
     <loc>https://type-and-bet.san-tou.com/simulate</loc>
-    <lastmod>2025-10-04</lastmod>
+    <lastmod>2025-10-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
     <image:image>
@@ -32,7 +32,7 @@
   <!-- タイピング対戦ページ（重要ページ） -->
   <url>
     <loc>https://type-and-bet.san-tou.com/play</loc>
-    <lastmod>2025-10-04</lastmod>
+    <lastmod>2025-10-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
     <image:image>
@@ -45,7 +45,7 @@
   <!-- 結果ページ -->
   <url>
     <loc>https://type-and-bet.san-tou.com/result</loc>
-    <lastmod>2025-10-04</lastmod>
+    <lastmod>2025-10-11</lastmod>
     <changefreq>hourly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -53,7 +53,7 @@
   <!-- ログインページ -->
   <url>
     <loc>https://type-and-bet.san-tou.com/auth/login</loc>
-    <lastmod>2025-10-04</lastmod>
+    <lastmod>2025-10-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
