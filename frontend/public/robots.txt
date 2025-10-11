@@ -1,0 +1,38 @@
+# Type&Bet - タイピングゲーム
+# ロボット用のクロール設定
+
+User-agent: *
+Allow: /
+Allow: /simulate
+Allow: /play
+Allow: /result
+Allow: /auth/login
+Allow: /auth/signup
+
+# クロール不要なページ
+Disallow: /auth/password-forget
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /error/
+Disallow: /api/
+
+# Googlebot 専用設定（重要ページを優先）
+User-agent: Googlebot
+Allow: /
+Allow: /simulate
+Allow: /play
+Crawl-delay: 1
+
+# Bingbot 専用設定
+User-agent: Bingbot
+Allow: /
+Allow: /simulate
+Allow: /play
+Crawl-delay: 1
+
+# サイトマップの場所
+Sitemap: https://type-and-bet.san-tou.com/sitemap.xml
+
+# クロール頻度の最適化
+Crawl-delay: 2
+

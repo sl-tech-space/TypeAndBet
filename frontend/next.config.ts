@@ -137,6 +137,12 @@ const nextConfig: NextConfig = {
 
   // 末尾のスラッシュを削除
   trailingSlash: false,
+
+  // メタデータの最適化
+  generateEtags: true,
+
+  // ページ拡張子の設定
+  pageExtensions: ["tsx", "ts", "jsx", "js"],
 };
 
 export default nextConfig;
