@@ -4,11 +4,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 import type { Session } from "next-auth";
 
-import { getToken } from "next-auth/jwt";
-
 import { auth } from "@/auth";
-import { NODE_ENV, ONE_SECOND_MS, ROUTE } from "@/constants";
-import { refreshToken } from "@/lib";
+import { NODE_ENV, ROUTE } from "@/constants";
 import { isAuthPage, isProtectedRoute } from "@/utils";
 
 export const config = {
@@ -45,19 +42,6 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   // セッションチェック
   const session: Session | null = await auth();
 
-  // トークン情報を取得
-  // NextAuth v5のCookie名を環境に応じて設定
-  const cookieName =
-    process.env.NODE_ENV === NODE_ENV.PRODUCTION
-      ? "__Secure-authjs.session-token"
-      : "authjs.session-token";
-
-  const token = await getToken({
-    req: request,
-    secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
-    cookieName, // 明示的にCookie名を指定
-  });
-
   // 保護されたルートの場合
   if (isProtectedRoute(pathname)) {
     // セッションが存在しない場合はログインページにリダイレクト
@@ -72,29 +56,14 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       }
     }
 
-    // トークンエラーがある場合はログアウト
+    // トークンリフレッシュに失敗した場合のみログアウト
+    // auth.tsのjwtコールバックで自動的にリフレッシュが試行される
     if (session.error === "RefreshAccessTokenError") {
       try {
         const redirectUrl = new URL(ROUTE.LOGIN, request.url);
         return NextResponse.redirect(redirectUrl);
       } catch {
         return NextResponse.redirect(ROUTE.LOGIN);
-      }
-    }
-
-    // アクセストークンの有効期限チェック（tokenがある場合のみ）
-    if (
-      token?.expiresAt &&
-      Number(token.expiresAt) * ONE_SECOND_MS < Date.now()
-    ) {
-      const success = await refreshToken();
-      if (!success) {
-        try {
-          const redirectUrl = new URL(ROUTE.LOGIN, request.url);
-          return NextResponse.redirect(redirectUrl);
-        } catch {
-          return NextResponse.redirect(ROUTE.LOGIN);
-        }
       }
     }
   }

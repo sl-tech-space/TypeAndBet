@@ -50,9 +50,22 @@ export const GoldBetForm = ({
     gameModeId,
   });
 
+  // Enterキーでベットを実行
+  const handleKeyDown = (e: React.KeyboardEvent): void => {
+    if (
+      e.key === "Enter" &&
+      !isLoading &&
+      !isSubmitting &&
+      !isExceedingBalance
+    ) {
+      e.preventDefault();
+      handleBet();
+    }
+  };
+
   return (
     <SessionProvider>
-      <div className={styles["form-content"]}>
+      <div className={styles["form-content"]} onKeyDown={handleKeyDown}>
         <div className={styles["form-content__info-box"]}>
           <div className={styles["form-content__info-row"]}>
             <span className={styles["form-content__info-label"]}>
@@ -84,6 +97,7 @@ export const GoldBetForm = ({
               step="5"
               value={betAmount}
               onChange={(e) => setBetAmount(Number(e.target.value))}
+              onKeyDown={handleKeyDown}
               className={styles["form-content__slider"]}
               disabled={isLoading || isSubmitting}
             />

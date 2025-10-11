@@ -1,22 +1,22 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 
-import { createGameSession, createBet } from "@/actions";
+import { createBet, createGameSession } from "@/actions";
 import {
-  GAME_TIME_LIMIT,
+  ERROR_MESSAGE,
   GAME_BET_LIMIT,
   GAME_MODE_ID,
-  ERROR_MESSAGE,
+  GAME_TIME_LIMIT,
 } from "@/constants";
 import { useTimer } from "@/features/games";
 import { useAsyncState, useBaseRouter, useNavigator } from "@/hooks";
 import type { CreateBetResponse } from "@/types";
 
 import type {
-  UseBettingReturn,
-  UseBettingProps,
   OnBetReturn,
+  UseBettingProps,
+  UseBettingReturn,
 } from "./betting.types";
 
 /**

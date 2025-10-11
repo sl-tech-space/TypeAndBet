@@ -29,7 +29,12 @@ class DjangoJobScheduler:
     def __init__(self):
         self.scheduler = BlockingScheduler()
         self.app_dir = "/app"
-        self.python_path = "/opt/venv/bin/python"
+        # 環境に応じてPythonパスを設定
+        # 本番環境: /opt/venv/bin/python, 開発環境: python (システムのpython)
+        if os.path.exists("/opt/venv/bin/python"):
+            self.python_path = "/opt/venv/bin/python"
+        else:
+            self.python_path = "python"
         self.django_env_file = "/tmp/django_env"
 
     def load_environment(self):

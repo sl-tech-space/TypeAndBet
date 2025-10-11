@@ -29,14 +29,15 @@ RUN pip install --no-cache-dir -r requirements.txt
 # アプリケーションのコードをコピー
 COPY . .
 
-# cronジョブ設定スクリプトに実行権限を付与
-RUN chmod +x setup_cron_jobs_prod.sh
-
 # ログディレクトリを作成
-RUN mkdir -p /var/log
+RUN mkdir -p /var/log /app/logs && \
+    chmod 755 /app/logs
 
 # MeCab設定ファイルのシンボリックリンクを作成
 RUN mkdir -p /usr/local/etc && ln -sf /etc/mecabrc /usr/local/etc/mecabrc
 
-# 開発サーバーを実行
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# 開発用起動スクリプトに実行権限を付与
+RUN chmod +x start-dev.sh
+
+# 開発サーバーとスケジューラーを実行
+CMD ["./start-dev.sh"]

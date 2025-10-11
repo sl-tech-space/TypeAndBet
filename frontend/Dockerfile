@@ -33,4 +33,5 @@ ENV NODE_MAX_OLD_SPACE_SIZE=2048
 EXPOSE 3000
 
 # 開発サーバーを起動
-CMD ["yarn", "dev"]
+# cross-envがない場合に備えてインストールしてから起動
+CMD ["sh", "-c", "yarn install --frozen-lockfile && yarn dev"]
