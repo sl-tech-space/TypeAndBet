@@ -69,7 +69,7 @@ export async function createBet(
     const encoded = await encode({
       token: updatedToken,
       secret,
-      salt: secret,
+      salt: cookieName,
     });
 
     // Cookie名は既に上で定義済み（環境に応じて設定）
